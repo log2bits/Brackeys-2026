@@ -9,7 +9,7 @@ public class Door : ClickableObject
 
     protected override void OnMouseDown()
     {
-        return;
+        AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
     }
 
     protected override void OnMouseUp()
