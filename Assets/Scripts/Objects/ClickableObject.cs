@@ -1,12 +1,9 @@
 using UnityEngine;
 
-public class ClickableObject : MonoBehaviour
+public abstract class ClickableObject : MonoBehaviour
 {
-    private void OnMouseDown(){
-        Debug.Log("down");
-    }
+    protected abstract void OnMouseDown();
 
-    private void OnMouseUp(){
-        Debug.Log("up");
-    }
+    protected abstract void OnMouseUp();
+
 }
