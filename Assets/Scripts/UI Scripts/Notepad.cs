@@ -9,7 +9,7 @@ public class Notepad : MonoBehaviour
 
     private bool isOpen = false;
 
-    void Update()
+    private void Update()
     {
         if (Keyboard.current.nKey.wasPressedThisFrame)
         {
@@ -18,7 +18,7 @@ public class Notepad : MonoBehaviour
         }
     }
 
-    void ToggleNotepad()
+    private void ToggleNotepad()
     {
         isOpen = !isOpen;
         notepadPanel.SetActive(isOpen);
