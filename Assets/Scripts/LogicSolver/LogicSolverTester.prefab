@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b83d0d5dc3c2da488bcc9518f5e3e63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LogicSolverDemo
-  doorCount: 15
+  doorCount: 6
   roomsToGenerate: 1
   hideAnswers: 0
   potColour: blue

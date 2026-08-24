@@ -53,6 +53,13 @@ namespace LogicSolver
 				bool neverVaries = where.IsEmpty || where.Equals(space.everyWorld);
 				if (claim.topic != Topic.Memory && neverVaries) continue;
 
+				bool alreadyHave = false;
+				for (int i = 0; i < trueIn.Count; i++)
+				{
+					if (trueIn[i].Equals(where)) { alreadyHave = true; break; }
+				}
+				if (alreadyHave) continue;
+
 				usableClaims.Add(claim);
 				trueIn.Add(where);
 			}
@@ -62,7 +69,7 @@ namespace LogicSolver
 				Keep(pool, space, speaker, whereHonest, usableClaims[i].topic, false,
 					usableClaims[i].text, trueIn[i]);
 			}
-			if (!settings.useCompounds) return pool;
+			if (settings.compoundStatements == 0) return pool;
 
 			for (int i = 0; i < usableClaims.Count; i++)
 			{
