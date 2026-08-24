@@ -28,11 +28,15 @@ public class MainCameraMove : MonoBehaviour
 
     private bool inputEnabled = true;
     private bool mouseHeldLastFrame = false;
-    private Vector3 mousePositionLastFrame;
 
     private void Update()
     {
         if (!inputEnabled)
+        {
+            return;
+        }
+
+        if (Time.timeScale == 0)
         {
             return;
         }
