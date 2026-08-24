@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Door : ClickableObject
 {
@@ -17,6 +18,11 @@ public class Door : ClickableObject
 
     protected override void OnMouseDown()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         if (open)
         {
             return;
