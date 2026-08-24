@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 using LogicSolver;
 
 public class PottedPlant : MemorableObjectTemplate
@@ -11,9 +9,9 @@ public class PottedPlant : MemorableObjectTemplate
     public PottedPlant()
     {
         // initialize the plant's potential possible values
-        GenerateKnownFact(new string[] {"green", "blue", "yellow", "red"}, "the flower pot in the last room held a {0} flower");
+        GenerateKnownFact(new string[] {"red", "purple", "blue"}, "the flower pot in the last room held a {0} flower");
 
-        GenerateKnownFact(new string[] {"brown", "black", "white"}, "the flower pot in the last room was a {0} pot");
+        GenerateKnownFact(new string[] {"brown", "gray", "green"}, "the flower pot in the last room was a {0} pot");
     }
 
 }
