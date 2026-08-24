@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using LogicSolver;
 public class Clock : MonoBehaviour
 {
     KnownFact ClockTime = new KnownFact();
