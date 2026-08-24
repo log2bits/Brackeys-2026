@@ -26,7 +26,7 @@ public class PauseMenu : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject pauseMenuUI;
-    [SerializeField] private GameObject optionsMenuUI;
+    [SerializeField] private GameObject optionsMenuUIHolder;
     [SerializeField] private OptionsMenu optionsMenuScript;
     [SerializeField] private GameObject controlsMenuUI;
 
@@ -69,7 +69,7 @@ public class PauseMenu : MonoBehaviour
         }
 
         pauseMenuUI.SetActive(false);
-        optionsMenuUI.SetActive(false);
+        optionsMenuUIHolder.SetActive(false);
         controlsMenuUI.SetActive(false);
         Time.timeScale = previousTimescale;
         isPaused = false;
@@ -102,28 +102,14 @@ public class PauseMenu : MonoBehaviour
     public void LoadOptions()
     {
         pauseMenuUI.SetActive(false);
-        optionsMenuUI.SetActive(true);
-    }
-
-    // Used by the controls button in the options menu
-    public void LoadControls()
-    {
-        optionsMenuUI.SetActive(false);
-        controlsMenuUI.SetActive(true);
+        optionsMenuUIHolder.SetActive(true);
     }
 
     // Used by the return button in the options menu
     public void ReturnFromOptions()
     {
-        optionsMenuUI.SetActive(false);
+        optionsMenuUIHolder.SetActive(false);
         pauseMenuUI.SetActive(true);
-    }
-
-    // Used by the return butotn in the controls menu
-    public void ReturnFromControls()
-    {
-        controlsMenuUI.SetActive(false);
-        optionsMenuUI.SetActive(true);
     }
 
     // Used by the quit button in the pause menu UI

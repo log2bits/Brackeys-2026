@@ -11,11 +11,27 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] private float minBrightnessValue;
 
     [Header("References")]
+    [SerializeField] private GameObject uiHolder;
+    [SerializeField] private GameObject controlsMenuUI;
     [SerializeField] private Slider brightnessSlider;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private Volume brightnessVolume;
     
+    // Used by the controls button in the options menu
+    public void LoadControls()
+    {
+        uiHolder.SetActive(false);
+        controlsMenuUI.SetActive(true);
+    }
+
+    // Used by the return button in the controls menu
+    public void ReturnFromControls()
+    {
+        controlsMenuUI.SetActive(false);
+        uiHolder.SetActive(true);
+    }
+
     public void SetBrightnessPercent(float percent)
     {
         ColorAdjustments colr;
