@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LogicSolver;
 
-public class PottedPlant : MutableObjectTemplate
+public class PottedPlant : MemorableObjectTemplate
 {
     List<KnownFact> sharedList;
 

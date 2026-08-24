@@ -2,7 +2,7 @@ using UnityEngine;
 using LogicSolver;
 using System.Collections.Generic;
 
-public class MutableObjectTemplate : MonoBehaviour
+public class MemorableObjectTemplate : MonoBehaviour
 {
     private List<KnownFact> sharedList;
     

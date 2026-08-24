@@ -2,7 +2,7 @@ using UnityEngine;
 using LogicSolver;
 using System.Collections.Generic;
 
-public class Clock : MutableObjectTemplate
+public class Clock : MemorableObjectTemplate
 {
     List<KnownFact> sharedList;
 
