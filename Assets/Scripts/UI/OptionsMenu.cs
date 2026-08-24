@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -13,12 +14,17 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] private Slider brightnessSlider;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
-    [SerializeField] private Volume vol;
+    [SerializeField] private Volume brightnessVolume;
     
     public void SetBrightnessPercent(float percent)
     {
         ColorAdjustments colr;
-        vol.profile.TryGet(out colr);
+        brightnessVolume.profile.TryGet(out colr);
+        if (colr == null)
+        {
+            throw new Exception("No ColorAdjustments profile found on brightness volume!");
+        }
+
         float brightnessFinal = ((maxBrightnessValue - minBrightnessValue) * percent) + minBrightnessValue;
         colr.colorFilter.value = new Color(brightnessFinal, brightnessFinal, brightnessFinal);
         SaveOptions();
