@@ -1994,6 +1994,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1115573171}
   - component: {fileID: 1115573172}
+  - component: {fileID: 1115573174}
+  - component: {fileID: 1115573173}
   m_Layer: 5
   m_Name: MusicSlider
   m_TagString: Untagged
@@ -2086,6 +2088,68 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1115573173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1115573170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioEventEmitter
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
+  Event: 
+  EventPlayTrigger: 17
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
+--- !u!114 &1115573174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1115573170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioEventEmitter
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
+  Event: 
+  EventPlayTrigger: 19
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &1141583874
 GameObject:
   m_ObjectHideFlags: 0
@@ -3001,6 +3065,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1765973681}
   - component: {fileID: 1765973682}
+  - component: {fileID: 1765973684}
+  - component: {fileID: 1765973683}
   m_Layer: 5
   m_Name: SFXSlider
   m_TagString: Untagged
@@ -3093,6 +3159,68 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1765973683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765973680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioEventEmitter
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
+  Event: 
+  EventPlayTrigger: 17
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
+--- !u!114 &1765973684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765973680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioEventEmitter
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
+  Event: 
+  EventPlayTrigger: 19
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &1774467600
 GameObject:
   m_ObjectHideFlags: 0
@@ -3473,6 +3601,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2145627101}
   - component: {fileID: 2145627102}
+  - component: {fileID: 2145627104}
+  - component: {fileID: 2145627103}
   m_Layer: 5
   m_Name: BrightnessSlider
   m_TagString: Untagged
@@ -3565,6 +3695,68 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2145627103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145627100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioEventEmitter
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
+  Event: 
+  EventPlayTrigger: 17
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
+--- !u!114 &2145627104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145627100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioEventEmitter
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
+  Event: 
+  EventPlayTrigger: 19
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!224 &182025875482534147
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3591,7 +3783,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4375060335154449401}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -3599,11 +3791,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1440832329
-      Data2: 1136308370
-      Data3: 1844766120
-      Data4: 460456945
-    Path: event:/UI/UIHover
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
   Event: 
   EventPlayTrigger: 17
   EventStopTrigger: 0
@@ -3749,7 +3941,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1554874888593631114}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -3757,11 +3949,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1725574213
-      Data2: 1315162338
-      Data3: 1284759976
-      Data4: 1286813813
-    Path: event:/UI/UIClick
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
   Event: 
   EventPlayTrigger: 19
   EventStopTrigger: 0
@@ -3894,7 +4086,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4015271751442893011}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -3902,11 +4094,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1440832329
-      Data2: 1136308370
-      Data3: 1844766120
-      Data4: 460456945
-    Path: event:/UI/UIHover
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
   Event: 
   EventPlayTrigger: 17
   EventStopTrigger: 0
@@ -3925,7 +4117,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3063475718900608771}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -3933,11 +4125,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1440832329
-      Data2: 1136308370
-      Data3: 1844766120
-      Data4: 460456945
-    Path: event:/UI/UIHover
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
   Event: 
   EventPlayTrigger: 17
   EventStopTrigger: 0
@@ -4178,7 +4370,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5277175855790743165}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -4186,11 +4378,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1440832329
-      Data2: 1136308370
-      Data3: 1844766120
-      Data4: 460456945
-    Path: event:/UI/UIHover
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
   Event: 
   EventPlayTrigger: 17
   EventStopTrigger: 0
@@ -4395,7 +4587,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3063475718900608771}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -4403,11 +4595,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1725574213
-      Data2: 1315162338
-      Data3: 1284759976
-      Data4: 1286813813
-    Path: event:/UI/UIClick
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
   Event: 
   EventPlayTrigger: 19
   EventStopTrigger: 0
@@ -4523,7 +4715,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1554874888593631114}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -4531,11 +4723,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1440832329
-      Data2: 1136308370
-      Data3: 1844766120
-      Data4: 460456945
-    Path: event:/UI/UIHover
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
   Event: 
   EventPlayTrigger: 17
   EventStopTrigger: 0
@@ -5052,7 +5244,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4375060335154449401}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -5060,11 +5252,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1725574213
-      Data2: 1315162338
-      Data3: 1284759976
-      Data4: 1286813813
-    Path: event:/UI/UIClick
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
   Event: 
   EventPlayTrigger: 19
   EventStopTrigger: 0
@@ -5183,7 +5375,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8376988228000096338}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -5191,11 +5383,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1725574213
-      Data2: 1315162338
-      Data3: 1284759976
-      Data4: 1286813813
-    Path: event:/UI/UIClick
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
   Event: 
   EventPlayTrigger: 19
   EventStopTrigger: 0
@@ -5277,7 +5469,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6238768103394115541}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -5285,11 +5477,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1440832329
-      Data2: 1136308370
-      Data3: 1844766120
-      Data4: 460456945
-    Path: event:/UI/UIHover
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
   Event: 
   EventPlayTrigger: 17
   EventStopTrigger: 0
@@ -5524,7 +5716,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4015271751442893011}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -5532,11 +5724,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1725574213
-      Data2: 1315162338
-      Data3: 1284759976
-      Data4: 1286813813
-    Path: event:/UI/UIClick
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
   Event: 
   EventPlayTrigger: 19
   EventStopTrigger: 0
@@ -5867,7 +6059,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8376988228000096338}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -5875,11 +6067,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1440832329
-      Data2: 1136308370
-      Data3: 1844766120
-      Data4: 460456945
-    Path: event:/UI/UIHover
+      Data1: -1881243713
+      Data2: 1122379050
+      Data3: -1100066910
+      Data4: -184013511
+    Path: event:/UISFX/UiHover
   Event: 
   EventPlayTrigger: 17
   EventStopTrigger: 0
@@ -6053,7 +6245,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5277175855790743165}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -6061,11 +6253,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1725574213
-      Data2: 1315162338
-      Data3: 1284759976
-      Data4: 1286813813
-    Path: event:/UI/UIClick
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
   Event: 
   EventPlayTrigger: 19
   EventStopTrigger: 0
@@ -6173,7 +6365,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6238768103394115541}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -6181,11 +6373,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 1725574213
-      Data2: 1315162338
-      Data3: 1284759976
-      Data4: 1286813813
-    Path: event:/UI/UIClick
+      Data1: 1689792471
+      Data2: 1140460804
+      Data3: 235552425
+      Data4: -525123840
+    Path: event:/UISFX/UiClick
   Event: 
   EventPlayTrigger: 19
   EventStopTrigger: 0
