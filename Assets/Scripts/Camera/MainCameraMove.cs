@@ -32,6 +32,11 @@ public class MainCameraMove : MonoBehaviour
 
     private void Update()
     {
+        if (!inputEnabled)
+        {
+            return;
+        }
+
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
         if (mouseHeldLastFrame)
