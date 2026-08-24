@@ -1,32 +1,36 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 
 public class Notepad : MonoBehaviour
 {
     [SerializeField] private TMP_InputField inputField;
-    [SerializeField] private GameObject notepadPanel;  
+    
+    [SerializeField] private GameObject notepadPanel;
 
-    private bool isOpen = false;
+    [SerializeField] private GameObject notepadButton;
 
-    private void Update()
+    public void Start()
     {
-        if (Keyboard.current.nKey.wasPressedThisFrame)
-        {
-            ToggleNotepad();
-            inputField.DeactivateInputField();
-        }
+        notepadPanel.SetActive(false);
     }
 
-    private void ToggleNotepad()
+    public void OpenNotepad()
     {
-        isOpen = !isOpen;
-        notepadPanel.SetActive(isOpen);
+        notepadPanel.SetActive(true);
+        notepadButton.SetActive(false); 
+        
+        inputField.ActivateInputField();
+        inputField.selectionAnchorPosition = inputField.text.Length;
+        inputField.selectionFocusPosition = inputField.text.Length;
+        inputField.caretPosition = inputField.text.Length;
+    }
 
-        if (isOpen)
-        {
-            inputField.ActivateInputField();
-        }
+    public void CloseNotepad()
+    {
+        notepadButton.SetActive(true);
+        notepadPanel.SetActive(false);
+
+        inputField.DeactivateInputField();
     }
 
     public void ClearNotepad()
