@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class MemorableObjectTemplate : MonoBehaviour
 {
     private List<KnownFact> sharedList;
+    [SerializeField] private List<SpriteData> spriteDatas;
     
     // GenerateKnownFact
     // Generates an undeclared solution fact, and adds to shared list
@@ -22,6 +23,8 @@ public class MemorableObjectTemplate : MonoBehaviour
     public void GenerateRandomSolution(int factIdx, int randNum)
     {
         sharedList[factIdx].actualValue = sharedList[factIdx].possibleValues[randNum];
+
+        
     }
 
     // AddSharedList

@@ -43,6 +43,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
     [Header("Parameters")]
     [SerializeField] private float roomDistance = 20;
+    [SerializeField] private float objectDistance = 5; // how much in front of the doors
     //[SerializeField] private float doorDistance = 15; // accounts for doorframes
     [SerializeField] private float sideWallsDistance = 15;
 
@@ -138,7 +139,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
     private void GenerateObjects(int room)
     {
-        //for (int )
+        //for ()
         
     }
 }

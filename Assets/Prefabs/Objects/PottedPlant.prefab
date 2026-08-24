@@ -252,3 +252,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1791f21c8677317418e441f9d9495546, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PottedPlant
+  spriteDatas: []
