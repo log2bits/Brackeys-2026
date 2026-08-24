@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class GameManager
 {
@@ -15,6 +16,9 @@ public class GameManager
     }
 
     public GameState state;
+
+    // Managers
+    //public ProceduralRoomGen proceduralRoomGenManager;
 
     private static GameManager theInstance;
     public static GameManager Instance
@@ -31,7 +35,9 @@ public class GameManager
 
     private GameManager()
     {
-        
+        Debug.Log("GameManager initalized");
+        //proceduralRoomGenManager.GenerateProcess();
+        ProceduralRoomGen.Instance.GenerateProcess();
     }
     
 }
