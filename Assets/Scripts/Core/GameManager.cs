@@ -19,6 +19,7 @@ public class GameManager
 
     // Managers
     //public ProceduralRoomGen proceduralRoomGenManager;
+    public GameState gameState = new GameState();
 
     private static GameManager theInstance;
     public static GameManager Instance

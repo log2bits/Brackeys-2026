@@ -32,7 +32,7 @@ public class ProceduralRoomGen : MonoBehaviour
         int seed = (int)(DateTime.UtcNow.Ticks % int.MaxValue);
         Debug.Log($"Generated Seed: {seed}");
 
-        
+
         randomNumberGenerator = new System.Random(seed);
     }
 
@@ -123,5 +123,10 @@ public class ProceduralRoomGen : MonoBehaviour
             // save the door
             currentDoors.Add(new DoorData(door, false));
         }
+    }
+
+    public void GenerateObjects()
+    {
+        
     }
 }
