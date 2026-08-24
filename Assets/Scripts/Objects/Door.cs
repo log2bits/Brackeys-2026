@@ -10,6 +10,7 @@ public class Door : ClickableObject
     protected override void OnMouseDown()
     {
         AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
+        MainCameraMove.Instance.MoveCamera(transform.position);
     }
 
     protected override void OnMouseUp()

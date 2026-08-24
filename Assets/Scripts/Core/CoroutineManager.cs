@@ -3,18 +3,24 @@ using System.Collections;
 
 public class CoroutineManager : MonoBehaviour
 {
-    public static CoroutineManager Instance;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        Instance = this;
-    }
+    // Singleton -------------------------------
+    private static CoroutineManager _instance;
 
-    // Update is called once per frame
-    void Update()
+    public static CoroutineManager Instance { get { return _instance; } }
+
+    private void Awake()
     {
-        
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            Debug.LogWarning("Multiple CoroutineManager scripts. Bad!");
+        }
+        else
+        {
+            _instance = this;
+        }
     }
+    // Singleton -------------------------------
 
     public void Run(IEnumerator coroutine)
     {
