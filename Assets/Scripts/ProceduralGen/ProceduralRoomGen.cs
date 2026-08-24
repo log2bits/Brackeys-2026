@@ -11,7 +11,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
     public static ProceduralRoomGen Instance { get { return _instance; } }
 
-    System.Random randomNumberGenerator;
+    System.Random proceduralRandGen;
 
     private void Awake()
     {
@@ -33,15 +33,15 @@ public class ProceduralRoomGen : MonoBehaviour
         Debug.Log($"Generated Seed: {seed}");
 
 
-        randomNumberGenerator = new System.Random(seed);
+        proceduralRandGen = new System.Random(seed);
     }
 
 
     [Header("References")]
     [SerializeField] private GameObject doorFullPrefab;
+    [SerializeField] private DifficultyTemplate difficultySettings;
 
     [Header("Parameters")]
-    [SerializeField] private int roomCount = 3;
     [SerializeField] private float roomDistance = 20;
     //[SerializeField] private float doorDistance = 15; // accounts for doorframes
     [SerializeField] private float sideWallsDistance = 15;
@@ -58,6 +58,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
     // Saves current doors in the room
     private List<DoorData> currentDoors = new List<DoorData>();
+    private 
 
     struct DoorData
     {
@@ -75,17 +76,17 @@ public class ProceduralRoomGen : MonoBehaviour
     public void GenerateProcess()
     {
         GenerateNextRoom(transform.position, 2);
-
-        System.Random rnd = new System.Random();
         
-        for (int room = 1; room < roomCount; room++)
+        for (int room = 1; room < difficultySettings.roomCount; room++)
         {
-            int randomInt = rnd.Next(0, room + 1);
+            int randomInt = proceduralRandGen.Next(0, room + 1);
             Debug.Log($"Random int: {randomInt}");
             Debug.Log($"Current Doors: {currentDoors.Count}");
             Vector3 nextDoorPosition = currentDoors[randomInt].door.transform.position;
             nextDoorPosition.z += roomDistance;
             GenerateNextRoom(nextDoorPosition, room + INITIAL_DOOR_COUNT);
+
+
         }
 
         // Clear all doors
@@ -135,8 +136,9 @@ public class ProceduralRoomGen : MonoBehaviour
         }
     }
 
-    private void GenerateObjects()
+    private void GenerateObjects(int room)
     {
-        //randomNumberGenerator.Next(0) 
+        //for (int )
+        
     }
 }
