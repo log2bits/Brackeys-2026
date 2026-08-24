@@ -514,6 +514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainCameraMove
   cameraMoveTime: 2
+  cameraDragStrength: -0.05
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

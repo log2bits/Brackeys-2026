@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MainCameraMove : MonoBehaviour
 {
@@ -23,6 +24,23 @@ public class MainCameraMove : MonoBehaviour
     // Singleton -------------------------------
 
     [SerializeField] private float cameraMoveTime;
+    [SerializeField] private float cameraDragStrength = 0.2f;
+
+    private bool inputEnabled = true;
+    private bool mouseHeldLastFrame = false;
+    private Vector3 mousePositionLastFrame;
+
+    private void Update()
+    {
+        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
+
+        if (mouseHeldLastFrame)
+        {
+            transform.position = new Vector3(transform.position.x + (mouseDelta.x * cameraDragStrength), transform.position.y, transform.position.z);
+        }
+
+        mouseHeldLastFrame = Mouse.current.leftButton.isPressed;
+    }
 
     public void MoveCamera(Vector3 position)
     {
@@ -31,6 +49,7 @@ public class MainCameraMove : MonoBehaviour
 
     private IEnumerator MoveCameraCoroutine(Vector3 position)
     {
+        inputEnabled = false;
         Vector3 startingPosition = transform.position;
 
         float i = 0;
@@ -42,5 +61,6 @@ public class MainCameraMove : MonoBehaviour
         }
 
         transform.position = position;
+        inputEnabled = true;
     }
 }
