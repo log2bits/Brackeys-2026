@@ -25,6 +25,10 @@ public class FmodEvents : MonoBehaviour
     [field: Header("Door SFX")]
     [field: SerializeField] public EventReference openDoor { get ; private set;}
 
+    [field: Header("VCAs")]
+    [field: SerializeField] public string sfxVCAPath;
+    [field: SerializeField] public string musicVCAPath;
+
 
 
 }

@@ -27,4 +27,15 @@ public class AudioManager : MonoBehaviour
         RuntimeManager.PlayOneShot(sound, worldPosition);
     }
 
+    public void PauseFmodSounds(bool pause)
+    {        
+        float pauseFloat = pause ? 1 : 0;
+        RuntimeManager.StudioSystem.setParameterByName("PauseParameter", pauseFloat);
+    }
+    
+    public void SetVCAVolume(string VCAPath, float volume)
+    {
+        RuntimeManager.GetVCA(VCAPath).setVolume(volume);
+    }
+
 }
