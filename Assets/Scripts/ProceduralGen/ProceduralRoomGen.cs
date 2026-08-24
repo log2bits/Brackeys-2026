@@ -95,10 +95,20 @@ public class ProceduralRoomGen : MonoBehaviour
     // 
     private void GenerateNextRoom(Vector3 centralPosition, int doorCount)
     {
+        GenerateRoomState();
+
         GenerateDoors(centralPosition, doorCount);
     }
 
-    public void GenerateDoors(Vector3 centralPosition, int doorCount)
+    private void GenerateRoomState()
+    {
+        
+    }
+
+
+
+
+    private void GenerateDoors(Vector3 centralPosition, int doorCount)
     {
         if (doorFullPrefab == null) throw new Exception("ProceduralRoomGen: DoorPrefab is null");
         // safely clear the currnet doors which are stored
@@ -125,8 +135,8 @@ public class ProceduralRoomGen : MonoBehaviour
         }
     }
 
-    public void GenerateObjects()
+    private void GenerateObjects()
     {
-        
+        //randomNumberGenerator.Next(0) 
     }
 }
