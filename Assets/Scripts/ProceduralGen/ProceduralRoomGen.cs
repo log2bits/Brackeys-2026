@@ -11,6 +11,8 @@ public class ProceduralRoomGen : MonoBehaviour
 
     public static ProceduralRoomGen Instance { get { return _instance; } }
 
+    System.Random randomNumberGenerator;
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -26,8 +28,12 @@ public class ProceduralRoomGen : MonoBehaviour
 
         doorSpriteRenderer = doorFullPrefab.transform.GetChild(0).GetComponent<SpriteRenderer>();
         doorSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
-        Debug.Log(doorSize);
-        Debug.Log("AHHH");
+        
+        int seed = (int)(DateTime.UtcNow.Ticks % int.MaxValue);
+        Debug.Log($"Generated Seed: {seed}");
+
+        
+        randomNumberGenerator = new System.Random(seed);
     }
 
 
