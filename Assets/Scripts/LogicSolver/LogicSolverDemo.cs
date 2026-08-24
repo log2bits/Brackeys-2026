@@ -35,22 +35,19 @@ public class LogicSolverDemo : MonoBehaviour
 			seed = Random.Range(0, int.MaxValue)
 		};
 
-		// No memory claims with only 2 doors
-		if (doorCount <= 2) settings.minMemoryMentions = 0;
-
 		// Things the player is meant to remember
-		settings.knownFacts.Add(new KnownFact
-		{
-			possibleValues = new string[] { "red", "blue", "yellow", "white" },
-			template = "the flower pot in the last room held a {0} flower",
-			actualValue = potColour
-		});
-		settings.knownFacts.Add(new KnownFact
-		{
-			possibleValues = new string[] { "one o'clock", "two o'clock", "three o'clock" },
-			template = "the clock in the last room read {0}",
-			actualValue = clockTime
-		});
+		// settings.knownFacts.Add(new KnownFact
+		// {
+		// 	possibleValues = new string[] { "red", "blue", "yellow", "white" },
+		// 	template = "the flower pot in the last room held a {0} flower",
+		// 	actualValue = potColour
+		// });
+		// settings.knownFacts.Add(new KnownFact
+		// {
+		// 	possibleValues = new string[] { "one o'clock", "two o'clock", "three o'clock" },
+		// 	template = "the clock in the last room read {0}",
+		// 	actualValue = clockTime
+		// });
 
 		RoomSolution room = Solver.Solve(settings);
 		if (room == null)

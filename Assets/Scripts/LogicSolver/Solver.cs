@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LogicSolver
 {
-	// Something the player is expected to remember
+	// Something the player is expected to remember, and which guards can therefore lie about
 	public sealed class KnownFact
 	{
 		// Everything it could have been, for example red, blue, yellow
@@ -18,7 +18,7 @@ namespace LogicSolver
 		public bool IsTrue(string value) { return value == actualValue; }
 	}
 
-	// Everything the solver needs for one room
+	// Everything the solver needs for one room. Every guard speaks, so doors are also guards
 	public sealed class RoomSettings
 	{
 		public int doorCount = 4;
@@ -41,16 +41,18 @@ namespace LogicSolver
 		public int minMemoryImpact = 2;
 
 		// Statements needed together before any door can be ruled out. Forced to 1 at two doors
-		public int minStatementsBeforeProgress = 1;
+		public int minStatementsToRuleOutDoor = 1;
 
-		// Whether guards may glue two claims together with and, or, if-then and so on
-		public bool useCompounds = false;
+		// Statements needed together before any guard's honesty is settled
+		// Memory claims do not count, they are meant to hand you a liar on their own
+		public int minStatementsToFindALiar = 1;
 
-		// How many of the statements in a room may be compound ones
-		public int maxCompoundStatements = 1;
+		// Exactly how many statements in the room glue two claims together
+		// Zero means none, -1 means every guard uses one
+		public int compoundStatements = 0;
 
 		// Pinning the liars down as well as the door is strict, so this needs to be generous
-		public int maxAttempts = 20000;
+		public int maxAttempts = 200000;
 
 		// Shorthand for a single fixed liar count
 		public int liarCount
@@ -92,7 +94,7 @@ namespace LogicSolver
 
 			// At two doors, ruling out a door is the same as solving it
 			// Demanding two door mentions and no statement settling it contradicts itself
-			if (settings.doorCount <= 2) settings.minStatementsBeforeProgress = 1;
+			if (settings.doorCount <= 2) settings.minStatementsToRuleOutDoor = 1;
 
 			WorldSpace space = new WorldSpace(settings.doorCount, settings.liarCounts);
 			StatementCompiler.Pool[] pools =

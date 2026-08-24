@@ -14,18 +14,21 @@ namespace LogicSolver
 			public int notUnique;
 			public int spareStatement;
 			public int tooEasyToStart;
+			public int tooEasyToSpotALiar;
 			public int tooFewDoorMentions;
 			public int tooFewMemories;
 			public int weakMemory;
-			public int tooWordy;
+			public int wrongCompoundCount;
 
 			public override string ToString()
 			{
 				return "not unique " + notUnique + ", spare statement " + spareStatement
 					+ ", too easy to start " + tooEasyToStart
+					+ ", too easy to spot a liar " + tooEasyToSpotALiar
 					+ ", too few door mentions " + tooFewDoorMentions
 					+ ", too few memories " + tooFewMemories
-					+ ", weak memory " + weakMemory + ", too wordy " + tooWordy;
+					+ ", weak memory " + weakMemory
+					+ ", wrong compound count " + wrongCompoundCount;
 			}
 		}
 
@@ -49,16 +52,22 @@ namespace LogicSolver
 			}
 
 			firstDeduction = StatementsNeededToRuleOutADoor(space, chosen);
-			if (firstDeduction < settings.minStatementsBeforeProgress)
+			if (firstDeduction < settings.minStatementsToRuleOutDoor)
 			{
 				tally.tooEasyToStart++;
 				return false;
 			}
 
-			// Compound sentences are a mouthful, so cap how many a room may use
-			if (Count(chosen, statement => statement.isCompound) > settings.maxCompoundStatements)
+			if (StatementsNeededToPinAGuard(space, chosen) < settings.minStatementsToFindALiar)
 			{
-				tally.tooWordy++;
+				tally.tooEasyToSpotALiar++;
+				return false;
+			}
+
+			int wantCompound = settings.compoundStatements < 0 ? chosen.Count : settings.compoundStatements;
+			if (Count(chosen, statement => statement.isCompound) != wantCompound)
+			{
+				tally.wrongCompoundCount++;
 				return false;
 			}
 
@@ -70,7 +79,7 @@ namespace LogicSolver
 			}
 
 			// Memory claims are the only reward for paying attention last room
-			if (Count(chosen, statement => statement.topic == Topic.Memory) < settings.minMemoryMentions)
+			if (settings.doorCount > 2 && settings.knownFacts.Count > 0 && Count(chosen, statement => statement.topic == Topic.Memory) < settings.minMemoryMentions)
 			{
 				tally.tooFewMemories++;
 				return false;
@@ -123,6 +132,29 @@ namespace LogicSolver
 				}
 			}
 			return statements.Count + 1;
+		}
+
+
+		private static int StatementsNeededToPinAGuard(WorldSpace space, List<Statement> statements)
+		{
+			List<Statement> logic = statements
+				.Where(statement => statement.topic != Topic.Memory).ToList();
+			if (logic.Count == 0) return int.MaxValue;
+
+			for (int size = 1; size <= logic.Count; size++)
+			{
+				foreach (List<Statement> group in GroupsOfSize(logic, size))
+				{
+					BitSet left = space.AllowedByAll(group);
+					int total = left.Count;
+					for (int guard = 0; guard < space.doorCount; guard++)
+					{
+						int lying = left.And(space.whereGuardLies[guard]).Count;
+						if (lying == 0 || lying == total) return size;
+					}
+				}
+			}
+			return logic.Count + 1;
 		}
 
 		// Doors still open when the weakest memory claim is taken away

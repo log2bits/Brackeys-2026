@@ -84,13 +84,17 @@ namespace LogicSolver
 				// Otherwise it closes in two lines and the rest say garbage
 				bool mustNotFinishYet = waiting.Count > 1;
 
-				int compoundsLeft = settings.maxCompoundStatements - chosen.Count(statement => statement.isCompound);
+				int wantCompound = settings.compoundStatements < 0 ? space.doorCount : settings.compoundStatements;
+				int usedCompound = chosen.Count(statement => statement.isCompound);
+				int usedSimple = chosen.Count - usedCompound;
+				bool compoundsAllowed = usedCompound < wantCompound;
+				bool simpleAllowed = usedSimple < space.doorCount - wantCompound;
 
 				List<Option> narrowing = new List<Option>();
 				List<Option> finishing = new List<Option>();
 				foreach (int guard in waiting)
 				{
-					CollectOptions(rng, guard, targetIndex, worldsLeft, rivalWorlds, rivalsNow, compoundsLeft, alreadySaid, narrowing, finishing);
+					CollectOptions(rng, guard, targetIndex, worldsLeft, rivalWorlds, rivalsNow, compoundsAllowed, simpleAllowed, alreadySaid, narrowing, finishing);
 				}
 
 				Option picked;
@@ -114,9 +118,9 @@ namespace LogicSolver
 			return chosen;
 		}
 
-		private void CollectOptions(Random rng, int guard, int targetIndex, BitSet worldsLeft, BitSet rivalWorlds, int rivalsNow, int compoundsLeft, HashSet<string> alreadySaid, List<Option> narrowing, List<Option> finishing)
+		private void CollectOptions(Random rng, int guard, int targetIndex, BitSet worldsLeft, BitSet rivalWorlds, int rivalsNow, bool compoundsAllowed, bool simpleAllowed, HashSet<string> alreadySaid, List<Option> narrowing, List<Option> finishing)
 		{
-			foreach (Statement statement in Candidates(guard, compoundsLeft, rng))
+			foreach (Statement statement in Candidates(guard, compoundsAllowed, simpleAllowed, rng))
 			{
 				// No two guards should say the same thing
 				if (alreadySaid.Contains(statement.text)) continue;
@@ -140,14 +144,13 @@ namespace LogicSolver
 			}
 		}
 
-		// Offer simple sentences always, compounds only while the budget allows
-		private IEnumerable<Statement> Candidates(int guard, int compoundsLeft, Random rng)
+		// Only offer the kinds of sentence the room still has room for
+		private IEnumerable<Statement> Candidates(int guard, bool compoundsAllowed,
+			bool simpleAllowed, Random rng)
 		{
-			List<Statement> offered = new List<Statement>(Sample(pools[guard].simple, 60, rng));
-			if (compoundsLeft > 0)
-			{
-				offered.AddRange(Sample(pools[guard].compound, 40, rng));
-			}
+			List<Statement> offered = new List<Statement>();
+			if (simpleAllowed) offered.AddRange(Sample(pools[guard].simple, 60, rng));
+			if (compoundsAllowed) offered.AddRange(Sample(pools[guard].compound, 40, rng));
 			return offered;
 		}
 
