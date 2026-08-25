@@ -5,7 +5,8 @@ using UnityEngine;
 public class RoomState
 {
     public List<GuardState> guardStates = new List<GuardState>();
-    public List<ObjectsState> objectsStates = new List<ObjectsState>();
+    public ObjectsState objectsState;
+    public Vector3 globalPosition;
     public RoomSettings roomSettings = new RoomSettings();
 
     // Constructor, provide seed and doors for the current room

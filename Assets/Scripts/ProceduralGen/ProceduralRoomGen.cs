@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-//using System.Numerics;
+
 
 public class ProceduralRoomGen : MonoBehaviour
 {
@@ -44,7 +44,9 @@ public class ProceduralRoomGen : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private float roomDistance = 20;
     [SerializeField] private float objectDoorDistance = 5; // how much in front of the doors
-    [SerializeField] private float objectToObjectDistance = 5;
+    [SerializeField] private float objectToObjectDistance = 0; // handles offsets from object to object
+    [SerializeField] private float objectInvalidationDistance = 0; // handles offsets for object invalidation
+
     //[SerializeField] private float doorDistance = 15; // accounts for doorframes
     [SerializeField] private float sideWallsDistance = 15;
 
@@ -55,6 +57,7 @@ public class ProceduralRoomGen : MonoBehaviour
     int seed = 0;
 
     // Constants
+    
     
 
     // Saves current doors in the room
@@ -89,7 +92,7 @@ public class ProceduralRoomGen : MonoBehaviour
     // StartGenerationProcess
     public void GenerateProcess()
     {
-        GenerateNextRoom(transform.position, 2);
+        GenerateNextRoom(transform.position, 2, 1);
         
         for (int room = 2; room < difficultySettings.roomCount; room++)
         {
@@ -98,19 +101,22 @@ public class ProceduralRoomGen : MonoBehaviour
             Debug.Log($"Current Doors: {currentDoors.Count}");
             Vector3 nextDoorPosition = currentDoors[randomInt].door.transform.position;
             nextDoorPosition.z += roomDistance;
-            GenerateNextRoom(nextDoorPosition, (room-1) + difficultySettings.minDoors);
+            GenerateNextRoom(nextDoorPosition, (room-1) + difficultySettings.minDoors, room);
         }
+        
 
         // Clear all doors
         currentDoors.Clear();
     }
 
     // 
-    private void GenerateNextRoom(Vector3 centralPosition, int doorCount)
+    private void GenerateNextRoom(Vector3 centralPosition, int doorCount, int room)
     {
         GenerateRoomState(doorCount);
 
-        GenerateDoors(centralPosition, doorCount);
+        GenerateDoors(centralPosition, doorCount, room);
+
+        GenerateObjects(room);
     }
 
     private void GenerateRoomState(int doorCount)
@@ -121,16 +127,14 @@ public class ProceduralRoomGen : MonoBehaviour
 
 
 
-    private void GenerateDoors(Vector3 centralPosition, int doorCount)
+    private void GenerateDoors(Vector3 centralPosition, int doorCount, int room)
     {
         if (doorFullPrefab == null) throw new Exception("ProceduralRoomGen: DoorPrefab is null");
         // safely clear the currnet doors which are stored
         currentDoors.Clear();
 
-        
 
         // Collect door size, offset initially, and width
-
         float offsetDoorSide = (doorCount % 2 == 0) ? doorSize / 2f : 0;
         float width = doorSize * doorCount;
         Debug.Log($"Object Size (W): {doorSize}");
@@ -145,13 +149,19 @@ public class ProceduralRoomGen : MonoBehaviour
             GameObject door = Instantiate(doorFullPrefab, newPosition, Quaternion.identity, transform);
             door.transform.GetChild(1).GetComponent<Door>().SetNumber(currDoor);
 
+            // Invalidate the position of the door in the grid
+            InvalidatePlacements(GameManager.Instance.worldState.roomStates[room].objectsState, doorSize, newPosition, room);
+
             // save the door
             currentDoors.Add(new DoorData(door, false));
         }
     }
 
+    // GenerateObjects
+    // Generates and initalized objects into the room based on all settings
     private void GenerateObjects(int room)
     {
+        if (GameManager.Instance.worldState.roomStates.Count <= room || GameManager.Instance.worldState.roomStates[room].objectsState == null) throw new Exception("GenerateObjects: roomState index exceeded, or ObjectsState is null");
         int currTotalObjects = Mathf.Min(difficultySettings.minObjects + (room * difficultySettings.durationUntilObjectIncrease), difficultySettings.maxObjects);
         List<int> indices = new List<int>();
         for (int i = 0; i < objectPrefabs.Count; i++) indices.Add(0);
@@ -159,11 +169,16 @@ public class ProceduralRoomGen : MonoBehaviour
         for(int currObject = 0; currObject <= currTotalObjects; currObject++)
         {
             int randomIndex = proceduralRandGen.Next(0, indices.Count);
+            
+            float width = GetMaxWidthOfObject(objectPrefabs[randomIndex]);
+
+            ObjectsState objectsState = GameManager.Instance.worldState.roomStates[room].objectsState;
+            Vector3 placementPosition = SetupRandomizedPlacement(objectsState, GameManager.Instance.worldState.roomStates[room].globalPosition, width, room);
+            if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
+            GameObject objectGenerated = Instantiate(objectPrefabs[randomIndex], placementPosition, Quaternion.identity, transform);
+
+            // prevents duplicates
             indices.RemoveAt(randomIndex);
-
-            objectPrefabs[randomIndex] = 
-            GameObject objectGenerated = Instantiate(objectPrefabs[randomIndex], , Quaternion.identity, transform);
-
         }
 
         
@@ -178,6 +193,8 @@ public class ProceduralRoomGen : MonoBehaviour
         float roomWidth = doorSize * ((room-1) + difficultySettings.minDoors);
 
         List<int> validIndices = ValidPlacements(objectsState, objectWidth);
+        if (validIndices.Count == 0) return new Vector3(0, 0, 0);
+
         int randomIndex = proceduralRandGen.Next(0, validIndices.Count);
         int placementObjectWidth = FindPlacementWidth(objectsState, objectWidth);
 
@@ -185,8 +202,27 @@ public class ProceduralRoomGen : MonoBehaviour
         
         float placementBetweenDistance = placementObjectWidth * objectsState.ratio;
         
-        Vector3 position = new Vector3(centerRoomPosition.x - (roomWidth / 2.0f) + placementBetweenDistance * randomIndex, centerRoomPosition.y, centerRoomPosition.z);
+        Vector3 position = new Vector3(centerRoomPosition.x - (roomWidth / 2.0f) + placementBetweenDistance * randomIndex, centerRoomPosition.y, centerRoomPosition.z - objectDoorDistance);
         return position;
+    }
+
+    // InvalidatePlacements
+    // Finds and sets valid indices to invalid with float size of the object, and position
+    private void InvalidatePlacements(ObjectsState objectsState, float width, Vector3 position, int room)
+    {
+        // relevant to grid
+        int placementSize = FindPlacementWidth(objectsState, width + objectInvalidationDistance);
+        // roomWidth
+        float roomWidth = doorSize * ((room-1) + difficultySettings.minDoors);
+        // the edge position of the room in global coordinates
+        float leftEdgeRoomPos = GameManager.Instance.worldState.roomStates[room].globalPosition.x - (roomWidth / 2.0f);
+        // the far left index grid of the object
+        int leftSideIndex = Mathf.FloorToInt((position.x - width/2.0f - leftEdgeRoomPos) / objectsState.ratio);
+        
+        for (int x = placementSize -1; x >= 0 ; x--) objectsState.availableGrids.RemoveAt(x);
+    
+        float leftEdgeRoom = position.x - (roomWidth / 2.0f);
+
     }
 
     // ValidPlacements
@@ -194,7 +230,7 @@ public class ProceduralRoomGen : MonoBehaviour
     private List<int> ValidPlacements(ObjectsState objectsState, float width)
     {
         //float doorWidth = GetSpriteLocalScaleX(doorFullPrefab.transform.GetChild(1).GetComponent<SpriteRenderer>());
-        int placementSize = FindPlacementWidth(objectsState, width);
+        int placementSize = FindPlacementWidth(objectsState, width + objectToObjectDistance);
         List<int> potentialIndices = new List<int>();
         int prevIndex = 0;
         for (int x = 1; x < objectsState.availableGrids.Count; x++)
@@ -232,14 +268,14 @@ public class ProceduralRoomGen : MonoBehaviour
         ObjectsState objectsState = new ObjectsState();
         objectsState.InitializeValidPositions(roomWidth);
         objectsState.ratio = ratio;
-        GameManager.Instance.worldState.roomStates[room].objectsStates.Add(objectsState);
+        GameManager.Instance.worldState.roomStates[room].objectsState = objectsState;
     }
 
     // GetMaxWidthOfObject()
     // Finds all sprites and finds the largest width of the sprite and returns it
-    private float GetMaxWidthOfObject()
+    private float GetMaxWidthOfObject(GameObject givenObject)
     {
-        SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        SpriteRenderer[] spriteRenderers = givenObject.GetComponentsInChildren<SpriteRenderer>(true);
         float maxWidth = 0f;
 
         foreach(SpriteRenderer spriteRenderer in spriteRenderers)
