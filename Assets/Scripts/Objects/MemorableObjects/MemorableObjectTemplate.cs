@@ -4,8 +4,9 @@ using System.Collections.Generic;
 
 public class MemorableObjectTemplate : MonoBehaviour
 {
-    private List<KnownFact> sharedList;
+    private List<KnownFact> sharedList = new List<KnownFact>();
     [SerializeField] private List<SpriteData> spriteDatas;
+    //private GameObject memObject;
     
     // GenerateKnownFact
     // Generates an undeclared solution fact, and adds to shared list
@@ -38,5 +39,8 @@ public class MemorableObjectTemplate : MonoBehaviour
     {
         sharedList.Clear();
     }
+
+    // SetObjectSprite
+    
 
 }

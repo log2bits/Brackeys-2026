@@ -891,11 +891,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralRoomGen
   doorFullPrefab: {fileID: 7530830482215578029, guid: aac19c4cd22eb4b4db837fd34e555594, type: 3}
+  objectPrefabs:
+  - {fileID: 7530830482215578029, guid: 281c4d3e7fb809d409a6d95f4111f248, type: 3}
   difficultySettings: {fileID: 11400000, guid: f77c6904f89e7de48864c74a624c46c7, type: 2}
   roomDistance: 20
-  objectDistance: 5
+  objectDoorDistance: 0.5
+  objectToObjectDistance: -1.8
+  objectInvalidationDistance: -1.8
   sideWallsDistance: 15
-  objects: 3
+  objectRatio: 0.1
 --- !u!1 &1279809685 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7699663905668372848, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}

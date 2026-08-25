@@ -5,7 +5,7 @@ using UnityEngine;
 public class RoomState
 {
     public List<GuardState> guardStates = new List<GuardState>();
-    public ObjectsState objectsState;
+    public ObjectsState objectsState = new ObjectsState();
     public Vector3 globalPosition;
     public RoomSettings roomSettings = new RoomSettings();
 
