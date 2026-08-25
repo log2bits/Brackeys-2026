@@ -226,11 +226,12 @@ public class ProceduralRoomGen : MonoBehaviour
         
         Vector3 position = new Vector3(
             centerRoomPosition.x - (roomWidth / 2.0f) + placementBetweenDistance * randomStartGridID + objectWidth/2.0f, 
-            centerRoomPosition.y - 2, 
+            centerRoomPosition.y, 
             centerRoomPosition.z - objectDoorDistance);
         return position;
     }
 
+    // if someone wants to fix this feel free, it should be more generalized
     // InvalidatePlacements
     // Finds and sets valid indices to invalid with float size of the object, and position
     private void InvalidatePlacements(ObjectsState objectsState, float width, Vector3 position, int room)
