@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class MemorableObjectTemplate : MonoBehaviour
 {
-    private List<KnownFact> sharedList = new List<KnownFact>();
+    protected List<KnownFact> sharedList = new List<KnownFact>();
     [SerializeField] private List<SpriteData> spriteDatas;
     //private GameObject memObject;
     
-    // GenerateKnownFact
+    // GenerateEmptyFact
     // Generates an undeclared solution fact, and adds to shared list
-    public void GenerateKnownFact(string[] possibleValues, string template)
+    public void GenerateEmptyFact(string[] possibleValues, string template)
     {
         KnownFact emptyFact = new KnownFact();
         emptyFact.possibleValues = possibleValues;
@@ -19,11 +19,12 @@ public class MemorableObjectTemplate : MonoBehaviour
         sharedList.Add(emptyFact);
     }
 
-    // GenerateRandomSolution
-    // Defines the actual value with the random number given
-    public void GenerateRandomSolution(int factIdx, int randNum)
+    // SetActualValue
+    // Sets the solution of a knownFact within the array, with given randNum, and the index of that fact
+    public void SetActualValue(int factIdx, int randNum)
     {
-        sharedList[factIdx].actualValue = sharedList[factIdx].possibleValues[randNum];
+        string potentialValueFound = sharedList[factIdx].possibleValues[randNum];
+        sharedList[factIdx].actualValue = potentialValueFound;
 
         
     }

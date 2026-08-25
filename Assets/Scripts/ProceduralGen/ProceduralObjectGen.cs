@@ -9,7 +9,8 @@ namespace ProceduralHelperGen
         public static void GenerateRandomForEachSprite(GameObject givenObject, System.Random procRandGen)
         {
             SpriteRenderer[] allRenderers = givenObject.GetComponentsInChildren<SpriteRenderer>(true);
-            List<SpriteData> spriteDatas = givenObject.GetComponent<MemorableObjectTemplate>().GetSpriteDatas();
+            MemorableObjectTemplate memObject = givenObject.GetComponent<MemorableObjectTemplate>();
+            List<SpriteData> spriteDatas = memObject.GetSpriteDatas();
 
 
             for (int rendererIdx = 0; rendererIdx < allRenderers.Count(); rendererIdx++)
@@ -18,8 +19,11 @@ namespace ProceduralHelperGen
                 // Skip the parent object's renderer
                 if (sr.gameObject == givenObject) continue;
                 
-                Sprite randSprite = GetRandomSprite(spriteDatas[rendererIdx], procRandGen.Next(0, spriteDatas[rendererIdx].sprites.Count));
+                int randActualValue = procRandGen.Next(0, spriteDatas[rendererIdx].sprites.Count);
+                memObject.SetActualValue(rendererIdx, randActualValue);
+
                 
+                Sprite randSprite = GetRandomSprite(spriteDatas[rendererIdx], randActualValue);
                 SetSprite(sr, randSprite);
             }
         }
