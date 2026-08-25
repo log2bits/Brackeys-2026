@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: DifficultyTemplate
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: easy
-  roomCount: 4
+  roomCount: 5
   minObjects: 1
   maxObjects: 2
   durationUntilObjectIncrease: 2
   minDoors: 2
-  maxDoors: 0
-  durationUntilDoorIncrease: 1
+  maxDoors: 6
+  roomsPerDoorIncrease: 1
   minStatementsBeforeProgress: 1
   maxCompoundStatements: 0
   durationUntilCompoundIncrease: 0

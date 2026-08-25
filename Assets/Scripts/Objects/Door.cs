@@ -15,6 +15,7 @@ public class Door : ClickableObject
     [SerializeField] private float doorRotateAngle;
     [SerializeField] private float doorZoomZDistance;
 
+    private string dialogue = "";
     private bool open; 
 
     protected override void OnMouseDown()
@@ -67,11 +68,17 @@ public class Door : ClickableObject
         return;
     }
 
+    public void SetDialogue(string dialogue)
+    {
+        this.dialogue = dialogue;
+    }
+
     public void SetNumber(int number)
     {
         if (number >= doorNumbers.Length)
         {
-            throw new Exception("Not enough door numbers on door prefab!");
+            Debug.LogWarning("Not enough door numbers on door prefab!");
+            return;
         }
         doorNumbersRenderer.sprite = doorNumbers[number];
     }

@@ -15,4 +15,11 @@ public class RoomState
         roomSettings.doorCount = doorCount;
         roomSettings.seed = seed;
     }
+
+    public RoomState(int seed, Vector3 globalPosition, int doorCount = 4)
+    {
+        roomSettings.doorCount = doorCount;
+        roomSettings.seed = seed;
+        this.globalPosition = globalPosition;
+    }
 }

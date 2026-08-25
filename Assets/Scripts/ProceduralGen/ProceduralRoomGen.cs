@@ -9,9 +9,6 @@ public class ProceduralRoomGen : MonoBehaviour
     private static ProceduralRoomGen _instance;
 
     public static ProceduralRoomGen Instance { get { return _instance; } }
-
-    System.Random proceduralRandGen;
-
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -23,18 +20,8 @@ public class ProceduralRoomGen : MonoBehaviour
         {
             _instance = this;
         }
-
-
-        doorSpriteRenderer = doorFullPrefab.transform.GetChild(0).GetComponent<SpriteRenderer>();
-        doorSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
-        
-        seed = (int)(DateTime.UtcNow.Ticks % int.MaxValue);
-        Debug.Log($"Generated Seed: {seed}");
-
-
-        proceduralRandGen = new System.Random(seed);
     }
-
+    // Singleton 
 
     [Header("References")]
     [SerializeField] private GameObject doorFullPrefab;
@@ -53,18 +40,17 @@ public class ProceduralRoomGen : MonoBehaviour
 
 
     // Initialized variables
+    private System.Random proceduralRandGen;
     private float doorSize;
     private int objectCount = 0;
-    private SpriteRenderer doorSpriteRenderer;
-    int seed = 0;
-
+    private int seed = 0;
+    
     // Constants
     
     
 
     // Saves current doors in the room
     private List<DoorData> currentDoors = new List<DoorData>();
-
 
     private struct DoorData
     {
@@ -94,23 +80,45 @@ public class ProceduralRoomGen : MonoBehaviour
     // StartGenerationProcess
     public void GenerateProcess()
     {
+        Initialize();
+
+        // Generate room 1, always with two doors
         GenerateNextRoom(transform.position, 2, 1);
-        objectCount = Mathf.Min(difficultySettings.minObjects, objectPrefabs.Count);
         
-        for (int room = 2; room < difficultySettings.roomCount; room++)
+        // Generate rest of the rooms. <= cause rooms are one indexed
+        for (int room = 2; room <= difficultySettings.roomCount; room++)
         {
-            int randomInt = proceduralRandGen.Next(0, room);
+            // Is this supposed to be picking a random door since theres no solver? i changed it to be from 0 to currentDoors.Count instead of 0 to room
+            // - Tyler
+            int randomInt = proceduralRandGen.Next(0, currentDoors.Count);
             Debug.Log($"Random int: {randomInt}");
             Debug.Log($"Current Doors: {currentDoors.Count}");
             Vector3 nextDoorPosition = currentDoors[randomInt].door.transform.position;
             nextDoorPosition.z += roomDistance;
-            GenerateNextRoom(nextDoorPosition, (room-1) + difficultySettings.minDoors, room);
 
+            int numDoorsForThisRoom = Mathf.FloorToInt((room - 1) / difficultySettings.roomsPerDoorIncrease) + difficultySettings.minDoors;
+            if (difficultySettings.maxDoors > 0)
+            {
+                numDoorsForThisRoom = Mathf.Min(numDoorsForThisRoom, difficultySettings.maxDoors);
+            }
+            GenerateNextRoom(nextDoorPosition, numDoorsForThisRoom, room);
         }
-        
 
         // Clear all doors
         currentDoors.Clear();
+    }
+
+    private void Initialize()
+    {
+        SpriteRenderer doorSpriteRenderer = doorFullPrefab.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        doorSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
+        
+        seed = (int)(DateTime.UtcNow.Ticks % int.MaxValue);
+        Debug.Log($"Generated Seed: {seed}");
+
+        proceduralRandGen = new System.Random(seed);
+
+        objectCount = Mathf.Min(difficultySettings.minObjects, objectPrefabs.Count);
     }
 
     // 
@@ -118,21 +126,17 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         Debug.Log("New Room");
         GenerateRoomState(doorCount, centralPosition);
-        GenerateObjectsState(room, Mathf.CeilToInt(doorSize * ((room-1) + difficultySettings.minDoors)), objectRatio);
+        GenerateObjectsState(room, Mathf.CeilToInt(doorSize * doorCount), objectRatio);
         PrintGrid(room);
         GenerateDoors(centralPosition, doorCount, room);
 
-        GenerateObjects(room);
+        GenerateObjects(doorCount, room);
     }
 
     private void GenerateRoomState(int doorCount, Vector3 centralPosition)
     {
-        GameManager.Instance.worldState.roomStates.Add(new RoomState(seed, doorCount));
-        GameManager.Instance.worldState.roomStates[GameManager.Instance.worldState.roomStates.Count - 1].globalPosition = centralPosition;
+        GameManager.Instance.worldState.roomStates.Add(new RoomState(seed, centralPosition, doorCount));
     }
-
-
-
 
     private void GenerateDoors(Vector3 centralPosition, int doorCount, int room)
     {
@@ -148,25 +152,29 @@ public class ProceduralRoomGen : MonoBehaviour
         Debug.Log($"Door Count: {doorCount}");
         
         // Iterate through doors
-        for (int currDoor = doorCount -1; currDoor >= 0; currDoor--)
+        for (int currDoor = doorCount - 1; currDoor >= 0; currDoor--)
         {
-            // finds the position of the x coordinate of the new door, offsetting for initial off, and for door frames
+            // Finds the position of the x coordinate of the new door, offsetting for initial off, and for door frames
             
             Vector3 newPosition = new Vector3(centralPosition.x + (((int)(currDoor - doorCount / 2) * (doorSize)) + offsetDoorSide), centralPosition.y, centralPosition.z);
             GameObject door = Instantiate(doorFullPrefab, newPosition, Quaternion.identity, transform);
-            door.transform.GetChild(1).GetComponent<Door>().SetNumber(currDoor);
+
+            Door doorScript = door.transform.GetChild(1).GetComponent<Door>();
+            if (doorScript == null) throw new Exception("ProceduralRoomGen: Door script not found on instantiated door");
+            doorScript.SetDialogue("hello this is the dialogue");
+            doorScript.SetNumber(currDoor);
 
             // Invalidate the position of the door in the grid
-            InvalidatePlacements(GameManager.Instance.worldState.roomStates[room-1].objectsState, GetMaxWidthOfObject(door.transform.GetChild(1).gameObject), newPosition, room);
+            InvalidatePlacements(GameManager.Instance.worldState.roomStates[room-1].objectsState, GetMaxWidthOfObject(door.transform.GetChild(1).gameObject), newPosition, doorCount, room);
 
-            // save the door
+            // Save the door
             currentDoors.Add(new DoorData(door, false));
         }
     }
 
     // GenerateObjects
     // Generates and initalized objects into the room based on all settings
-    private void GenerateObjects(int room)
+    private void GenerateObjects(int doorCount, int room)
     {
         if (GameManager.Instance.worldState.roomStates.Count <= room-1 || GameManager.Instance.worldState.roomStates[room-1].objectsState == null) throw new Exception($"GenerateObjects: roomState index exceeded {GameManager.Instance.worldState.roomStates.Count}, or ObjectsState is null {GameManager.Instance.worldState.roomStates[room-1].objectsState}");
         // iterate the curr objects
@@ -187,7 +195,7 @@ public class ProceduralRoomGen : MonoBehaviour
             float width = GetMaxWidthOfObject(objectPrefabs[randomIndex]);
 
             ObjectsState objectsState = GameManager.Instance.worldState.roomStates[room-1].objectsState;
-            Vector3 placementPosition = SetupRandomizedPlacement(objectsState, GameManager.Instance.worldState.roomStates[room-1].globalPosition, width, room);
+            Vector3 placementPosition = SetupRandomizedPlacement(objectsState, GameManager.Instance.worldState.roomStates[room-1].globalPosition, width, doorCount, room);
             if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
             GameObject objectGenerated = Instantiate(objectPrefabs[randomIndex], placementPosition, Quaternion.identity, transform);
 
@@ -202,9 +210,9 @@ public class ProceduralRoomGen : MonoBehaviour
     // SetupRandomizedPlacement
     // Randomly finds a place and returns a random position within those grids, making sure to invalidate
     // Meant prior before object initalization.
-    private Vector3 SetupRandomizedPlacement(ObjectsState objectsState, Vector3 centerRoomPosition, float objectWidth, int room)
+    private Vector3 SetupRandomizedPlacement(ObjectsState objectsState, Vector3 centerRoomPosition, float objectWidth, int doorCount, int room)
     {
-        float roomWidth = doorSize * ((room-1) + difficultySettings.minDoors);
+        float roomWidth = doorSize * doorCount;
 
         // Generate a list of valid starting Grid IDs
         List<int> validIndices = ValidPlacements(objectsState, objectWidth);
@@ -216,7 +224,7 @@ public class ProceduralRoomGen : MonoBehaviour
         int randomStartGridID = validIndices[randomIndex];
 
         // finds parition size the object takes up
-        int placementObjectWidth = FindPlacementWidth(objectsState, objectWidth);
+        int placementObjectWidth = FindPlacementWidth(objectWidth);
 
         for (int x = 0; x < placementObjectWidth; x++) objectsState.availableGrids.Remove(randomStartGridID + x);
 
@@ -234,12 +242,12 @@ public class ProceduralRoomGen : MonoBehaviour
     // if someone wants to fix this feel free, it should be more generalized
     // InvalidatePlacements
     // Finds and sets valid indices to invalid with float size of the object, and position
-    private void InvalidatePlacements(ObjectsState objectsState, float width, Vector3 position, int room)
+    private void InvalidatePlacements(ObjectsState objectsState, float width, Vector3 position, int doorCount, int room)
     {
         // relevant to grid
-        int placementSize = FindPlacementWidth(objectsState, width + objectInvalidationDistance);
+        int placementSize = FindPlacementWidth(width + objectInvalidationDistance);
         // roomWidth
-        float roomWidth = doorSize * ((room-1) + difficultySettings.minDoors);
+        float roomWidth = doorSize * doorCount;
         // the edge position of the room in global coordinates
         float leftEdgeRoomPos = GameManager.Instance.worldState.roomStates[room-1].globalPosition.x - (roomWidth / 2.0f);
         // the far left index grid of the object, and how far it is
@@ -255,7 +263,7 @@ public class ProceduralRoomGen : MonoBehaviour
     private List<int> ValidPlacements(ObjectsState objectsState, float width)
     {
         //float doorWidth = GetSpriteLocalScaleX(doorFullPrefab.transform.GetChild(1).GetComponent<SpriteRenderer>());
-        int placementSize = FindPlacementWidth(objectsState, width + objectToObjectDistance);
+        int placementSize = FindPlacementWidth(width + objectToObjectDistance);
         List<int> potentialIndices = new List<int>();
         Debug.Log($"Object Size: {placementSize}");
         
@@ -281,7 +289,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
     // FindPlacementWidth()
     // Finds how many indices the objects width might take up, rounded up
-    private int FindPlacementWidth(ObjectsState objectsState, float width)
+    private int FindPlacementWidth(float width)
     {
         return (int) Math.Ceiling(width / objectRatio);
     }
