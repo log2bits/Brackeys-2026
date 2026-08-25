@@ -31,6 +31,25 @@ namespace LogicSolver
 
 		public int seed = 0;
 
+
+		// THE DIFFICULTY KNOB
+
+		// How many statements the player must read together before anything can be
+		// worked out, either a door ruled out or a guard determined a liar
+		// -1 means it does not matter, take whatever comes
+		public int statementsToMakeProgress = -1;
+
+		// THE DIFFICULTY KNOB, 0 through 5
+		// The room's sentences have to average somewhere in the band starting here
+		//   0 easy, naming things outright
+		//   1 medium, groups and positions
+		//   2 hard, the safe door and the liars tangled together
+		//   3 extreme, guards start gluing two claims into one sentence
+		//   4 logician, compound sentences built from the hardest claims
+		public int difficulty = 2;
+
+		// the rest are structure and taste, not difficulty
+
 		// At least this many statements must mention the safe door, otherwise it spoils the answer
 		public int minDoorMentions = 2;
 
@@ -40,19 +59,12 @@ namespace LogicSolver
 		// Doors left open when a memory claim is removed, so forgetting actually costs you
 		public int minMemoryImpact = 2;
 
-		// Statements needed together before any door can be ruled out. Forced to 1 at two doors
-		public int minStatementsToRuleOutDoor = 1;
-
-		// Statements needed together before any guard's honesty is settled
-		// Memory claims do not count, they are meant to hand you a liar on their own
-		public int minStatementsToFindALiar = 1;
-
-		// Exactly how many statements in the room glue two claims together
-		// Zero means none, -1 means every guard uses one
-		public int compoundStatements = 0;
+		// How many statements from each guard's pool to weigh up per round
+		// Bigger means the greedy sees more options and gives up less often, at a cost per attempt
+		public int sampleSize = 60;
 
 		// Pinning the liars down as well as the door is strict, so this needs to be generous
-		public int maxAttempts = 200000;
+		public int maxAttempts = 10000;
 
 		// Shorthand for a single fixed liar count
 		public int liarCount
@@ -73,14 +85,11 @@ namespace LogicSolver
 
 		// One line per guard, indexed by guard number
 		public string[] statements;
+
+		// How the room turned out, handy when tuning a difficulty curve
+		public RoomStats stats;
 	}
 
-	// The entry point. One room in, one room out, no state between calls
-	//
-	// RoomSettings settings = new RoomSettings { doorCount = 4 };
-	// settings.knownFacts.Add(new KnownFact { ... });
-	// RoomSolution room = Solver.Solve(settings);
-	//
 	// Returns null when nothing satisfying the settings could be built
 	public static class Solver
 	{
@@ -92,9 +101,24 @@ namespace LogicSolver
 				settings.liarCounts = WorldSpace.AllLiarCounts(settings.doorCount);
 			}
 
-			// At two doors, ruling out a door is the same as solving it
-			// Demanding two door mentions and no statement settling it contradicts itself
-			if (settings.doorCount <= 2) settings.minStatementsToRuleOutDoor = 1;
+			if (settings.knownFacts == null || settings.knownFacts.Count == 0)
+			{
+				settings.minMemoryMentions = 0;
+			}
+
+			settings.minMemoryMentions = Math.Max(0, Math.Min(settings.minMemoryMentions, settings.doorCount - 2));
+
+			settings.minDoorMentions = Math.Max(1, Math.Min(settings.minDoorMentions, settings.doorCount - settings.minMemoryMentions - 1));
+
+			if (settings.statementsToMakeProgress > settings.doorCount)
+			{
+				settings.statementsToMakeProgress = settings.doorCount;
+			}
+
+			if (settings.doorCount <= 2 && settings.statementsToMakeProgress > 1)
+			{
+				settings.statementsToMakeProgress = 1;
+			}
 
 			WorldSpace space = new WorldSpace(settings.doorCount, settings.liarCounts);
 			StatementCompiler.Pool[] pools =
@@ -117,7 +141,8 @@ namespace LogicSolver
 				{
 					safeDoor = room.safeDoor,
 					liars = room.liars,
-					statements = lines
+					statements = lines,
+					stats = room.stats
 				};
 			}
 			return null;

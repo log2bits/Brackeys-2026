@@ -2,7 +2,7 @@ using System.Text;
 using UnityEngine;
 using LogicSolver;
 
-// Test for the script
+// Drop this on any GameObject and press Play. It prints rooms to the Console
 public class LogicSolverDemo : MonoBehaviour
 {
 	[Header("Room")]
@@ -14,11 +14,14 @@ public class LogicSolverDemo : MonoBehaviour
 	[Header("Turn on to try solving them yourself")]
 	public bool hideAnswers = false;
 
-	// Hardcoded stuff
+	[Header("Print how the room turned out")]
+	public bool showStats = true;
+
+	// Your object generator would produce these. Here they are just typed in
 	[Header("What the previous room looked like")]
 	public string potColour = "blue";
 	public string clockTime = "two o'clock";
-	
+
 	private void Start()
 	{
 		for (int room = 0; room < roomsToGenerate; room++)
@@ -35,19 +38,19 @@ public class LogicSolverDemo : MonoBehaviour
 			seed = Random.Range(0, int.MaxValue)
 		};
 
-		// Things the player is meant to remember
-		// settings.knownFacts.Add(new KnownFact
-		// {
-		// 	possibleValues = new string[] { "red", "blue", "yellow", "white" },
-		// 	template = "the flower pot in the last room held a {0} flower",
-		// 	actualValue = potColour
-		// });
-		// settings.knownFacts.Add(new KnownFact
-		// {
-		// 	possibleValues = new string[] { "one o'clock", "two o'clock", "three o'clock" },
-		// 	template = "the clock in the last room read {0}",
-		// 	actualValue = clockTime
-		// });
+		// Things the player is meant to remember. Skip this for the first room of a run
+		settings.knownFacts.Add(new KnownFact
+		{
+			possibleValues = new string[] { "red", "blue", "yellow", "white" },
+			template = "the flower pot in the last room held a {0} flower",
+			actualValue = potColour
+		});
+		settings.knownFacts.Add(new KnownFact
+		{
+			possibleValues = new string[] { "one o'clock", "two o'clock", "three o'clock" },
+			template = "the clock in the last room read {0}",
+			actualValue = clockTime
+		});
 
 		RoomSolution room = Solver.Solve(settings);
 		if (room == null)
@@ -77,10 +80,16 @@ public class LogicSolverDemo : MonoBehaviour
 			text.AppendLine("ANSWER: door " + (room.safeDoor + 1)
 				+ ", lying guards: " + Join(room.liars));
 		}
+
+		if (showStats && room.stats != null)
+		{
+			text.AppendLine();
+			text.AppendLine(room.stats.ToString());
+		}
 		return text.ToString();
 	}
 
-	// Guards are shown to the player starting at 1
+	// Guards are shown to the player starting at 1, not 0
 	private static string Join(int[] guards)
 	{
 		StringBuilder text = new StringBuilder();

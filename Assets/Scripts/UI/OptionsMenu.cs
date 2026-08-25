@@ -61,12 +61,12 @@ public class OptionsMenu : MonoBehaviour
     public void SaveOptions()
     {
         OptionsData optionsData = new OptionsData(brightnessSlider.value, musicSlider.value, sfxSlider.value);
-        //SaveSystem.SaveOptions(optionsData);
+        SaveSystem.SaveOptions(optionsData);
     }
 
     public void LoadOptions()
     {
-        OptionsData optionsData = null;// = SaveSystem.GetOptions();
+        OptionsData optionsData = SaveSystem.GetOptions();
         if (optionsData == null)
         {
             optionsData = new OptionsData(1f, 1f, 1f);
