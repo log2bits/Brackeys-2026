@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemType", menuName = "ScriptableObjects/ItemType")]
+[CreateAssetMenu(fileName = "DifficultyTemplate", menuName = "ScriptableObjects/DifficultyTemplate")]
 public class DifficultyTemplate : ScriptableObject
 {
     [Header("Basic Configurations")]

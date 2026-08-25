@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.state = GameManager.GameState.PREGAME;
         optionsMenuScript.LoadOptions();
     }
 

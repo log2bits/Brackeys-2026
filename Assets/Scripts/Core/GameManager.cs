@@ -1,17 +1,32 @@
 using UnityEngine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 
 public class GameManager
 {
+    private static GameManager _instance;
+    public static GameManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new GameManager();
+            }
+            return _instance; 
+        }
+    }
+
+    private GameManager()
+    {
+        Debug.Log("GameManager initalized");        
+    }
+
     public enum GameState
     {
         PREGAME,
         INNERROOM,
         OUTERROOM,
         TRANSITIONROOM,
+        ZOOMING,
         GAMEOVER
     }
 
@@ -21,24 +36,6 @@ public class GameManager
     //public ProceduralRoomGen proceduralRoomGenManager;
     public WorldState worldState = new WorldState();
 
-    private static GameManager theInstance;
-    public static GameManager Instance
-    {
-        get
-        {
-            if (theInstance == null)
-                theInstance = new GameManager();
-            return theInstance; 
-        }
-    }
-
-    //public GameObject player;
-
-    private GameManager()
-    {
-        Debug.Log("GameManager initalized");
-        //proceduralRoomGenManager.GenerateProcess();
-        ProceduralRoomGen.Instance.GenerateProcess();
-    }
+    public float mainCameraZBeforeZoom;
     
 }

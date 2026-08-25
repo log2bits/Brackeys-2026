@@ -13,6 +13,7 @@ public class Door : ClickableObject
     [Header("Parameters")]
     [SerializeField] private float doorRotateTime;
     [SerializeField] private float doorRotateAngle;
+    [SerializeField] private float doorZoomZDistance;
 
     private bool open; 
 
@@ -28,11 +29,37 @@ public class Door : ClickableObject
             return;
         }
 
-        AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
-        MainCameraMove.Instance.MoveCamera(transform.position);
-        open = true;
+        // Zoom into door
+        if (GameManager.Instance.state == GameManager.GameState.OUTERROOM)
+        {
+            GameManager.Instance.mainCameraZBeforeZoom = MainCameraMove.Instance.transform.position.z;
 
-        CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
+            Vector3 finalPosition = new Vector3(transform.position.x, MainCameraMove.Instance.transform.position.y, transform.position.z + doorZoomZDistance);
+            MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.INNERROOM);
+
+            GameManager.Instance.state = GameManager.GameState.ZOOMING;
+        }
+
+        else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
+        {
+            // Zoom out if clicking on a door that isn't focused on
+            if (Mathf.Abs(transform.position.x - MainCameraMove.Instance.transform.position.x) > 0.1f)
+            {
+                Vector3 finalPosition = new Vector3(transform.position.x, MainCameraMove.Instance.transform.position.y, GameManager.Instance.mainCameraZBeforeZoom);
+                MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.OUTERROOM);
+
+                GameManager.Instance.state = GameManager.GameState.ZOOMING;
+                return;
+            }
+
+            // Move to next room
+            AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
+            MainCameraMove.Instance.MoveCamera(transform.position, GameManager.GameState.OUTERROOM);
+            open = true;
+
+            CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
+            GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
+        }
     }
 
     protected override void OnMouseUp()

@@ -891,8 +891,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralRoomGen
   doorFullPrefab: {fileID: 7530830482215578029, guid: aac19c4cd22eb4b4db837fd34e555594, type: 3}
-  roomCount: 2
+  difficultySettings: {fileID: 11400000, guid: f77c6904f89e7de48864c74a624c46c7, type: 2}
   roomDistance: 20
+  objectDistance: 5
   sideWallsDistance: 15
   objects: 3
 --- !u!1 &1279809685 stripped
