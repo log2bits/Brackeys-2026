@@ -95,6 +95,7 @@ public class PauseMenu : MonoBehaviour
         returningToMainMenu = true;
 
         Time.timeScale = 1f;
+        AudioManager.Instance.PauseFmodSounds(false);
         SceneManager.LoadSceneAsync("MainMenu");
     }
 

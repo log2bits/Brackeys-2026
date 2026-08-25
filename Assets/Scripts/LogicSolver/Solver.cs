@@ -48,8 +48,6 @@ namespace LogicSolver
 		//   4 logician, compound sentences built from the hardest claims
 		public int difficulty = 1;
 
-		// the rest are structure and taste, not difficulty
-
 		// At least this many statements must mention the safe door, otherwise it spoils the answer
 		public int minDoorMentions = 2;
 
@@ -64,7 +62,7 @@ namespace LogicSolver
 		public int sampleSize = 60;
 
 		// Pinning the liars down as well as the door is strict, so this needs to be generous
-		public int maxAttempts = 10000;
+		public int maxAttempts = 20000;
 
 		// Shorthand for a single fixed liar count
 		public int liarCount
@@ -121,8 +119,7 @@ namespace LogicSolver
 			}
 
 			WorldSpace space = new WorldSpace(settings.doorCount, settings.liarCounts);
-			StatementCompiler.Pool[] pools =
-				StatementCompiler.CompileAll(space, settings, settings.knownFacts);
+			StatementCompiler.Pool[] pools = StatementCompiler.CompileAll(space, settings, settings.knownFacts);
 			RoomBuilder builder = new RoomBuilder(space, settings, pools);
 			Random rng = new Random(settings.seed);
 

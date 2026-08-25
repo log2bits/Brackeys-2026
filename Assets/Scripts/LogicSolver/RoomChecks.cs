@@ -8,8 +8,19 @@ namespace LogicSolver
 	// Everything here is a reason to throw an attempt away and try again
 	public static class RoomChecks
 	{
-		// How far above the top of the band a single sentence may reach
-		public const float OneBandOver = 1f;
+		// The average of a room's sentences, and the only place it gets worked out
+		public static float AverageDifficulty(IEnumerable<Statement> statements)
+		{
+			float total = 0f;
+			int counted = 0;
+			foreach (Statement statement in statements)
+			{
+				if (statement.topic == Topic.Memory) continue;
+				total += statement.difficulty;
+				counted++;
+			}
+			return counted == 0 ? -1f : total / counted;
+		}
 
 		// Why attempts were rejected, useful when nothing generates
 		public sealed class Tally
@@ -48,7 +59,7 @@ namespace LogicSolver
 				return false;
 			}
 
-			if (settings.difficulty >= 1 && !EveryStatementMatters(space, chosen))
+			if (settings.difficulty >= 1 && SpareGuards(space, chosen).Count > 0)
 			{
 				tally.spareStatement++;
 				return false;
@@ -63,34 +74,38 @@ namespace LogicSolver
 				return false;
 			}
 
-			// The sentences only have to average somewhere in the band, so a hard one is
-			float ceiling = settings.difficulty + 1f + OneBandOver;
-			float total = 0f;
-			int counted = 0;
+			// Nothing may read harder than the top of the band asked for, so an easy room
+			// never contains a sentence an easy room should not contain
+			float ceiling = settings.difficulty + 1f;
 			foreach (Statement statement in chosen)
 			{
-				// Glued sentences belong to the extreme band and above, whatever they score
+				// Glued sentences belong to the extreme band and above
 				if (statement.isCompound
 					&& settings.difficulty < StatementCompiler.FirstCompoundBand)
 				{
 					tally.statementTooHard++;
 					return false;
 				}
+
+				// From the logician band up, a plain sentence is the thing out of place
+				if (!statement.isCompound
+					&& settings.difficulty >= StatementCompiler.CompoundOnlyBand)
+				{
+					tally.statementTooHard++;
+					return false;
+				}
+
 				if (statement.topic == Topic.Memory) continue;
 				if (statement.difficulty > ceiling)
 				{
 					tally.statementTooHard++;
 					return false;
 				}
-				total += statement.difficulty;
-				counted++;
 			}
-			if (counted == 0)
-			{
-				tally.wrongDifficulty++;
-				return false;
-			}
-			float average = total / counted;
+
+			// Everything sits inside the band, so the average lands there too unless the
+			// room leans on the easy end of it
+			float average = AverageDifficulty(chosen);
 			if (average < settings.difficulty || average >= settings.difficulty + 1f)
 			{
 				tally.wrongDifficulty++;
@@ -132,17 +147,18 @@ namespace LogicSolver
 			return count;
 		}
 
-		// Every statement load bearing, so no smaller set solves it either
-		private static bool EveryStatementMatters(WorldSpace space, List<Statement> statements)
+		public static List<int> SpareGuards(WorldSpace space, List<Statement> statements)
 		{
+			List<int> spare = new List<int>();
 			foreach (Statement dropped in statements)
 			{
 				List<Statement> rest = statements
 					.Where(statement => statement != dropped).ToList();
 				if (rest.Count == 0) continue;
-				if (space.AllowedByAll(rest).Count == 1) return false;
+				if (space.AllowedByAll(rest).Count == 1) spare.Add(dropped.speaker);
 			}
-			return true;
+			spare.Sort();
+			return spare;
 		}
 
 		// How many statements the player must read together before they learn anything
