@@ -113,10 +113,8 @@ namespace LogicSolver
 			stats.worldsConsidered = space.worlds.Count;
 			stats.statementsToMakeProgress = firstDeduction;
 
-			float total = 0f;
 			foreach (Statement statement in chosen)
 			{
-				total += statement.difficulty;
 				if (statement.difficulty > stats.hardestStatement)
 				{
 					stats.hardestStatement = statement.difficulty;
@@ -125,20 +123,9 @@ namespace LogicSolver
 				stats.memoryClaims += statement.memoryCount;
 				if ((statement.topic & Topic.Door) != 0) stats.doorMentions++;
 			}
-			stats.averageDifficulty = total / chosen.Count;
+			stats.averageDifficulty = RoomChecks.AverageDifficulty(chosen);
 
-			// A guard is spare when the room still has one answer without them
-			List<int> spare = new List<int>();
-			foreach (Statement dropped in chosen)
-			{
-				List<Statement> rest = chosen.Where(other => other != dropped).ToList();
-				if (rest.Count > 0 && space.AllowedByAll(rest).Count == 1)
-				{
-					spare.Add(dropped.speaker);
-				}
-			}
-			spare.Sort();
-			stats.spareGuards = spare.ToArray();
+			stats.spareGuards = RoomChecks.SpareGuards(space, chosen).ToArray();
 
 			// What forgetting the remembered facts would cost
 			List<Statement> withoutMemory = chosen
@@ -176,8 +163,12 @@ namespace LogicSolver
 				// Otherwise it closes in two lines and the rest say garbage
 				bool mustNotFinishYet = waiting.Count > 1;
 
-				bool simpleAllowed = true;
-				bool compoundsAllowed = true;
+				// Only offer the kind of sentence this band accepts, otherwise most of
+				// what gets weighed up is thrown out again by the checks
+				bool compoundsAllowed =
+					settings.difficulty >= StatementCompiler.FirstCompoundBand;
+				bool simpleAllowed =
+					settings.difficulty < StatementCompiler.CompoundOnlyBand;
 
 				int memoriesSoFar = chosen.Sum(statement => statement.memoryCount);
 				bool memoryRequired = settings.minMemoryMentions - memoriesSoFar > (waiting.Count - 1) * 2;
@@ -248,8 +239,8 @@ namespace LogicSolver
 			bool simpleAllowed, Random rng)
 		{
 			List<Statement> offered = new List<Statement>();
-			if (simpleAllowed) offered.AddRange(Sample(pools[guard].simple, 60, rng));
-			if (compoundsAllowed) offered.AddRange(Sample(pools[guard].compound, 40, rng));
+			if (simpleAllowed) offered.AddRange(Sample(pools[guard].simple, settings.sampleSize, rng));
+			if (compoundsAllowed) offered.AddRange(Sample(pools[guard].compound, settings.sampleSize, rng));
 			return offered;
 		}
 

@@ -10,18 +10,26 @@ namespace LogicSolver
 		// The lowest band that may contain a glued sentence
 		public const int FirstCompoundBand = 3;
 
-		public const float CompoundFloor = 2.8f;
-		public const float CompoundSpread = 0.3f;
+		// From this band up, every sentence is a glued one
+		public const int CompoundOnlyBand = 4;
 
-		public const float MemoryHalvesDiscount = 0.28f;
+		// The hardest a single claim can score. Compounds are mapped on top of this
+		public const float HardestSimpleClaim = 3f;
 
-		public const float AndCost = 0.2f;
-		public const float OrCost = 0.35f;
-		public const float NorCost = 0.6f;
-		public const float NandCost = 0.7f;
-		public const float ImpliesCost = 0.85f;
-		public const float XorCost = 1f;
-		public const float XnorCost = 1.25f;
+		// Glued sentences fill the top two bands exactly, 3 at the easiest and 5 at the
+		// hardest. Half of that range comes from what the two halves say and half from
+		// how they are joined, so either can carry a sentence a full band
+		public const float CompoundBase = 3f;
+		public const float CompoundRange = 2f;
+
+		// How much work each connective is, from nothing to a full share of the range
+		public const float AndCost = 0f;
+		public const float OrCost = 0.15f;
+		public const float NorCost = 0.4f;
+		public const float NandCost = 0.5f;
+		public const float ImpliesCost = 0.7f;
+		public const float XorCost = 0.85f;
+		public const float XnorCost = 1f;
 
 		public sealed class Pool
 		{
@@ -54,6 +62,11 @@ namespace LogicSolver
 			BitSet whereHonest = space.whereGuardLies[speaker].Not();
 			Pool pool = new Pool();
 
+			// Nothing above the top of the band can ever be used, so do not build it
+			// This is most of the pool at the easy end, and skipping it early saves the
+			// builder weighing up sentences the checks would only throw out again
+			float ceiling = settings.difficulty + 1f;
+
 			// Work out where each claim is true. This is the only place worlds get walked
 			List<Claim> usableClaims = new List<Claim>();
 			List<BitSet> trueIn = new List<BitSet>();
@@ -81,11 +94,16 @@ namespace LogicSolver
 				trueIn.Add(where);
 			}
 
-			for (int i = 0; i < usableClaims.Count; i++)
+			// A plain sentence is out of place from the logician band up
+			if (settings.difficulty < CompoundOnlyBand)
 			{
-				Keep(pool, space, speaker, whereHonest, usableClaims[i].topic, false,
-					usableClaims[i].namesAValue, usableClaims[i].difficulty,
-					MemoriesIn(usableClaims[i]), usableClaims[i].text, trueIn[i]);
+				for (int i = 0; i < usableClaims.Count; i++)
+				{
+					if (!Fits(usableClaims[i], ceiling)) continue;
+					Keep(pool, space, speaker, whereHonest, usableClaims[i].topic, false,
+						usableClaims[i].namesAValue, usableClaims[i].difficulty,
+						MemoriesIn(usableClaims[i]), usableClaims[i].text, trueIn[i]);
+				}
 			}
 			if (settings.difficulty < FirstCompoundBand) return pool;
 
@@ -93,7 +111,7 @@ namespace LogicSolver
 			{
 				for (int j = i + 1; j < usableClaims.Count; j++)
 				{
-					Combine(pool, space, speaker, whereHonest,
+					Combine(pool, space, speaker, whereHonest, ceiling,
 						usableClaims[i], trueIn[i], usableClaims[j], trueIn[j]);
 				}
 			}
@@ -102,79 +120,79 @@ namespace LogicSolver
 
 		// Every way of gluing two claims together that reads as plain English
 		private static void Combine(Pool pool, WorldSpace space, int speaker,
-			BitSet whereHonest, Claim first, BitSet firstTrue, Claim second, BitSet secondTrue)
+			BitSet whereHonest, float ceiling,
+			Claim first, BitSet firstTrue, Claim second, BitSet secondTrue)
 		{
 			// A glued sentence is about everything either half was about
 			Topic topic = first.topic | second.topic;
 			int memories = MemoriesIn(first) + MemoriesIn(second);
-			float halves = HalvesCost(first, second);
+			float content = ContentCost(first, second);
 			string a = first.text;
 			string b = second.text;
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, AndCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, AndCost,
 				"both of these are true: " + a + "; " + b,
 				firstTrue.And(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, OrCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, OrCost,
 				"at least one of these is true: " + a + "; " + b,
 				firstTrue.Or(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, NorCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, NorCost,
 				"neither of these is true: " + a + "; " + b,
 				firstTrue.Or(secondTrue).Not());
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, NandCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, NandCost,
 				"these are not both true: " + a + "; " + b,
 				firstTrue.And(secondTrue).Not());
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, ImpliesCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, ImpliesCost,
 				"if " + a + ", then " + b,
 				firstTrue.Not().Or(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, ImpliesCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, ImpliesCost,
 				"if " + b + ", then " + a,
 				secondTrue.Not().Or(firstTrue));
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, XorCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, XorCost,
 				"exactly one of these is true: " + a + "; " + b,
 				firstTrue.Xor(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, topic, memories, halves, XnorCost,
+			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, XnorCost,
 				"either both of these are true or neither is: " + a + "; " + b,
 				firstTrue.Xor(secondTrue).Not());
 		}
 
-		// What the two halves cost before the connective is taken into account
-		private static float HalvesCost(Claim first, Claim second)
+		// What the reader still has to work out once the sentence is in front of them
+		private static float ContentCost(Claim first, Claim second)
 		{
 			bool firstRemembered = (first.topic & Topic.Memory) != 0;
 			bool secondRemembered = (second.topic & Topic.Memory) != 0;
 
-			float halves;
-			if (firstRemembered && secondRemembered)
-			{
-				halves = (first.difficulty + second.difficulty) * 0.5f * MemoryHalvesDiscount;
-			}
-			else if (firstRemembered)
-			{
-				halves = second.difficulty * MemoryHalvesDiscount;
-			}
-			else if (secondRemembered)
-			{
-				halves = first.difficulty * MemoryHalvesDiscount;
-			}
-			else
-			{
-				halves = (first.difficulty + second.difficulty) * 0.5f * CompoundSpread;
-			}
-			return CompoundFloor + halves;
+			if (firstRemembered && secondRemembered) return 0f;
+			if (firstRemembered) return second.difficulty;
+			if (secondRemembered) return first.difficulty;
+			return (first.difficulty + second.difficulty) * 0.5f;
 		}
 
+		// Content and connective each get half the range, so the easiest glued sentence
+		// lands on 3 and the hardest on 5
 		private static void Glue(Pool pool, WorldSpace space, int speaker, BitSet whereHonest,
-			Topic topic, int memories, float halves, float connective, string text, BitSet trueIn)
+			float ceiling, Topic topic, int memories, float content, float connective,
+			string text, BitSet trueIn)
 		{
+			float share = 0.5f * (content / HardestSimpleClaim) + 0.5f * connective;
+			float difficulty = CompoundBase + CompoundRange * share;
+			if (difficulty > ceiling) return;
 			Keep(pool, space, speaker, whereHonest, topic, true, false,
-				halves + connective, memories, text, trueIn);
+				difficulty, memories, text, trueIn);
+		}
+
+		// Memory claims carry no difficulty and belong in any band
+		private static bool Fits(Claim claim, float ceiling)
+		{
+			if ((claim.topic & Topic.Memory) != 0) return true;
+			return claim.difficulty <= ceiling;
 		}
 
 		private static int MemoriesIn(Claim claim)
