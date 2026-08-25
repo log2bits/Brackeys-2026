@@ -161,7 +161,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
             Door doorScript = door.transform.GetChild(1).GetComponent<Door>();
             if (doorScript == null) throw new Exception("ProceduralRoomGen: Door script not found on instantiated door");
-            doorScript.SetDialogue("hello this is the dialogue");
+            doorScript.SetDialogue("hello this is the dialogue for door #" + (currDoor + 1));
             doorScript.SetNumber(currDoor);
 
             // Invalidate the position of the door in the grid
