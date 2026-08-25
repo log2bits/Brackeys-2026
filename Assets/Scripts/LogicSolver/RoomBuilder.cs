@@ -4,9 +4,55 @@ using System.Linq;
 
 namespace LogicSolver
 {
+	// What the room turned out like, for tuning a difficulty curve
+	public sealed class RoomStats
+	{
+		public int doorCount;
+		public int liarCount;
+
+		// How many realities the room had to narrow down from
+		public int worldsConsidered;
+
+		public float averageDifficulty;
+		public float hardestStatement;
+
+		// Statements the player must read together before anything can be worked out
+		public int statementsToMakeProgress;
+
+		// Guards whose statement could be dropped with the room still solvable
+		// Only ever non empty in easy rooms, where spare statements are allowed
+		public int[] spareGuards = new int[0];
+
+		public int compoundStatements;
+		public int memoryClaims;
+		public int doorMentions;
+
+		// Doors still open if the player forgot what the memory claims refer to
+		public int doorsLeftIfForgotten;
+
+		public override string ToString()
+		{
+			string spare = spareGuards.Length == 0
+				? "none"
+				: string.Join(", ", spareGuards.Select(guard => (guard + 1).ToString()).ToArray());
+			return "doors " + doorCount + ", liars " + liarCount
+				+ ", worlds " + worldsConsidered
+				+ "\ndifficulty " + averageDifficulty.ToString("F2")
+				+ " average, " + hardestStatement.ToString("F2") + " hardest"
+				+ "\nstatements to make progress " + statementsToMakeProgress
+				+ "\ncompound " + compoundStatements
+				+ ", memory claims " + memoryClaims
+				+ ", door mentions " + doorMentions
+				+ "\nspare guards " + spare
+				+ "\ndoors left if the memory is forgotten " + doorsLeftIfForgotten;
+		}
+	}
+
 	// One finished room, before it is turned into plain strings for the caller
 	public sealed class BuiltRoom
 	{
+		public RoomStats stats;
+
 		public int safeDoor;
 		public int[] liars;
 		public Statement[] statements;
@@ -54,8 +100,54 @@ namespace LogicSolver
 				safeDoor = target.safeDoor,
 				liars = space.LiarsIn(target),
 				statements = chosen.OrderBy(statement => statement.speaker).ToArray(),
-				statementsBeforeProgress = firstDeduction
+				statementsBeforeProgress = firstDeduction,
+				stats = Describe(chosen, target, firstDeduction)
 			};
+		}
+
+		private RoomStats Describe(List<Statement> chosen, World target, int firstDeduction)
+		{
+			RoomStats stats = new RoomStats();
+			stats.doorCount = space.doorCount;
+			stats.liarCount = target.LiarCount;
+			stats.worldsConsidered = space.worlds.Count;
+			stats.statementsToMakeProgress = firstDeduction;
+
+			float total = 0f;
+			foreach (Statement statement in chosen)
+			{
+				total += statement.difficulty;
+				if (statement.difficulty > stats.hardestStatement)
+				{
+					stats.hardestStatement = statement.difficulty;
+				}
+				if (statement.isCompound) stats.compoundStatements++;
+				stats.memoryClaims += statement.memoryCount;
+				if ((statement.topic & Topic.Door) != 0) stats.doorMentions++;
+			}
+			stats.averageDifficulty = total / chosen.Count;
+
+			// A guard is spare when the room still has one answer without them
+			List<int> spare = new List<int>();
+			foreach (Statement dropped in chosen)
+			{
+				List<Statement> rest = chosen.Where(other => other != dropped).ToList();
+				if (rest.Count > 0 && space.AllowedByAll(rest).Count == 1)
+				{
+					spare.Add(dropped.speaker);
+				}
+			}
+			spare.Sort();
+			stats.spareGuards = spare.ToArray();
+
+			// What forgetting the remembered facts would cost
+			List<Statement> withoutMemory = chosen
+				.Where(statement => statement.memoryCount == 0).ToList();
+			stats.doorsLeftIfForgotten = withoutMemory.Count == chosen.Count
+				? 0
+				: space.CountPossibleDoors(space.AllowedByAll(withoutMemory));
+
+			return stats;
 		}
 
 		// One candidate statement and what picking it would leave
@@ -84,17 +176,19 @@ namespace LogicSolver
 				// Otherwise it closes in two lines and the rest say garbage
 				bool mustNotFinishYet = waiting.Count > 1;
 
-				int wantCompound = settings.compoundStatements < 0 ? space.doorCount : settings.compoundStatements;
-				int usedCompound = chosen.Count(statement => statement.isCompound);
-				int usedSimple = chosen.Count - usedCompound;
-				bool compoundsAllowed = usedCompound < wantCompound;
-				bool simpleAllowed = usedSimple < space.doorCount - wantCompound;
+				bool simpleAllowed = true;
+				bool compoundsAllowed = true;
+
+				int memoriesSoFar = chosen.Sum(statement => statement.memoryCount);
+				bool memoryRequired = settings.minMemoryMentions - memoriesSoFar > (waiting.Count - 1) * 2;
 
 				List<Option> narrowing = new List<Option>();
 				List<Option> finishing = new List<Option>();
 				foreach (int guard in waiting)
 				{
-					CollectOptions(rng, guard, targetIndex, worldsLeft, rivalWorlds, rivalsNow, compoundsAllowed, simpleAllowed, alreadySaid, narrowing, finishing);
+					CollectOptions(rng, guard, targetIndex, worldsLeft, rivalWorlds, rivalsNow,
+						compoundsAllowed, simpleAllowed, memoryRequired,
+						alreadySaid, narrowing, finishing);
 				}
 
 				Option picked;
@@ -118,10 +212,15 @@ namespace LogicSolver
 			return chosen;
 		}
 
-		private void CollectOptions(Random rng, int guard, int targetIndex, BitSet worldsLeft, BitSet rivalWorlds, int rivalsNow, bool compoundsAllowed, bool simpleAllowed, HashSet<string> alreadySaid, List<Option> narrowing, List<Option> finishing)
+		private void CollectOptions(Random rng, int guard, int targetIndex, BitSet worldsLeft,
+			BitSet rivalWorlds, int rivalsNow, bool compoundsAllowed, bool simpleAllowed,
+			bool memoryRequired, HashSet<string> alreadySaid,
+			List<Option> narrowing, List<Option> finishing)
 		{
 			foreach (Statement statement in Candidates(guard, compoundsAllowed, simpleAllowed, rng))
 			{
+				if (memoryRequired && statement.memoryCount == 0) continue;
+
 				// No two guards should say the same thing
 				if (alreadySaid.Contains(statement.text)) continue;
 
