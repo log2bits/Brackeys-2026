@@ -1,7 +1,8 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-
+using Unity.Mathematics;
+using ProceduralHelperGen;
 
 public class ProceduralRoomGen : MonoBehaviour
 {
@@ -170,13 +171,13 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         if (GameManager.Instance.worldState.roomStates.Count <= room-1 || GameManager.Instance.worldState.roomStates[room-1].objectsState == null) throw new Exception($"GenerateObjects: roomState index exceeded {GameManager.Instance.worldState.roomStates.Count}, or ObjectsState is null {GameManager.Instance.worldState.roomStates[room-1].objectsState}");
         // iterate the curr objects
-        //int currTotalObjects = Mathf.Min(difficultySettings.minObjects + (room % difficultySettings.durationUntilObjectIncrease), difficultySettings.maxObjects);
+        int currTotalObjects = Mathf.Min(difficultySettings.minObjects + Mathf.FloorToInt(room / difficultySettings.durationUntilObjectIncrease), Mathf.Min(difficultySettings.maxObjects, objectPrefabs.Count)); 
         //if (room % difficultySettings.durationUntilObjectIncrease)
-        int currTotalObjects = objectCount;
 
         List<int> indices = new List<int>();
         for (int i = 0; i < objectPrefabs.Count; i++) indices.Add(i);
 
+        Debug.Log("Generating Objects");
         PrintGrid(room);
 
         for(int currObject = 0; currObject < currTotalObjects; currObject++)
@@ -190,6 +191,7 @@ public class ProceduralRoomGen : MonoBehaviour
             Vector3 placementPosition = SetupRandomizedPlacement(objectsState, GameManager.Instance.worldState.roomStates[room-1].globalPosition, width, room);
             if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
             GameObject objectGenerated = Instantiate(objectPrefabs[randomIndex], placementPosition, Quaternion.identity, transform);
+            ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, proceduralRandGen);
 
             // prevents duplicate prefabs
             indices.RemoveAt(randomIndex);
@@ -208,7 +210,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
         // Generate a list of valid starting Grid IDs
         List<int> validIndices = ValidPlacements(objectsState, objectWidth);
-        Debug.Log($"Door Count: {validIndices}");
+        Debug.Log($"Valid Counts: {validIndices}");
         if (validIndices.Count == 0) return new Vector3(0, 0, 0);
 
         // finds the valid grid ID from available options
@@ -254,7 +256,6 @@ public class ProceduralRoomGen : MonoBehaviour
     // Returns valid list of potential indices in relation to the available grid of objects state
     private List<int> ValidPlacements(ObjectsState objectsState, float width)
     {
-        //float doorWidth = GetSpriteLocalScaleX(doorFullPrefab.transform.GetChild(1).GetComponent<SpriteRenderer>());
         int placementSize = FindPlacementWidth(objectsState, width + objectToObjectDistance);
         List<int> potentialIndices = new List<int>();
         Debug.Log($"Object Size: {placementSize}");

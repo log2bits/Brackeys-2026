@@ -40,7 +40,11 @@ public class MemorableObjectTemplate : MonoBehaviour
         sharedList.Clear();
     }
 
-    // SetObjectSprite
-    
+    // GetSpriteDataList
+    // Returns the sprite data of this object's list
+    public List<SpriteData> GetSpriteDatas()
+    {
+        return spriteDatas;
+    }
 
 }
