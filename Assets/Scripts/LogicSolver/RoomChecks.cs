@@ -36,10 +36,8 @@ namespace LogicSolver
 			}
 		}
 
-		// Returns true when the room is worth keeping. firstDeduction comes back so the
-		// caller can record it without working it out twice
-		public static bool Passes(WorldSpace space, RoomSettings settings,
-			List<Statement> chosen, Tally tally, out int firstDeduction)
+		// Returns true when the room is worth keeping
+		public static bool Passes(WorldSpace space, RoomSettings settings, List<Statement> chosen, Tally tally, out int firstDeduction)
 		{
 			firstDeduction = 0;
 
@@ -49,9 +47,7 @@ namespace LogicSolver
 				tally.notUnique++;
 				return false;
 			}
-			// A spare statement is fine in an easy room. It gives the player something
-			// that agrees with what they already worked out, which is forgiving rather
-			// than sloppy. Anywhere above easy every guard has to carry weight
+
 			if (settings.difficulty >= 1 && !EveryStatementMatters(space, chosen))
 			{
 				tally.spareStatement++;
@@ -68,15 +64,6 @@ namespace LogicSolver
 			}
 
 			// The sentences only have to average somewhere in the band, so a hard one is
-			// fine as long as easier ones balance it out
-			//
-			// The average alone is not enough though. Two claims scoring zero will carry
-			// a band two sentence into a band zero room, and with few guards that one
-			// sentence is most of what the player reads. So nothing may sit more than
-			// one band above what was asked for
-			// A plain memory claim is not really a difficulty at all. The player either
-			// remembered or they did not, and no amount of thinking changes that, so it
-			// is left out of the average rather than dragging it down
 			float ceiling = settings.difficulty + 1f + OneBandOver;
 			float total = 0f;
 			int counted = 0;
@@ -117,10 +104,6 @@ namespace LogicSolver
 				return false;
 			}
 
-			// Memory claims are the only reward for paying attention last room
-			// Count the claims, not the sentences, because a glued sentence can carry two
-			// A memory claim inside a compound is doing half the work of one on its own,
-			// so a compound room needs twice as many of them
 			int memoriesWanted = settings.minMemoryMentions;
 			int memoriesFound = 0;
 			foreach (Statement statement in chosen) memoriesFound += statement.memoryCount;
@@ -130,10 +113,8 @@ namespace LogicSolver
 				return false;
 			}
 
-			// Being needed is not enough, forgetting a memory claim should really cost you
-			// Easy rooms are let off, forgetting should not sink a tutorial
-			if (settings.difficulty >= 1
-				&& WeakestMemoryImpact(space, chosen) < settings.minMemoryImpact)
+
+			if (settings.difficulty >= 1 && WeakestMemoryImpact(space, chosen) < settings.minMemoryImpact)
 			{
 				tally.weakMemory++;
 				return false;
@@ -165,14 +146,6 @@ namespace LogicSolver
 		}
 
 		// How many statements the player must read together before they learn anything
-		//
-		// Anything means either a door ruled out or a guard's honesty settled. These used
-		// to be two separate walks over every subset, which was the same work twice and
-		// two numbers to explain when they always moved together
-		//
-		// Memory claims are skipped for the honesty half. One of those settles its own
-		// speaker by itself, which is the whole point of remembering, so counting them
-		// would force this to 1 in every room that has one
 		private static int StatementsNeededToLearnAnything(WorldSpace space,
 			List<Statement> statements)
 		{
