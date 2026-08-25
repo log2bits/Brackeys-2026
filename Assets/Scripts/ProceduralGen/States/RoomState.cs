@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class RoomState
 {
-    List<GuardState> guardStates;
-    List<ObjectsState> objectsStates;
-    RoomSettings roomSettings = new RoomSettings();
+    public List<GuardState> guardStates = new List<GuardState>();
+    public List<ObjectsState> objectsStates = new List<ObjectsState>();
+    public RoomSettings roomSettings = new RoomSettings();
 
     // Constructor, provide seed and doors for the current room
-    RoomState(int seed, int doorCount = 4)
+    public RoomState(int seed, int doorCount = 4)
     {
         roomSettings.doorCount = doorCount;
         roomSettings.seed = seed;
