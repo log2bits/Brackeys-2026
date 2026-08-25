@@ -46,7 +46,7 @@ namespace LogicSolver
 		//   2 hard, the safe door and the liars tangled together
 		//   3 extreme, guards start gluing two claims into one sentence
 		//   4 logician, compound sentences built from the hardest claims
-		public int difficulty = 2;
+		public int difficulty = 1;
 
 		// the rest are structure and taste, not difficulty
 

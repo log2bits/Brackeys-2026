@@ -41,6 +41,11 @@ public class MainCameraMove : MonoBehaviour
             return;
         }
 
+        if (GameManager.Instance.state != GameManager.GameState.OUTERROOM)
+        {
+            return;
+        }
+
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
         if (mouseHeldLastFrame)
@@ -51,12 +56,12 @@ public class MainCameraMove : MonoBehaviour
         mouseHeldLastFrame = Mouse.current.leftButton.isPressed;
     }
 
-    public void MoveCamera(Vector3 position)
+    public void MoveCamera(Vector3 position, GameManager.GameState finalState)
     {
-        CoroutineManager.Instance.Run(MoveCameraCoroutine(position));
+        CoroutineManager.Instance.Run(MoveCameraCoroutine(position, finalState));
     }
 
-    private IEnumerator MoveCameraCoroutine(Vector3 position)
+    private IEnumerator MoveCameraCoroutine(Vector3 position, GameManager.GameState finalState)
     {
         inputEnabled = false;
         Vector3 startingPosition = transform.position;
@@ -71,5 +76,7 @@ public class MainCameraMove : MonoBehaviour
 
         transform.position = position;
         inputEnabled = true;
+
+        GameManager.Instance.state = finalState;
     }
 }

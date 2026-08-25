@@ -171,6 +171,7 @@ MonoBehaviour:
   doorNumbersRenderer: {fileID: 7503322821144491428}
   doorRotateTime: 1
   doorRotateAngle: 60
+  doorZoomZDistance: -12
 --- !u!1 &7646837612948708103
 GameObject:
   m_ObjectHideFlags: 0
