@@ -36,4 +36,5 @@ namespace ProceduralHelperGen
             spriteRenderer.sprite = sprite;
         }
     }
+    
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using ProceduralHelperGen;
+using LogicSolver;
 
 public class ProceduralRoomGen : MonoBehaviour
 {
@@ -55,28 +56,20 @@ public class ProceduralRoomGen : MonoBehaviour
 
     private struct DoorData
     {
-        public GameObject door;
-        public bool safe;
+        public GameObject fullDoor;
+        public Door doorComponent;
 
-        public DoorData(GameObject givenDoor, bool isSafe)
+        public DoorData(GameObject givenDoor)
         {
-            door = givenDoor;
-            safe = isSafe;
+            fullDoor = givenDoor;
+            doorComponent = givenDoor.transform.GetChild(1).GetComponent<Door>();
+        }
+        public DoorData(GameObject givenDoor, Door givenDoorChild)
+        {
+            fullDoor = givenDoor;
+            doorComponent = givenDoorChild;
         }
     }
-
-
-    /*private struct ObjectData
-    {
-        public GameObject memorableObject;
-        public float maxWidth; 
-
-        public ObjectData(GameObject givenObject, float width)
-        {
-            memorableObject = givenObject;
-            maxWidth = width;
-        }
-    }*/
 
     // StartGenerationProcess
     public void GenerateProcess()
@@ -85,16 +78,16 @@ public class ProceduralRoomGen : MonoBehaviour
 
         // Generate room 1, always with two doors
         GenerateNextRoom(transform.position, 2, 1);
-        
+        RoomSolution roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[0].roomSettings);
+        AssignAllDialogue(roomSolution);
+
         // Generate rest of the rooms. <= cause rooms are one indexed
         for (int room = 2; room <= difficultySettings.roomCount; room++)
         {
-            // Is this supposed to be picking a random door since theres no solver? i changed it to be from 0 to currentDoors.Count instead of 0 to room
-            // - Tyler
-            int randomInt = proceduralRandGen.Next(0, currentDoors.Count);
-            Debug.Log($"Random int: {randomInt}");
+            int safeDoorIndex = roomSolution.safeDoor;
+            Debug.Log($"Random int: {safeDoorIndex}");
             Debug.Log($"Current Doors: {currentDoors.Count}");
-            Vector3 nextDoorPosition = currentDoors[randomInt].door.transform.position;
+            Vector3 nextDoorPosition = currentDoors[safeDoorIndex].fullDoor.transform.position;
             nextDoorPosition.z += roomDistance;
 
             int numDoorsForThisRoom = Mathf.FloorToInt((room - 1) / difficultySettings.roomsPerDoorIncrease) + difficultySettings.minDoors;
@@ -103,6 +96,8 @@ public class ProceduralRoomGen : MonoBehaviour
                 numDoorsForThisRoom = Mathf.Min(numDoorsForThisRoom, difficultySettings.maxDoors);
             }
             GenerateNextRoom(nextDoorPosition, numDoorsForThisRoom, room);
+            roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[room-1].roomSettings);
+            AssignAllDialogue(roomSolution);
         }
 
         // Clear all doors
@@ -136,7 +131,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
     private void GenerateRoomState(int doorCount, Vector3 centralPosition)
     {
-        GameManager.Instance.worldState.roomStates.Add(new RoomState(seed, centralPosition, doorCount));
+        GameManager.Instance.worldState.roomStates.Add(new RoomState(seed, centralPosition, doorCount, difficultySettings.solverDifficulty));
     }
 
     private void GenerateDoors(Vector3 centralPosition, int doorCount, int room)
@@ -162,14 +157,24 @@ public class ProceduralRoomGen : MonoBehaviour
 
             Door doorScript = door.transform.GetChild(1).GetComponent<Door>();
             if (doorScript == null) throw new Exception("ProceduralRoomGen: Door script not found on instantiated door");
-            doorScript.SetDialogue("hello this is the dialogue");
+            doorScript.SetDialogue("Missing Dialogue");
             doorScript.SetNumber(currDoor);
 
             // Invalidate the position of the door in the grid
             InvalidatePlacements(GameManager.Instance.worldState.roomStates[room-1].objectsState, GetMaxWidthOfObject(door.transform.GetChild(1).gameObject), newPosition, doorCount, room);
 
             // Save the door
-            currentDoors.Add(new DoorData(door, false));
+            currentDoors.Add(new DoorData(door, doorScript));
+        }
+    }
+
+    // AssignAllDialogue
+    // Goes through each door and assigns proper given dialogue from the solver
+    public void AssignAllDialogue(RoomSolution roomSolution)
+    {
+        for (int currDoor = 0; currDoor < currentDoors.Count; currDoor++)
+        {
+            currentDoors[currDoor].doorComponent.SetDialogue(roomSolution.statements[currDoor]);
         }
     }
 
