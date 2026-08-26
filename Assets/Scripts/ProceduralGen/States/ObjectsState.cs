@@ -17,8 +17,8 @@ public class ObjectsState
         availableGrids.Clear();
         
         
-        Debug.Log($"Room Width: {roomWidth}");
-        Debug.Log($"Room Width Ratio: {(int)roomWidth / ratio}");
+        //Debug.Log($"Room Width: {roomWidth}");
+        //Debug.Log($"Room Width Ratio: {(int)roomWidth / ratio}");
         // safely calculate the total num of grids
         int totalGridSize = Mathf.FloorToInt(roomWidth / ratio);
         for (int x = 0; x < totalGridSize; x++) availableGrids.Add(x);
