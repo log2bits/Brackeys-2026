@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Door : ClickableObject
 {
@@ -53,6 +54,23 @@ public class Door : ClickableObject
             if (Mathf.Abs(transform.position.x - MainCameraMove.Instance.transform.position.x) > 0.1f)
             {
                 Dialogue.Instance.DeferClickCheckToDialogue();
+                return;
+            }
+
+            // You lose a life
+            if (!safe)
+            {
+                int lives = GameManager.Instance.lives;
+                lives -= 1;
+                GameManager.Instance.lives = lives;
+                if (lives < 1)
+                {
+                    SceneManager.LoadScene("MainMenu");
+                }
+                else
+                {
+                    EventBus.Instance.DoLostLife();
+                }
                 return;
             }
 

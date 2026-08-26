@@ -1,7 +1,6 @@
-using UnityEngine;
-
 public class GameManager
 {
+    // Singleton
     private static GameManager _instance;
     public static GameManager Instance
     {
@@ -14,10 +13,11 @@ public class GameManager
             return _instance; 
         }
     }
+    // Singleton
 
     private GameManager()
     {
-        Debug.Log("GameManager initalized");        
+        ResetGameManager();
     }
 
     public enum GameState
@@ -32,10 +32,13 @@ public class GameManager
 
     public GameState state;
 
-    // Managers
-    //public ProceduralRoomGen proceduralRoomGenManager;
-    public WorldState worldState = new WorldState();
-
+    public WorldState worldState;
+    public int lives;
     public float mainCameraZBeforeZoom;
-    
+
+    public void ResetGameManager()
+    {
+        worldState = new WorldState();
+        lives = 3;
+    }
 }
