@@ -29,6 +29,7 @@ public class ProceduralRoomGen : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject doorFullPrefab;
     [SerializeField] private GameObject wallPrefab;
+    [SerializeField] private GameObject roomLightsPrefab;
     [SerializeField] private List<ObjectDataTemplate> objectDataTemplates;
     [SerializeField] private DifficultyTemplate difficultySettings;
 
@@ -37,9 +38,11 @@ public class ProceduralRoomGen : MonoBehaviour
     [SerializeField] private float objectDoorDistance = 5f; // how much in front of the doors
     [SerializeField] private float objectToObjectDistance = 0; // handles offsets from object to object
     [SerializeField] private float objectInvalidationDistance = 0; // handles offsets for object invalidation
+    [SerializeField] private float roomLightsYPosition = 17f;
+
 
     //[SerializeField] private float doorDistance = 15; // accounts for doorframes
-    [SerializeField] private float sideWallsDistance = 15f;
+    //[SerializeField] private float sideWallsDistance = 15f;
     [SerializeField] private float objectRatio = 0.5f;
 
 
@@ -135,6 +138,7 @@ public class ProceduralRoomGen : MonoBehaviour
         //PrintGrid(room);
         GenerateDoors(centralPosition, doorCount, room);
         GenerateWalls(centralPosition, doorCount, room);
+        GenerateRoomLights(centralPosition);
 
         GenerateObjects(doorCount, room);
     }
@@ -204,6 +208,14 @@ public class ProceduralRoomGen : MonoBehaviour
         
         Instantiate(wallPrefab, rightPosition, Quaternion.Euler(0, 90, 0), transform);
         Instantiate(wallPrefab, leftPosition, Quaternion.Euler(0, 270, 0), transform);
+    }
+
+    private void GenerateRoomLights(Vector3 centralPosition)
+    {
+        if (roomLightsPrefab == null) throw new Exception("ProceduralRoomGen: RoomLightsPrefab is null");
+       
+        Vector3 position = new Vector3(centralPosition.x, roomLightsYPosition, centralPosition.z - (roomDistance / 2));
+        Instantiate(roomLightsPrefab, position, Quaternion.Euler(90, 0, 0), transform);
     }
 
     // GenerateObjects
