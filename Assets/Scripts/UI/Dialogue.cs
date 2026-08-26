@@ -68,12 +68,7 @@ public class Dialogue : MonoBehaviour
                 charactersShown += 1;
             }
 
-            if (Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                charactersShown = currentDialogueText.Length;
-            }
-
-            if (charactersShown == currentDialogueText.Length)
+            if (charactersShown >= currentDialogueText.Length)
             {
                 dialogueTextAppearing = false;
             }
@@ -81,8 +76,34 @@ public class Dialogue : MonoBehaviour
             dialogueText.maxVisibleCharacters = charactersShown;
             return;
         }
+    }
 
+    public void DeferClickCheckToDialogue()
+    {
         if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            ClickDialogue();
+        }
+    }
+    
+    public void ClickDialogue()
+    {
+        if (Time.timeScale == 0)
+        {
+            return;
+        }
+
+        if (!inDialogue || dialogueBoxMoving)
+        {
+            return;
+        }
+
+        if (dialogueTextAppearing)
+        {
+            charactersShown = currentDialogueText.Length;
+            dialogueText.maxVisibleCharacters = charactersShown;
+        }
+        else
         {
             EndDialogue();
         }
@@ -116,12 +137,23 @@ public class Dialogue : MonoBehaviour
         }
     }
 
-    private void EndDialogue()
+    public void EndDialogue(bool moveCamera = true)
     {
+        if (!inDialogue)
+        {
+            return;
+        }
+
         inDialogue = false;
+        dialogueTextAppearing = false;
+        CoroutineManager.Instance.Run(MoveDialogueBox(dialogueBoxVisibleY, dialogueBoxHiddenY, dialogueBoxMoveTime));
+
+        if (!moveCamera)
+        {
+            return;
+        }
         
         currentDialogueCompleteAction?.Invoke();
-        CoroutineManager.Instance.Run(MoveDialogueBox(dialogueBoxVisibleY, dialogueBoxHiddenY, dialogueBoxMoveTime));
     }
 
     private IEnumerator MoveDialogueBox(float startingY, float finishedY, float time, Action moveCompleted = null)
