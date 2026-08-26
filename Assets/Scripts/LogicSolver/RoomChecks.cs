@@ -7,25 +7,11 @@ namespace LogicSolver
 	public static class RoomChecks
 	{
 		// details are left out, remembering is not thinking
-		public static float AverageDifficulty(IEnumerable<Statement> statements)
-		{
-			float total = 0f;
-			int counted = 0;
-			foreach (Statement statement in statements)
-			{
-				if (statement.IsMemory) continue;
-				total += statement.difficulty;
-				counted++;
-			}
-			return counted == 0 ? -1f : total / counted;
-		}
-
 		public sealed class Tally
 		{
 			public int notUnique;
 			public int spareStatement;
 			public int tooEasyToStart;
-			public int tooFewDoorMentions;
 			public int tooFewMemories;
 			public int weakMemory;
 			public int wrongDifficulty;
@@ -35,7 +21,6 @@ namespace LogicSolver
 			{
 				return "not unique " + notUnique + ", spare statement " + spareStatement
 					+ ", too easy to start " + tooEasyToStart
-					+ ", too few door mentions " + tooFewDoorMentions
 					+ ", too few memories " + tooFewMemories
 					+ ", weak memory " + weakMemory
 					+ ", wrong difficulty " + wrongDifficulty
@@ -44,7 +29,8 @@ namespace LogicSolver
 			}
 		}
 
-		public static bool Passes(WorldSpace space, RoomSettings settings, List<Statement> chosen, Tally tally, out int firstDeduction)
+		public static bool Passes(WorldSpace space, RoomSettings settings, List<Statement> chosen,
+			bool anythingAtBand, Tally tally, out int firstDeduction)
 		{
 			firstDeduction = 0;
 
@@ -69,32 +55,27 @@ namespace LogicSolver
 				return false;
 			}
 
+			// a room has to actually reach its own band, or an extreme one could be built
+			// entirely out of easy ingredients
+			// half the room has to sit on its own band or above. one token hard sentence
+			// among four easy ones is an easy room wearing a label
+			int atBand = 0, judged = 0;
 			foreach (Statement statement in chosen)
 			{
 				if (statement.IsMemory) continue;
-				if (!StatementCompiler.InReach(statement.difficulty, settings.difficulty))
-				{
-					tally.statementTooHard++;
-					return false;
-				}
+				judged++;
+				if (statement.tier >= settings.difficulty) atBand++;
 			}
-
-			float average = AverageDifficulty(chosen);
-			if (average < settings.difficulty || average >= settings.difficulty + 1f)
+			int wanted = (judged + 1) / 2;
+			if (anythingAtBand && atBand < wanted)
 			{
 				tally.wrongDifficulty++;
 				return false;
 			}
 
-			if (Count(chosen, statement => (statement.topic & Topic.Door) != 0) < settings.minDoorMentions)
-			{
-				tally.tooFewDoorMentions++;
-				return false;
-			}
-
 			float memoriesFound = 0f;
 			foreach (Statement statement in chosen) memoriesFound += statement.memoryWeight;
-			if (memoriesFound < settings.minMemoryMentions)
+			if (memoriesFound != settings.detailMentions)
 			{
 				tally.tooFewMemories++;
 				return false;
@@ -106,16 +87,6 @@ namespace LogicSolver
 				return false;
 			}
 			return true;
-		}
-
-		private static int Count(List<Statement> statements, Func<Statement, bool> test)
-		{
-			int count = 0;
-			foreach (Statement statement in statements)
-			{
-				if (test(statement)) count++;
-			}
-			return count;
 		}
 
 		public static List<int> SpareGuards(WorldSpace space, List<Statement> statements)

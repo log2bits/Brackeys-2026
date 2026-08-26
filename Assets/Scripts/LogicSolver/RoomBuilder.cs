@@ -11,8 +11,7 @@ namespace LogicSolver
 
 		public int worldsConsidered;
 
-		public float averageDifficulty;
-		public float hardestStatement;
+		public int hardestTier;
 
 		public int statementsToMakeProgress;
 
@@ -31,8 +30,7 @@ namespace LogicSolver
 				: string.Join(", ", spareGuards.Select(guard => (guard + 1).ToString()).ToArray());
 			return "doors " + doorCount + ", liars " + liarCount
 				+ ", worlds " + worldsConsidered
-				+ "\ndifficulty " + averageDifficulty.ToString("F2")
-				+ " average, " + hardestStatement.ToString("F2") + " hardest"
+				+ "\nhardest tier " + hardestTier
 				+ "\nstatements to make progress " + statementsToMakeProgress
 				+ "\ncompound " + compoundStatements
 				+ ", memory claims " + memoryClaims.ToString("F1")
@@ -61,12 +59,23 @@ namespace LogicSolver
 
 		public readonly RoomChecks.Tally rejections = new RoomChecks.Tally();
 
+		// small boards may have nothing at all sitting on the asked for band
+		private readonly bool anythingAtBand;
+
 		public RoomBuilder(WorldSpace space, RoomSettings settings,
 			StatementCompiler.Pool[] pools)
 		{
 			this.space = space;
 			this.settings = settings;
 			this.pools = pools;
+
+			foreach (StatementCompiler.Pool pool in pools)
+			{
+				foreach (Statement statement in pool.All)
+				{
+					if (statement.tier == settings.difficulty) anythingAtBand = true;
+				}
+			}
 		}
 
 		public int PoolSizeFor(int guard) { return pools[guard].Count; }
@@ -80,7 +89,8 @@ namespace LogicSolver
 			if (chosen == null) return null;
 
 			int firstDeduction;
-			if (!RoomChecks.Passes(space, settings, chosen, rejections, out firstDeduction))
+			if (!RoomChecks.Passes(space, settings, chosen, anythingAtBand, rejections,
+				out firstDeduction))
 			{
 				return null;
 			}
@@ -105,15 +115,11 @@ namespace LogicSolver
 
 			foreach (Statement statement in chosen)
 			{
-				if (statement.difficulty > stats.hardestStatement)
-				{
-					stats.hardestStatement = statement.difficulty;
-				}
+				if (statement.tier > stats.hardestTier) stats.hardestTier = statement.tier;
 				if (statement.isCompound) stats.compoundStatements++;
 				stats.memoryClaims += statement.memoryWeight;
 				if ((statement.topic & Topic.Door) != 0) stats.doorMentions++;
 			}
-			stats.averageDifficulty = RoomChecks.AverageDifficulty(chosen);
 
 			stats.spareGuards = RoomChecks.SpareGuards(space, chosen).ToArray();
 
@@ -149,9 +155,18 @@ namespace LogicSolver
 				// hold back, or the room closes in two lines and the rest waffle
 				bool mustNotFinishYet = waiting.Count > 1;
 
+				// half the room must sit on its own band, so force it once the guards left
+				// could only just supply what is still missing
+				int atBandSoFar = chosen.Count(x => !x.IsMemory && x.tier >= settings.difficulty);
+				int judgedTotal = space.doorCount - (int)settings.detailMentions;
+				int wantedAtBand = (judgedTotal + 1) / 2;
+				bool bandRequired = anythingAtBand
+					&& wantedAtBand - atBandSoFar > waiting.Count - 1;
+
 				float memoriesSoFar = chosen.Sum(statement => statement.memoryWeight);
+				bool memoryFull = memoriesSoFar >= settings.detailMentions;
 				// force it once the guards left could only just supply what is missing
-				bool memoryRequired = settings.minMemoryMentions - memoriesSoFar
+				bool memoryRequired = settings.detailMentions - memoriesSoFar
 					> (waiting.Count - 1) * 2;
 
 				List<Option> narrowing = new List<Option>();
@@ -159,7 +174,8 @@ namespace LogicSolver
 				foreach (int guard in waiting)
 				{
 					CollectOptions(rng, guard, targetIndex, worldsLeft, rivalWorlds, rivalsNow,
-						memoryRequired, alreadySaid, narrowing, finishing);
+						memoryRequired, memoryFull, bandRequired, alreadySaid,
+						narrowing, finishing);
 				}
 
 				Option picked;
@@ -184,12 +200,14 @@ namespace LogicSolver
 
 		private void CollectOptions(Random rng, int guard, int targetIndex, BitSet worldsLeft,
 			BitSet rivalWorlds, int rivalsNow,
-			bool memoryRequired, HashSet<string> alreadySaid,
+			bool memoryRequired, bool memoryFull, bool bandRequired, HashSet<string> alreadySaid,
 			List<Option> narrowing, List<Option> finishing)
 		{
 			foreach (Statement statement in Candidates(guard, rng))
 			{
 				if (memoryRequired && !statement.IsMemory) continue;
+				if (memoryFull && statement.IsMemory) continue;
+				if (bandRequired && statement.tier < settings.difficulty) continue;
 
 				if (alreadySaid.Contains(statement.text)) continue;
 

@@ -2,72 +2,60 @@ using System.Text;
 using UnityEngine;
 using LogicSolver;
 
-// Drop this on any GameObject and press Play. It prints rooms to the Console
+// Drop this on any GameObject and press Play. It prints a room at every size and band
 public class LogicSolverDemo : MonoBehaviour
 {
-	[Header("Room")]
-	public int doorCount = 4;
-
-	[Header("How many rooms to generate")]
-	public int roomsToGenerate = 3;
-
 	[Header("Turn on to try solving them yourself")]
 	public bool hideAnswers = false;
 
-	[Header("Print how the room turned out")]
-	public bool showStats = true;
+	private static readonly int[] DoorCounts = { 2, 3, 4, 5, 6 };
+
+	private static readonly string[] BandNames =
+		{ "EASY", "MEDIUM", "HARD", "EXTREME", "LOGICIAN" };
 
 	private void Start()
 	{
-		for (int room = 0; room < roomsToGenerate; room++)
+		StringBuilder text = new StringBuilder();
+		for (int i = 0; i < DoorCounts.Length; i++)
 		{
-			GenerateRoom(room);
+			if (i > 0) text.AppendLine();
+			text.AppendLine("# " + DoorCounts[i] + " DOORS");
+			for (int band = 0; band < BandNames.Length; band++)
+			{
+				text.AppendLine();
+				text.AppendLine("**" + BandNames[band] + "**");
+				text.Append(BuildRoom(DoorCounts[i], band));
+			}
 		}
+		Debug.Log(text.ToString());
 	}
 
-	private void GenerateRoom(int roomNumber)
+	private string BuildRoom(int doorCount, int band)
 	{
 		RoomSettings settings = new RoomSettings
 		{
 			doorCount = doorCount,
+			difficulty = band,
 			seed = Random.Range(0, int.MaxValue)
 		};
-
 		settings.details.Add(new Detail("the flower pot in the last room was blue", true, "pot"));
+		settings.details.Add(new Detail("the flower pot in the last room was red", false, "pot"));
 
 		RoomSolution room = Solver.Solve(settings);
 		if (room == null)
 		{
-			Debug.LogWarning("Room " + roomNumber + ": nothing could be built, try raising maxAttempts");
-			return;
+			return "nothing could be built, try raising maxAttempts\n";
 		}
 
-		Debug.Log(Describe(roomNumber, room));
-	}
-
-	private string Describe(int roomNumber, RoomSolution room)
-	{
 		StringBuilder text = new StringBuilder();
-		text.AppendLine("ROOM " + roomNumber + "  (" + doorCount + " doors)");
-		text.AppendLine("You remember: pot was blue");
-		text.AppendLine();
-
 		for (int guard = 0; guard < room.statements.Length; guard++)
 		{
 			text.AppendLine("Guard " + (guard + 1) + ": \"" + room.statements[guard] + "\"");
 		}
-
 		if (!hideAnswers)
 		{
-			text.AppendLine();
-			text.AppendLine("ANSWER: door " + (room.safeDoor + 1)
-				+ ", lying guards: " + Join(room.liars));
-		}
-
-		if (showStats && room.stats != null)
-		{
-			text.AppendLine();
-			text.AppendLine(room.stats.ToString());
+			text.AppendLine("ANSWER: ||door " + (room.safeDoor + 1)
+				+ ", lying guards: " + Join(room.liars) + "||");
 		}
 		return text.ToString();
 	}
