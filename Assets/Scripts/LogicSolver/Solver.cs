@@ -35,12 +35,12 @@ namespace LogicSolver
 
 		public int statementsToMakeProgress = -1;
 
-		// 0 easy, 1 medium, 2 hard, 3 extreme, 4 insane, 5 logician
-		public int difficulty = 0;
+		// 0 easy, 1 medium, 2 hard, 3 extreme, 4 logician
+		public int difficulty = 1;
 
-		public int minDoorMentions = 2;
 
-		public float minMemoryMentions = 1f;
+		// how many details the room should carry, clamped down on small boards
+		public int detailMentions = 1;
 
 		public int minMemoryImpact = 2;
 
@@ -106,12 +106,10 @@ namespace LogicSolver
 			settings.details = Balanced(settings.details, new Random(settings.seed));
 			if (settings.details.Count == 0)
 			{
-				settings.minMemoryMentions = 0f;
+				settings.detailMentions = 0;
 			}
 
-			settings.minMemoryMentions = Math.Max(0f, Math.Min(settings.minMemoryMentions, settings.doorCount - 2));
-
-			settings.minDoorMentions = Math.Max(1, Math.Min(settings.minDoorMentions, settings.doorCount - (int)Math.Ceiling(settings.minMemoryMentions) - 1));
+			settings.detailMentions = Math.Max(0, Math.Min(settings.detailMentions, settings.doorCount - 2));
 
 			if (settings.statementsToMakeProgress > settings.doorCount)
 			{
