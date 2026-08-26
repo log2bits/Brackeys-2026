@@ -4,32 +4,50 @@ using System.Linq;
 
 namespace LogicSolver
 {
-	// Turns the claim library into statements each guard could actually say
 	public static class StatementCompiler
 	{
-		// The lowest band that may contain a glued sentence
-		public const int FirstCompoundBand = 3;
-
-		// From this band up, every sentence is a glued one
-		public const int CompoundOnlyBand = 4;
-
-		// The hardest a single claim can score. Compounds are mapped on top of this
+		// plain claims live in 0 to 3, glued ones in 3 to 6
 		public const float HardestSimpleClaim = 3f;
+		public const float HardestCompound = 6f;
 
-		// Glued sentences fill the top two bands exactly, 3 at the easiest and 5 at the
-		// hardest. Half of that range comes from what the two halves say and half from
-		// how they are joined, so either can carry a sentence a full band
-		public const float CompoundBase = 3f;
-		public const float CompoundRange = 2f;
-
-		// How much work each connective is, from nothing to a full share of the range
 		public const float AndCost = 0f;
-		public const float OrCost = 0.15f;
-		public const float NorCost = 0.4f;
-		public const float NandCost = 0.5f;
-		public const float ImpliesCost = 0.7f;
-		public const float XorCost = 0.85f;
+		public const float OrCost = 0.1f;
+		public const float NorCost = 0.45f;
+		public const float NandCost = 0.55f;
+		public const float ImpliesCost = 0.75f;
+		public const float XorCost = 0.9f;
 		public const float XnorCost = 1f;
+
+		// above this, details only turn up inside longer sentences
+		public const int MemoryGoesCompoundBand = 2;
+
+		public static bool PlainMemoryAllowed(int band)
+		{
+			return band < MemoryGoesCompoundBand;
+		}
+
+		public static bool MemoryCompoundsAllowed(int band)
+		{
+			return band >= MemoryGoesCompoundBand - 1;
+		}
+
+		// how far outside its band a room may reach for a sentence
+		public const float BandReach = 1f;
+
+		public static float LowestAllowed(int difficulty)
+		{
+			return Math.Max(0f, difficulty - BandReach);
+		}
+
+		public static float HighestAllowed(int difficulty)
+		{
+			return difficulty + 1f + BandReach;
+		}
+
+		public static bool InReach(float difficulty, int band)
+		{
+			return difficulty >= LowestAllowed(band) && difficulty < HighestAllowed(band);
+		}
 
 		public sealed class Pool
 		{
@@ -45,13 +63,13 @@ namespace LogicSolver
 		}
 
 		public static Pool[] CompileAll(WorldSpace space, RoomSettings settings,
-			List<KnownFact> facts)
+			List<Detail> details)
 		{
 			Pool[] pools = new Pool[space.doorCount];
 			for (int guard = 0; guard < space.doorCount; guard++)
 			{
 				pools[guard] = CompileFor(space, settings, guard,
-					ClaimLibrary.Build(guard, settings, facts));
+					ClaimLibrary.Build(guard, settings, details));
 			}
 			return pools;
 		}
@@ -62,31 +80,26 @@ namespace LogicSolver
 			BitSet whereHonest = space.whereGuardLies[speaker].Not();
 			Pool pool = new Pool();
 
-			// Nothing above the top of the band can ever be used, so do not build it
-			// This is most of the pool at the easy end, and skipping it early saves the
-			// builder weighing up sentences the checks would only throw out again
-			float ceiling = settings.difficulty + 1f;
+			float floor = LowestAllowed(settings.difficulty);
+			float ceiling = HighestAllowed(settings.difficulty);
 
-			// Work out where each claim is true. This is the only place worlds get walked
 			List<Claim> usableClaims = new List<Claim>();
 			List<BitSet> trueIn = new List<BitSet>();
 			foreach (Claim claim in claims)
 			{
 				BitSet where = space.Where(claim.holds);
 
-				// A claim true everywhere or nowhere is not really about this room
-				// Memory claims are the exception, being flatly right or wrong is the point
 				bool neverVaries = where.IsEmpty || where.Equals(space.everyWorld);
 				bool isMemory = (claim.topic & Topic.Memory) != 0;
 				if (!isMemory && neverVaries) continue;
 
-
-				// Two wordings that are true in exactly the same worlds are the same claim
-				// "the safe door is mine" and "the safe door is door 1" for guard 1, say
 				bool alreadyHave = false;
-				for (int i = 0; i < trueIn.Count; i++)
+				if (!isMemory)
 				{
-					if (trueIn[i].Equals(where)) { alreadyHave = true; break; }
+					for (int i = 0; i < trueIn.Count; i++)
+					{
+						if (trueIn[i].Equals(where)) { alreadyHave = true; break; }
+					}
 				}
 				if (alreadyHave) continue;
 
@@ -94,23 +107,30 @@ namespace LogicSolver
 				trueIn.Add(where);
 			}
 
-			// A plain sentence is out of place from the logician band up
-			if (settings.difficulty < CompoundOnlyBand)
+			for (int i = 0; i < usableClaims.Count; i++)
 			{
-				for (int i = 0; i < usableClaims.Count; i++)
-				{
-					if (!Fits(usableClaims[i], ceiling)) continue;
-					Keep(pool, space, speaker, whereHonest, usableClaims[i].topic, false,
-						usableClaims[i].namesAValue, usableClaims[i].difficulty,
-						MemoriesIn(usableClaims[i]), usableClaims[i].text, trueIn[i]);
-				}
+				bool isMemory = (usableClaims[i].topic & Topic.Memory) != 0;
+				if (isMemory && !PlainMemoryAllowed(settings.difficulty)) continue;
+				if (!Fits(usableClaims[i], floor, ceiling)) continue;
+				Keep(pool, space, speaker, whereHonest, usableClaims[i].topic, false,
+					usableClaims[i].namesAValue, usableClaims[i].difficulty,
+					isMemory ? 1f : 0f, usableClaims[i].text, trueIn[i]);
 			}
-			if (settings.difficulty < FirstCompoundBand) return pool;
+
+			if (ceiling < HardestSimpleClaim) return pool;
 
 			for (int i = 0; i < usableClaims.Count; i++)
 			{
+				if (usableClaims[i].text.StartsWith("if ")) continue;
 				for (int j = i + 1; j < usableClaims.Count; j++)
 				{
+					if (usableClaims[j].text.StartsWith("if ")) continue;
+
+					bool anyMemory = (usableClaims[i].topic & Topic.Memory) != 0
+						|| (usableClaims[j].topic & Topic.Memory) != 0;
+					if (anyMemory && !MemoryCompoundsAllowed(settings.difficulty)) continue;
+
+					if (SameSubject(usableClaims[i], usableClaims[j])) continue;
 					Combine(pool, space, speaker, whereHonest, ceiling,
 						usableClaims[i], trueIn[i], usableClaims[j], trueIn[j]);
 				}
@@ -118,52 +138,42 @@ namespace LogicSolver
 			return pool;
 		}
 
-		// Every way of gluing two claims together that reads as plain English
 		private static void Combine(Pool pool, WorldSpace space, int speaker,
 			BitSet whereHonest, float ceiling,
 			Claim first, BitSet firstTrue, Claim second, BitSet secondTrue)
 		{
-			// A glued sentence is about everything either half was about
 			Topic topic = first.topic | second.topic;
-			int memories = MemoriesIn(first) + MemoriesIn(second);
+			float memories = MemoryWeightOf(first, second);
 			float content = ContentCost(first, second);
 			string a = first.text;
 			string b = second.text;
 
 			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, AndCost,
-				"both of these are true: " + a + "; " + b,
+				a + ", and " + b,
 				firstTrue.And(secondTrue));
 
 			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, OrCost,
-				"at least one of these is true: " + a + "; " + b,
+				a + ", or " + b + ", or both",
 				firstTrue.Or(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, NorCost,
-				"neither of these is true: " + a + "; " + b,
-				firstTrue.Or(secondTrue).Not());
-
-			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, NandCost,
-				"these are not both true: " + a + "; " + b,
-				firstTrue.And(secondTrue).Not());
-
-			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, ImpliesCost,
-				"if " + a + ", then " + b,
-				firstTrue.Not().Or(secondTrue));
-
-			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, ImpliesCost,
-				"if " + b + ", then " + a,
-				secondTrue.Not().Or(firstTrue));
-
 			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, XorCost,
-				"exactly one of these is true: " + a + "; " + b,
+				"either " + a + ", or " + b + ", but not both",
 				firstTrue.Xor(secondTrue));
 
+			// Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, NorCost,
+			// 	"neither of these is true: " + a + "; " + b,
+			// 	firstTrue.Or(secondTrue).Not());
+
+			// Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, NandCost,
+			// 	"these are not both true: " + a + "; " + b,
+			// 	firstTrue.And(secondTrue).Not());
+
 			Glue(pool, space, speaker, whereHonest, ceiling, topic, memories, content, XnorCost,
-				"either both of these are true or neither is: " + a + "; " + b,
+				a + " if and only if " + b,
 				firstTrue.Xor(secondTrue).Not());
+
 		}
 
-		// What the reader still has to work out once the sentence is in front of them
 		private static float ContentCost(Claim first, Claim second)
 		{
 			bool firstRemembered = (first.topic & Topic.Memory) != 0;
@@ -175,40 +185,57 @@ namespace LogicSolver
 			return (first.difficulty + second.difficulty) * 0.5f;
 		}
 
-		// Content and connective each get half the range, so the easiest glued sentence
-		// lands on 3 and the hardest on 5
 		private static void Glue(Pool pool, WorldSpace space, int speaker, BitSet whereHonest,
-			float ceiling, Topic topic, int memories, float content, float connective,
+			float ceiling, Topic topic, float memories, float content, float connective,
 			string text, BitSet trueIn)
 		{
 			float share = 0.5f * (content / HardestSimpleClaim) + 0.5f * connective;
-			float difficulty = CompoundBase + CompoundRange * share;
-			if (difficulty > ceiling) return;
+			float difficulty = HardestSimpleClaim
+				+ (HardestCompound - HardestSimpleClaim) * share;
+
+			if (memories == 0f && difficulty >= ceiling) return;
 			Keep(pool, space, speaker, whereHonest, topic, true, false,
 				difficulty, memories, text, trueIn);
 		}
 
-		// Memory claims carry no difficulty and belong in any band
-		private static bool Fits(Claim claim, float ceiling)
+		private static bool Fits(Claim claim, float floor, float ceiling)
 		{
 			if ((claim.topic & Topic.Memory) != 0) return true;
-			return claim.difficulty <= ceiling;
+			return claim.difficulty >= floor && claim.difficulty < ceiling;
 		}
 
-		private static int MemoriesIn(Claim claim)
+		private static bool SameSubject(Claim first, Claim second)
 		{
-			return (claim.topic & Topic.Memory) != 0 ? 1 : 0;
+			Detail a = first.factSource as Detail;
+			Detail b = second.factSource as Detail;
+			if (a == null || b == null) return false;
+			if (a == b) return true;
+			return a.about != null && a.about == b.about;
+		}
+
+		private static float MemoryWeightOf(Claim first, Claim second)
+		{
+			float weight = 0f;
+			if ((first.topic & Topic.Memory) != 0) weight += 1f;
+			if ((second.topic & Topic.Memory) != 0) weight += 1f;
+			return weight;
 		}
 
 		private static void Keep(Pool pool, WorldSpace space, int speaker,
 			BitSet whereHonest, Topic topic, bool isCompound, bool namesAValue, float difficulty,
-			int memoryCount, string text, BitSet trueIn)
+			float memoryWeight, string text, BitSet trueIn)
 		{
-			// A guard could say this wherever its truth matches their honesty, which is XNOR
+			// a guard could say this wherever its truth matches their honesty
 			BitSet couldHaveSaidIt = trueIn.Xor(whereHonest).Not();
 
-			// Nowhere means the sentence contradicts itself, everywhere means it says nothing
 			if (couldHaveSaidIt.IsEmpty || couldHaveSaidIt.Equals(space.everyWorld)) return;
+
+			// drop anything that settles its own speaker, it is a free answer
+			if (memoryWeight == 0f)
+			{
+				int lying = couldHaveSaidIt.And(space.whereGuardLies[speaker]).Count;
+				if (lying == 0 || lying == couldHaveSaidIt.Count) return;
+			}
 
 			Statement statement = new Statement
 			{
@@ -218,7 +245,7 @@ namespace LogicSolver
 				isCompound = isCompound,
 				namesAValue = namesAValue,
 				difficulty = difficulty,
-				memoryCount = memoryCount,
+				memoryWeight = memoryWeight,
 				possibleWorlds = couldHaveSaidIt
 			};
 			if (isCompound) pool.compound.Add(statement);

@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace LogicSolver
 {
-	// One possible reality: which door is safe, and which guards lie
 	public readonly struct World
 	{
 		public readonly int safeDoor;
@@ -35,20 +34,15 @@ namespace LogicSolver
 		}
 	}
 
-	// Every reality the room could be in, plus the masks everything else works from
-	// Built once per room, then read by the compiler, the builder and the checks
 	public sealed class WorldSpace
 	{
 		public readonly int doorCount;
 		public readonly List<World> worlds;
 
-		// Starting point, every world still possible
 		public readonly BitSet everyWorld;
 
-		// withSafeDoor[door] holds the worlds where that door is the safe one
 		public readonly BitSet[] withSafeDoor;
 
-		// whereGuardLies[guard] holds the worlds where that guard is a liar
 		public readonly BitSet[] whereGuardLies;
 
 		public WorldSpace(int doorCount, int[] liarCounts)
@@ -57,6 +51,7 @@ namespace LogicSolver
 			worlds = ListEveryWorld(doorCount, liarCounts);
 			everyWorld = new BitSet(worlds.Count, true);
 
+			// foreach, not for, or every lambda below captures the same variable
 			withSafeDoor = new BitSet[doorCount];
 			foreach (int door in Enumerable.Range(0, doorCount))
 			{
@@ -70,7 +65,6 @@ namespace LogicSolver
 			}
 		}
 
-		// Zero liars through to all of them, for when the player is told nothing
 		public static int[] AllLiarCounts(int doorCount)
 		{
 			int[] counts = new int[doorCount + 1];
@@ -78,7 +72,6 @@ namespace LogicSolver
 			return counts;
 		}
 
-		// The bridge from game ideas into bit arithmetic
 		public BitSet Where(Func<World, bool> test)
 		{
 			BitSet found = new BitSet(worlds.Count);
@@ -128,7 +121,6 @@ namespace LogicSolver
 
 		private static List<World> ListEveryWorld(int doorCount, int[] liarCounts)
 		{
-			// A liar arrangement is a bitmask over guards, bit g means guard g lies
 			List<int> arrangements = new List<int>();
 			int arrangementCount = 1 << doorCount;
 			for (int arrangement = 0; arrangement < arrangementCount; arrangement++)
@@ -139,7 +131,6 @@ namespace LogicSolver
 				}
 			}
 
-			// One world per safe door per arrangement
 			List<World> everyPossibility = new List<World>();
 			for (int safeDoor = 0; safeDoor < doorCount; safeDoor++)
 			{
