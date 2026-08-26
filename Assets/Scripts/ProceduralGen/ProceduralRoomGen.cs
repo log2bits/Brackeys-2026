@@ -28,6 +28,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject doorFullPrefab;
+    [SerializeField] private GameObject wallPrefab;
     [SerializeField] private List<ObjectDataTemplate> objectDataTemplates;
     [SerializeField] private DifficultyTemplate difficultySettings;
 
@@ -133,6 +134,7 @@ public class ProceduralRoomGen : MonoBehaviour
         GenerateGridState(room, Mathf.CeilToInt(doorSize * doorCount), objectRatio);
         //PrintGrid(room);
         GenerateDoors(centralPosition, doorCount, room);
+        GenerateWalls(centralPosition, doorCount, room);
 
         GenerateObjects(doorCount, room);
     }
@@ -141,7 +143,7 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         // we generate random seed using our seed, for deterministic values, while having each room be different, since right now
         // if we have the same door size, we get the same seed each time
-        GameManager.Instance.worldState.roomStates.Add(new RoomState(proceduralRandGen.Next(), centralPosition, doorCount, difficultySettings.solverDifficulty));
+        GameManager.Instance.worldState.roomStates.Add(new RoomState(proceduralRandGen.Next(), centralPosition, GetRoomWidth(doorCount), doorCount, difficultySettings.solverDifficulty));
     }
 
     private void GenerateDoors(Vector3 centralPosition, int doorCount, int room)
@@ -191,6 +193,19 @@ public class ProceduralRoomGen : MonoBehaviour
         }
     }
 
+    private void GenerateWalls(Vector3 centralPosition, int doorCount, int room)
+    {
+        if (wallPrefab == null) throw new Exception("ProceduralRoomGen: WallPrefab is null");
+
+        float roomWidth = GetRoomWidth(doorCount);
+       
+        Vector3 rightPosition = new Vector3(centralPosition.x + (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2));
+        Vector3 leftPosition = new Vector3(centralPosition.x - (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2));
+        
+        Instantiate(wallPrefab, rightPosition, Quaternion.Euler(0, 90, 0), transform);
+        Instantiate(wallPrefab, leftPosition, Quaternion.Euler(0, 270, 0), transform);
+    }
+
     // GenerateObjects
     // Generates and initalized objects into the room based on all settings
     private void GenerateObjects(int doorCount, int room)
@@ -234,7 +249,7 @@ public class ProceduralRoomGen : MonoBehaviour
     // Meant prior before object initalization.
     private Vector3 SetupRandomizedPlacement(GridState objectsState, Vector3 centerRoomPosition, float objectWidth, int doorCount, int room)
     {
-        float roomWidth = doorSize * doorCount;
+        float roomWidth = GetRoomWidth(doorCount);
 
         // Generate a list of valid starting Grid IDs
         List<int> validIndices = ValidPlacements(objectsState, objectWidth);
@@ -268,8 +283,7 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         // relevant to grid
         int placementSize = FindPlacementWidth(width + objectInvalidationDistance);
-        // roomWidth
-        float roomWidth = doorSize * doorCount;
+        float roomWidth = GetRoomWidth(doorCount);
         // the edge position of the room in global coordinates
         float leftEdgeRoomPos = GameManager.Instance.worldState.roomStates[room].globalPosition.x - (roomWidth / 2.0f);
         // the far left index grid of the object, and how far it is
@@ -348,6 +362,11 @@ public class ProceduralRoomGen : MonoBehaviour
     private float GetSpriteLocalScaleX(SpriteRenderer spriteRenderer)
     {
         return spriteRenderer.sprite.bounds.size.x * Mathf.Abs(spriteRenderer.transform.localScale.x);
+    }
+
+    private float GetRoomWidth(int doorCount)
+    {
+        return doorSize * doorCount;
     }
 
 

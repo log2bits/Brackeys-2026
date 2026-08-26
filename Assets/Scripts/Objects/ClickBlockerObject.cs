@@ -1,6 +1,6 @@
 using UnityEngine.EventSystems;
 
-public class DoorFrame : ClickableObject
+public class ClickBlockerObject : ClickableObject
 {
     protected override void OnMouseDown()
     {
