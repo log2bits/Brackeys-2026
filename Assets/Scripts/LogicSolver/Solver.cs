@@ -3,68 +3,51 @@ using System.Collections.Generic;
 
 namespace LogicSolver
 {
-	// Something the player is expected to remember, and which guards can therefore lie about
-	public sealed class KnownFact
+	// anything a guard can lie about, and whether it is actually so
+	public sealed class Detail
 	{
-		// Everything it could have been, for example red, blue, yellow
-		public string[] possibleValues;
+		public string text;
+		public bool isTrue;
 
-		// How a guard phrases it, with {0} where the value goes
-		public string template;
+		// details sharing this are never glued into one sentence
+		public string about;
 
-		public string actualValue;
+		public Detail() { }
 
-		public string Say(string value) { return template.Replace("{0}", value); }
-		public bool IsTrue(string value) { return value == actualValue; }
+		public Detail(string text, bool isTrue, string about = null)
+		{
+			this.text = text;
+			this.isTrue = isTrue;
+			this.about = about;
+		}
 	}
 
-	// Everything the solver needs for one room. Every guard speaks, so doors are also guards
 	public sealed class RoomSettings
 	{
 		public int doorCount = 4;
 
-		// Which liar counts the player thinks possible. Null means they were told nothing
+		// null means the player is told nothing about how many lie
 		public int[] liarCounts = null;
 
-		// Facts the player should remember. Empty is fine, the first room has none
-		public List<KnownFact> knownFacts = new List<KnownFact>();
+		public List<Detail> details = new List<Detail>();
 
 		public int seed = 0;
 
-
-		// THE DIFFICULTY KNOB
-
-		// How many statements the player must read together before anything can be
-		// worked out, either a door ruled out or a guard determined a liar
-		// -1 means it does not matter, take whatever comes
 		public int statementsToMakeProgress = -1;
 
-		// THE DIFFICULTY KNOB, 0 through 5
-		// The room's sentences have to average somewhere in the band starting here
-		//   0 easy, naming things outright
-		//   1 medium, groups and positions
-		//   2 hard, the safe door and the liars tangled together
-		//   3 extreme, guards start gluing two claims into one sentence
-		//   4 logician, compound sentences built from the hardest claims
-		public int difficulty = 1;
+		// 0 easy, 1 medium, 2 hard, 3 extreme, 4 insane, 5 logician
+		public int difficulty = 0;
 
-		// At least this many statements must mention the safe door, otherwise it spoils the answer
 		public int minDoorMentions = 2;
 
-		// At least this many statements must be about something remembered. Zero for the first room
-		public int minMemoryMentions = 1;
+		public float minMemoryMentions = 1f;
 
-		// Doors left open when a memory claim is removed, so forgetting actually costs you
 		public int minMemoryImpact = 2;
 
-		// How many statements from each guard's pool to weigh up per round
-		// Bigger means the greedy sees more options and gives up less often, at a cost per attempt
 		public int sampleSize = 60;
 
-		// Pinning the liars down as well as the door is strict, so this needs to be generous
 		public int maxAttempts = 20000;
 
-		// Shorthand for a single fixed liar count
 		public int liarCount
 		{
 			get { return liarCounts != null && liarCounts.Length > 0 ? liarCounts[0] : 1; }
@@ -72,41 +55,63 @@ namespace LogicSolver
 		}
 	}
 
-	// What the solver produces for one room
 	public sealed class RoomSolution
 	{
-		// Index of the safe door, zero based
 		public int safeDoor;
 
-		// Which guards lie, zero based
 		public int[] liars;
 
-		// One line per guard, indexed by guard number
 		public string[] statements;
 
-		// How the room turned out, handy when tuning a difficulty curve
 		public RoomStats stats;
 	}
 
-	// Returns null when nothing satisfying the settings could be built
 	public static class Solver
 	{
+		// even the pool up, or a guard mentioning a detail is probably lying
+		private static List<Detail> Balanced(List<Detail> given, Random rng)
+		{
+			if (given == null) return new List<Detail>();
+
+			List<Detail> trues = given.FindAll(detail => detail.isTrue);
+			List<Detail> falses = given.FindAll(detail => !detail.isTrue);
+			int keep = Math.Min(trues.Count, falses.Count);
+
+			List<Detail> balanced = new List<Detail>();
+			balanced.AddRange(Pick(trues, keep, rng));
+			balanced.AddRange(Pick(falses, keep, rng));
+			return balanced;
+		}
+
+		private static List<Detail> Pick(List<Detail> from, int howMany, Random rng)
+		{
+			List<Detail> pool = new List<Detail>(from);
+			List<Detail> taken = new List<Detail>();
+			while (taken.Count < howMany && pool.Count > 0)
+			{
+				int at = rng.Next(pool.Count);
+				taken.Add(pool[at]);
+				pool.RemoveAt(at);
+			}
+			return taken;
+		}
+
 		public static RoomSolution Solve(RoomSettings settings)
 		{
-			// Null liarCounts means the player was told nothing, so allow every count
 			if (settings.liarCounts == null || settings.liarCounts.Length == 0)
 			{
 				settings.liarCounts = WorldSpace.AllLiarCounts(settings.doorCount);
 			}
 
-			if (settings.knownFacts == null || settings.knownFacts.Count == 0)
+			settings.details = Balanced(settings.details, new Random(settings.seed));
+			if (settings.details.Count == 0)
 			{
-				settings.minMemoryMentions = 0;
+				settings.minMemoryMentions = 0f;
 			}
 
-			settings.minMemoryMentions = Math.Max(0, Math.Min(settings.minMemoryMentions, settings.doorCount - 2));
+			settings.minMemoryMentions = Math.Max(0f, Math.Min(settings.minMemoryMentions, settings.doorCount - 2));
 
-			settings.minDoorMentions = Math.Max(1, Math.Min(settings.minDoorMentions, settings.doorCount - settings.minMemoryMentions - 1));
+			settings.minDoorMentions = Math.Max(1, Math.Min(settings.minDoorMentions, settings.doorCount - (int)Math.Ceiling(settings.minMemoryMentions) - 1));
 
 			if (settings.statementsToMakeProgress > settings.doorCount)
 			{
@@ -119,7 +124,7 @@ namespace LogicSolver
 			}
 
 			WorldSpace space = new WorldSpace(settings.doorCount, settings.liarCounts);
-			StatementCompiler.Pool[] pools = StatementCompiler.CompileAll(space, settings, settings.knownFacts);
+			StatementCompiler.Pool[] pools = StatementCompiler.CompileAll(space, settings, settings.details);
 			RoomBuilder builder = new RoomBuilder(space, settings, pools);
 			Random rng = new Random(settings.seed);
 
