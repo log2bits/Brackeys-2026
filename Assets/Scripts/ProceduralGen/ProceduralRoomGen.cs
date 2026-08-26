@@ -81,7 +81,7 @@ public class ProceduralRoomGen : MonoBehaviour
         
         RoomSolution roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[0].roomSettings);
         Debug.Log($"Correct Door Room 1: {roomSolution.safeDoor}");
-        AssignAllDialogue(roomSolution);
+        AssignDoorData(roomSolution);
 
         // Generate rest of the rooms. <= cause rooms are one indexed
         for (int room = 2; room <= difficultySettings.roomCount; room++)
@@ -100,7 +100,7 @@ public class ProceduralRoomGen : MonoBehaviour
             GenerateNextRoom(nextDoorPosition, numDoorsForThisRoom, room);
             roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[room-1].roomSettings);
             Debug.Log($"Correct Door Room {room + 1}: {roomSolution.safeDoor}");
-            AssignAllDialogue(roomSolution);
+            AssignDoorData(roomSolution);
         }
     
         // Clear all doors
@@ -173,10 +173,11 @@ public class ProceduralRoomGen : MonoBehaviour
         currentDoors.Reverse();
     }
 
-    // AssignAllDialogue
+    // AssignDoorData
     // Goes through each door and assigns proper given dialogue from the solver
-    public void AssignAllDialogue(RoomSolution roomSolution)
+    public void AssignDoorData(RoomSolution roomSolution)
     {
+        currentDoors[roomSolution.safeDoor].doorComponent.SetIsSafe(true);
         for (int currDoor = 0; currDoor < currentDoors.Count; currDoor++)
         {
             currentDoors[currDoor].doorComponent.SetDialogue(roomSolution.statements[currDoor]);
