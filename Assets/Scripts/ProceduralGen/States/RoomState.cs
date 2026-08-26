@@ -6,6 +6,7 @@ public class RoomState
 {
     public List<GuardState> guardStates = new List<GuardState>();
     public GridState gridState = new GridState();
+    public List<GameObject> objects = new List<GameObject>();
     public Vector3 globalPosition = new Vector3();
     public RoomSettings roomSettings = new RoomSettings();
 
