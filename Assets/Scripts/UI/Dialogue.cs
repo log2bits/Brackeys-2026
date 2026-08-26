@@ -107,6 +107,15 @@ public class Dialogue : MonoBehaviour
         return true;
     }
 
+    private void FinishStartDialogue()
+    {
+        if (charactersShown == 0)
+        {
+            dialogueTextAppearing = true;
+            timeLastCharacterShown = Time.time;
+        }
+    }
+
     private void EndDialogue()
     {
         inDialogue = false;
@@ -131,14 +140,5 @@ public class Dialogue : MonoBehaviour
 
         dialogueBoxMoving = false;
         moveCompleted?.Invoke();
-    }
-
-    private void FinishStartDialogue()
-    {
-        if (charactersShown == 0)
-        {
-            dialogueTextAppearing = true;
-            timeLastCharacterShown = Time.time;
-        }
     }
 }
