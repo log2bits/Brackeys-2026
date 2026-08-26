@@ -5,7 +5,7 @@ using UnityEngine;
 public class RoomState
 {
     public List<GuardState> guardStates = new List<GuardState>();
-    public ObjectsState objectsState = new ObjectsState();
+    public GridState gridState = new GridState();
     public Vector3 globalPosition = new Vector3();
     public RoomSettings roomSettings = new RoomSettings();
 
@@ -27,7 +27,7 @@ public class RoomState
 
     // SetRoomKnownFactsPrev
     // Sets all known facts except current, to the roomSettings. Do this prior to solver
-    public void SetRoomKnownFactsPrev()
+    /*public void SetRoomKnownFactsPrev()
     {
         int currRoom = 0;
         WorldState worldState = GameManager.Instance.worldState;
@@ -37,5 +37,5 @@ public class RoomState
             currRoom +=1;
         }
         
-    }
+    }*/
 }

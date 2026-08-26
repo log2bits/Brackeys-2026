@@ -1,13 +1,13 @@
 using UnityEngine;
-using LogicSolver;
 using System.Collections.Generic;
 
 public class MemorableObjectTemplate : MonoBehaviour
 {
-    protected List<KnownFact> sharedList = new List<KnownFact>();
-    [SerializeField] private List<SpriteData> spriteDatas;
-    //private GameObject memObject;
+    [SerializeField] private SpriteRenderer[] spriteRenderers;
+    private Dictionary<string, string> actualProperties = new Dictionary<string, string>();
+    public int room;
     
+    /*
     // GenerateEmptyFact
     // Generates an undeclared solution fact, and adds to shared list
     public void GenerateEmptyFact(string[] possibleValues, string template)
@@ -28,24 +28,19 @@ public class MemorableObjectTemplate : MonoBehaviour
 
         
     }
+    */
 
-    // AddSharedList
-    public void AddSharedList(KnownFact emptyFact)
+    public void SetSprite(int index, Sprite sprite)
     {
-        sharedList.Add(emptyFact);
+        spriteRenderers[index].sprite = sprite;
     }
-
-    // ClearSharedList
-    public void ClearSharedList()
+    public SpriteRenderer[] GetSpriteRenderers()
     {
-        sharedList.Clear();
+        return spriteRenderers;
     }
-
-    // GetSpriteDataList
-    // Returns the sprite data of this object's list
-    public List<SpriteData> GetSpriteDatas()
+    public Dictionary<string, string> GetActualProperties()
     {
-        return spriteDatas;
+        return actualProperties;
     }
-
+    
 }
