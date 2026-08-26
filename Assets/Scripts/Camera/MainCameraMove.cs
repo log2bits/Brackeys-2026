@@ -23,6 +23,8 @@ public class MainCameraMove : MonoBehaviour
     }
     // Singleton -------------------------------
 
+    [Header("Parameters")]
+    [SerializeField] private float cameraWallMargin;
     [SerializeField] private float cameraMoveTime;
     [SerializeField] private float cameraDragStrength = 0.2f;
 
@@ -54,6 +56,15 @@ public class MainCameraMove : MonoBehaviour
         }
 
         mouseHeldLastFrame = Mouse.current.leftButton.isPressed;
+
+        // Clamp camera within room bounds
+        RoomState currentRoomState = GameManager.Instance.worldState.roomStates[GameManager.Instance.currentRoom];
+        if (currentRoomState == null)
+        {
+            throw new System.Exception("MainCameraMove: Game currently inside an invalid room!");
+        }
+        float clampedX = Mathf.Clamp(transform.position.x, currentRoomState.globalPosition.x + cameraWallMargin - (currentRoomState.roomWidth/2), currentRoomState.globalPosition.x - cameraWallMargin + (currentRoomState.roomWidth/2));
+        transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
     }
 
     public void MoveCamera(Vector3 position, GameManager.GameState finalState)

@@ -33,6 +33,7 @@ public class GameManager
     public GameState state;
 
     public WorldState worldState;
+    public int currentRoom = 0;
     public int lives;
     public float mainCameraZBeforeZoom;
 

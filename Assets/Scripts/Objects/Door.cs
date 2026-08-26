@@ -80,7 +80,9 @@ public class Door : ClickableObject
             open = true;
 
             CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
+
             GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
+            GameManager.Instance.currentRoom += 1;
 
             Dialogue.Instance.EndDialogue(false);
         }
