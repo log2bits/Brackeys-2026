@@ -16,6 +16,7 @@ public class Door : ClickableObject
     [SerializeField] private float doorZoomZDistance;
 
     private string dialogue = "";
+    private bool hasTalkedBefore = false;
     private bool open; 
 
     protected override void OnMouseDown()
@@ -39,17 +40,17 @@ public class Door : ClickableObject
             MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.INNERROOM);
 
             GameManager.Instance.state = GameManager.GameState.ZOOMING;
+
+            Dialogue.Instance.StartDialogue(dialogue, !hasTalkedBefore, ZoomOut);
+            hasTalkedBefore = true;
         }
 
-        else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
+        /*else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
         {
             // Zoom out if clicking on a door that isn't focused on
             if (Mathf.Abs(transform.position.x - MainCameraMove.Instance.transform.position.x) > 0.1f)
             {
-                Vector3 finalPosition = new Vector3(transform.position.x, MainCameraMove.Instance.transform.position.y, GameManager.Instance.mainCameraZBeforeZoom);
-                MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.OUTERROOM);
-
-                GameManager.Instance.state = GameManager.GameState.ZOOMING;
+                ZoomOut();
                 return;
             }
 
@@ -60,7 +61,15 @@ public class Door : ClickableObject
 
             CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
             GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
-        }
+        }*/
+    }
+
+    private void ZoomOut()
+    {
+        Vector3 finalPosition = new Vector3(transform.position.x, MainCameraMove.Instance.transform.position.y, GameManager.Instance.mainCameraZBeforeZoom);
+        MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.OUTERROOM);
+
+        GameManager.Instance.state = GameManager.GameState.ZOOMING;
     }
 
     protected override void OnMouseUp()
