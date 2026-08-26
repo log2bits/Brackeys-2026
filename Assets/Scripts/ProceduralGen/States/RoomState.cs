@@ -21,6 +21,8 @@ public class RoomState
     public RoomState(int seed, Vector3 givenPosition, int doorCount = 4, int solverDifficulty = 1)
     {
         roomSettings.doorCount = doorCount;
+        // we generate random seed using our seed, for deterministic values, while having each room be different, since right now
+        // if we have the same door size, we get the same seed each time
         roomSettings.seed = seed;
         roomSettings.difficulty = solverDifficulty;
         globalPosition = givenPosition;

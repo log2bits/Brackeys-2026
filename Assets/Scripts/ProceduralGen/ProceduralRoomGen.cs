@@ -78,29 +78,31 @@ public class ProceduralRoomGen : MonoBehaviour
         Initialize();
 
         // Generate room 1, always with two doors
-        GenerateNextRoom(transform.position, 2, 1);
+        GenerateNextRoom(transform.position, difficultySettings.minDoors, 0);
         
         RoomSolution roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[0].roomSettings);
         Debug.Log($"Correct Door Room 1: {roomSolution.safeDoor}");
         AssignDoorData(roomSolution);
 
         // Generate rest of the rooms. <= cause rooms are one indexed
-        for (int room = 2; room <= difficultySettings.roomCount; room++)
+        for (int room = 1; room < difficultySettings.roomCount; room++)
         {
             int safeDoorIndex = roomSolution.safeDoor;
-            //Debug.Log($"Random int: {safeDoorIndex}");
+            Debug.Log($"Random int: {safeDoorIndex}");
             Debug.Log($"Current Doors: {currentDoors.Count}");
             Vector3 nextDoorPosition = currentDoors[safeDoorIndex].fullDoor.transform.position;
             nextDoorPosition.z += roomDistance;
 
-            int numDoorsForThisRoom = Mathf.FloorToInt((room - 1) / difficultySettings.roomsPerDoorIncrease) + difficultySettings.minDoors;
+            // this might be wrong - chris
+            int numDoorsForThisRoom = Mathf.FloorToInt((room) / difficultySettings.roomsPerDoorIncrease) + difficultySettings.minDoors;
             if (difficultySettings.maxDoors > 0)
             {
                 numDoorsForThisRoom = Mathf.Min(numDoorsForThisRoom, difficultySettings.maxDoors);
             }
+            Debug.Log($"Num doors : {numDoorsForThisRoom}");
             GenerateNextRoom(nextDoorPosition, numDoorsForThisRoom, room);
-            roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[room-1].roomSettings);
-            Debug.Log($"Correct Door Room {room + 1}: {roomSolution.safeDoor}");
+            roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[room].roomSettings);
+            Debug.Log($"Correct Door Room {room}: {roomSolution.safeDoor}");
             AssignDoorData(roomSolution);
         }
     
@@ -135,7 +137,9 @@ public class ProceduralRoomGen : MonoBehaviour
 
     private void GenerateRoomState(int doorCount, Vector3 centralPosition)
     {
-        GameManager.Instance.worldState.roomStates.Add(new RoomState(seed, centralPosition, doorCount, difficultySettings.solverDifficulty));
+        // we generate random seed using our seed, for deterministic values, while having each room be different, since right now
+        // if we have the same door size, we get the same seed each time
+        GameManager.Instance.worldState.roomStates.Add(new RoomState(proceduralRandGen.Next(), centralPosition, doorCount, difficultySettings.solverDifficulty));
     }
 
     private void GenerateDoors(Vector3 centralPosition, int doorCount, int room)
@@ -165,7 +169,7 @@ public class ProceduralRoomGen : MonoBehaviour
             doorScript.SetNumber(currDoor);
 
             // Invalidate the position of the door in the grid
-            InvalidatePlacements(GameManager.Instance.worldState.roomStates[room-1].gridState, GetMaxWidthOfObject(door.transform.GetChild(1).gameObject), newPosition, doorCount, room);
+            InvalidatePlacements(GameManager.Instance.worldState.roomStates[room].gridState, GetMaxWidthOfObject(door.transform.GetChild(1).gameObject), newPosition, doorCount, room);
 
             // Save the door
             currentDoors.Add(new DoorData(door, doorScript));
@@ -189,7 +193,7 @@ public class ProceduralRoomGen : MonoBehaviour
     // Generates and initalized objects into the room based on all settings
     private void GenerateObjects(int doorCount, int room)
     {
-        if (GameManager.Instance.worldState.roomStates.Count <= room-1 || GameManager.Instance.worldState.roomStates[room-1].gridState == null) throw new Exception($"GenerateObjects: roomState index exceeded {GameManager.Instance.worldState.roomStates.Count}, or ObjectsState is null {GameManager.Instance.worldState.roomStates[room-1].gridState}");
+        if (GameManager.Instance.worldState.roomStates.Count <= room || GameManager.Instance.worldState.roomStates[room].gridState == null) throw new Exception($"GenerateObjects: roomState index exceeded {GameManager.Instance.worldState.roomStates.Count}, or ObjectsState is null {GameManager.Instance.worldState.roomStates[room].gridState}");
         // iterate the curr objects
         int currTotalObjects = Mathf.Min(difficultySettings.minObjects + Mathf.FloorToInt(room / difficultySettings.durationUntilObjectIncrease), Mathf.Min(difficultySettings.maxObjects, objectDataTemplates.Count)); 
         //if (room % difficultySettings.durationUntilObjectIncrease)
@@ -207,11 +211,11 @@ public class ProceduralRoomGen : MonoBehaviour
             
             float width = GetMaxWidthOfObject(objectDataTemplates[randomIndex].GetObjectPrefab());
 
-            GridState objectsState = GameManager.Instance.worldState.roomStates[room-1].gridState;
-            Vector3 placementPosition = SetupRandomizedPlacement(objectsState, GameManager.Instance.worldState.roomStates[room-1].globalPosition, width, doorCount, room);
+            GridState objectsState = GameManager.Instance.worldState.roomStates[room].gridState;
+            Vector3 placementPosition = SetupRandomizedPlacement(objectsState, GameManager.Instance.worldState.roomStates[room].globalPosition, width, doorCount, room);
             if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
             GameObject objectGenerated = Instantiate(objectDataTemplates[randomIndex].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
-            GameManager.Instance.worldState.roomStates[room-1].objects.Add(objectGenerated);
+            GameManager.Instance.worldState.roomStates[room].objects.Add(objectGenerated);
             
             ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, objectDataTemplates[randomIndex].GetObjectPropertyDatas(), proceduralRandGen);
 
@@ -265,7 +269,7 @@ public class ProceduralRoomGen : MonoBehaviour
         // roomWidth
         float roomWidth = doorSize * doorCount;
         // the edge position of the room in global coordinates
-        float leftEdgeRoomPos = GameManager.Instance.worldState.roomStates[room-1].globalPosition.x - (roomWidth / 2.0f);
+        float leftEdgeRoomPos = GameManager.Instance.worldState.roomStates[room].globalPosition.x - (roomWidth / 2.0f);
         // the far left index grid of the object, and how far it is
         int startGridID = Mathf.FloorToInt((position.x - (width / 2.0f) - leftEdgeRoomPos) / objectRatio);
 
@@ -313,11 +317,12 @@ public class ProceduralRoomGen : MonoBehaviour
     // Generates an GridState with given parameter values, and adds to the current GameState
     private void GenerateGridState(int room, int roomWidth, float ratio = 1.0f)
     {
-        if (GameManager.Instance.worldState.roomStates.Count -1 >= room) throw new Exception("GenerateObjectsState: Exceeded roomStates size in worldState");
+        // this grid right here might have an issue with the change in room - 1   - chris
+        if (GameManager.Instance.worldState.roomStates.Count -1 > room) throw new Exception("GenerateObjectsState: Exceeded roomStates size in worldState");
         GridState gridState = new GridState();
         gridState.ratio = ratio;
         gridState.InitializeValidPositions(roomWidth);
-        GameManager.Instance.worldState.roomStates[room-1].gridState = gridState;
+        GameManager.Instance.worldState.roomStates[room].gridState = gridState;
     }
 
     // GetMaxWidthOfObject()
@@ -348,7 +353,7 @@ public class ProceduralRoomGen : MonoBehaviour
     // helper for printing the grid of what is available
     private void PrintGrid(int room)
     {
-        GridState gridState = GameManager.Instance.worldState.roomStates[room-1].gridState;
+        GridState gridState = GameManager.Instance.worldState.roomStates[room].gridState;
         string output = "";
         for (int i = 0; i < gridState.availableGrids.Count; i++)
         {
