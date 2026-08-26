@@ -33,7 +33,7 @@ public class GameManager
     public GameState state;
 
     public WorldState worldState;
-    public int currentRoom = 0;
+    public int currentRoom;
     public int lives;
     public float mainCameraZBeforeZoom;
 
@@ -41,5 +41,6 @@ public class GameManager
     {
         worldState = new WorldState();
         lives = 3;
+        currentRoom = 0;
     }
 }
