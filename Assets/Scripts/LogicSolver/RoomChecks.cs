@@ -4,25 +4,22 @@ using System.Linq;
 
 namespace LogicSolver
 {
-	// Decides whether a finished set of statements makes a good room
-	// Everything here is a reason to throw an attempt away and try again
 	public static class RoomChecks
 	{
-		// The average of a room's sentences, and the only place it gets worked out
+		// details are left out, remembering is not thinking
 		public static float AverageDifficulty(IEnumerable<Statement> statements)
 		{
 			float total = 0f;
 			int counted = 0;
 			foreach (Statement statement in statements)
 			{
-				if (statement.topic == Topic.Memory) continue;
+				if (statement.IsMemory) continue;
 				total += statement.difficulty;
 				counted++;
 			}
 			return counted == 0 ? -1f : total / counted;
 		}
 
-		// Why attempts were rejected, useful when nothing generates
 		public sealed class Tally
 		{
 			public int notUnique;
@@ -47,12 +44,11 @@ namespace LogicSolver
 			}
 		}
 
-		// Returns true when the room is worth keeping
 		public static bool Passes(WorldSpace space, RoomSettings settings, List<Statement> chosen, Tally tally, out int firstDeduction)
 		{
 			firstDeduction = 0;
 
-			// The player names the liars as well as the door, so one world has to survive
+			// one world, not one door, since the player names the liars too
 			if (space.AllowedByAll(chosen).Count != 1)
 			{
 				tally.notUnique++;
@@ -65,7 +61,6 @@ namespace LogicSolver
 				return false;
 			}
 
-			// Minus one means the caller does not mind how long it takes
 			firstDeduction = StatementsNeededToLearnAnything(space, chosen);
 			if (settings.statementsToMakeProgress >= 0
 				&& firstDeduction != settings.statementsToMakeProgress)
@@ -74,37 +69,16 @@ namespace LogicSolver
 				return false;
 			}
 
-			// Nothing may read harder than the top of the band asked for, so an easy room
-			// never contains a sentence an easy room should not contain
-			float ceiling = settings.difficulty + 1f;
 			foreach (Statement statement in chosen)
 			{
-				// Glued sentences belong to the extreme band and above
-				if (statement.isCompound
-					&& settings.difficulty < StatementCompiler.FirstCompoundBand)
-				{
-					tally.statementTooHard++;
-					return false;
-				}
-
-				// From the logician band up, a plain sentence is the thing out of place
-				if (!statement.isCompound
-					&& settings.difficulty >= StatementCompiler.CompoundOnlyBand)
-				{
-					tally.statementTooHard++;
-					return false;
-				}
-
-				if (statement.topic == Topic.Memory) continue;
-				if (statement.difficulty > ceiling)
+				if (statement.IsMemory) continue;
+				if (!StatementCompiler.InReach(statement.difficulty, settings.difficulty))
 				{
 					tally.statementTooHard++;
 					return false;
 				}
 			}
 
-			// Everything sits inside the band, so the average lands there too unless the
-			// room leans on the easy end of it
 			float average = AverageDifficulty(chosen);
 			if (average < settings.difficulty || average >= settings.difficulty + 1f)
 			{
@@ -112,22 +86,19 @@ namespace LogicSolver
 				return false;
 			}
 
-			// One door mention lets the player skip the logic and just trust that guard
 			if (Count(chosen, statement => (statement.topic & Topic.Door) != 0) < settings.minDoorMentions)
 			{
 				tally.tooFewDoorMentions++;
 				return false;
 			}
 
-			int memoriesWanted = settings.minMemoryMentions;
-			int memoriesFound = 0;
-			foreach (Statement statement in chosen) memoriesFound += statement.memoryCount;
-			if (memoriesFound < memoriesWanted)
+			float memoriesFound = 0f;
+			foreach (Statement statement in chosen) memoriesFound += statement.memoryWeight;
+			if (memoriesFound < settings.minMemoryMentions)
 			{
 				tally.tooFewMemories++;
 				return false;
 			}
-
 
 			if (settings.difficulty >= 1 && WeakestMemoryImpact(space, chosen) < settings.minMemoryImpact)
 			{
@@ -161,7 +132,6 @@ namespace LogicSolver
 			return spare;
 		}
 
-		// How many statements the player must read together before they learn anything
 		private static int StatementsNeededToLearnAnything(WorldSpace space,
 			List<Statement> statements)
 		{
@@ -171,11 +141,9 @@ namespace LogicSolver
 				{
 					BitSet left = space.AllowedByAll(group);
 
-					// A door ruled out counts as progress
 					if (space.CountPossibleDoors(left) < space.doorCount) return size;
 
-					// So does pinning any guard, as long as no memory claim did it for free
-					if (group.Any(statement => statement.memoryCount > 0)) continue;
+					if (group.Any(statement => statement.IsMemory)) continue;
 					int total = left.Count;
 					for (int guard = 0; guard < space.doorCount; guard++)
 					{
@@ -187,13 +155,12 @@ namespace LogicSolver
 			return statements.Count + 1;
 		}
 
-		// Doors still open when the weakest memory claim is taken away
 		private static int WeakestMemoryImpact(WorldSpace space, List<Statement> statements)
 		{
 			int weakest = int.MaxValue;
 			foreach (Statement statement in statements)
 			{
-				if (statement.memoryCount == 0) continue;
+				if (!statement.IsMemory) continue;
 				List<Statement> rest = statements
 					.Where(other => other != statement).ToList();
 				weakest = Math.Min(weakest, space.CountPossibleDoors(space.AllowedByAll(rest)));

@@ -4,30 +4,24 @@ using System.Linq;
 
 namespace LogicSolver
 {
-	// What the room turned out like, for tuning a difficulty curve
 	public sealed class RoomStats
 	{
 		public int doorCount;
 		public int liarCount;
 
-		// How many realities the room had to narrow down from
 		public int worldsConsidered;
 
 		public float averageDifficulty;
 		public float hardestStatement;
 
-		// Statements the player must read together before anything can be worked out
 		public int statementsToMakeProgress;
 
-		// Guards whose statement could be dropped with the room still solvable
-		// Only ever non empty in easy rooms, where spare statements are allowed
 		public int[] spareGuards = new int[0];
 
 		public int compoundStatements;
-		public int memoryClaims;
+		public float memoryClaims;
 		public int doorMentions;
 
-		// Doors still open if the player forgot what the memory claims refer to
 		public int doorsLeftIfForgotten;
 
 		public override string ToString()
@@ -41,14 +35,13 @@ namespace LogicSolver
 				+ " average, " + hardestStatement.ToString("F2") + " hardest"
 				+ "\nstatements to make progress " + statementsToMakeProgress
 				+ "\ncompound " + compoundStatements
-				+ ", memory claims " + memoryClaims
+				+ ", memory claims " + memoryClaims.ToString("F1")
 				+ ", door mentions " + doorMentions
 				+ "\nspare guards " + spare
 				+ "\ndoors left if the memory is forgotten " + doorsLeftIfForgotten;
 		}
 	}
 
-	// One finished room, before it is turned into plain strings for the caller
 	public sealed class BuiltRoom
 	{
 		public RoomStats stats;
@@ -57,12 +50,9 @@ namespace LogicSolver
 		public int[] liars;
 		public Statement[] statements;
 
-		// Statements needed together before any door could be ruled out
 		public int statementsBeforeProgress;
 	}
 
-	// Picks a world, then hands each guard a statement until only that world survives
-	// Build once per room setup, then call TryBuild until it returns something
 	public sealed class RoomBuilder
 	{
 		private readonly WorldSpace space;
@@ -120,16 +110,15 @@ namespace LogicSolver
 					stats.hardestStatement = statement.difficulty;
 				}
 				if (statement.isCompound) stats.compoundStatements++;
-				stats.memoryClaims += statement.memoryCount;
+				stats.memoryClaims += statement.memoryWeight;
 				if ((statement.topic & Topic.Door) != 0) stats.doorMentions++;
 			}
 			stats.averageDifficulty = RoomChecks.AverageDifficulty(chosen);
 
 			stats.spareGuards = RoomChecks.SpareGuards(space, chosen).ToArray();
 
-			// What forgetting the remembered facts would cost
 			List<Statement> withoutMemory = chosen
-				.Where(statement => statement.memoryCount == 0).ToList();
+				.Where(statement => !statement.IsMemory).ToList();
 			stats.doorsLeftIfForgotten = withoutMemory.Count == chosen.Count
 				? 0
 				: space.CountPossibleDoors(space.AllowedByAll(withoutMemory));
@@ -137,7 +126,6 @@ namespace LogicSolver
 			return stats;
 		}
 
-		// One candidate statement and what picking it would leave
 		private struct Option
 		{
 			public Statement statement;
@@ -146,7 +134,6 @@ namespace LogicSolver
 			public BitSet worldsLeft;
 		}
 
-		// Add statements one at a time until no world except the answer survives
 		private List<Statement> PickStatements(Random rng, int targetIndex)
 		{
 			BitSet rivalWorlds = space.OnlyWorld(targetIndex).Not();
@@ -159,33 +146,25 @@ namespace LogicSolver
 			{
 				int rivalsNow = worldsLeft.And(rivalWorlds).Count;
 
-				// Until the last guard speaks, refuse anything that would finish the room
-				// Otherwise it closes in two lines and the rest say garbage
+				// hold back, or the room closes in two lines and the rest waffle
 				bool mustNotFinishYet = waiting.Count > 1;
 
-				// Only offer the kind of sentence this band accepts, otherwise most of
-				// what gets weighed up is thrown out again by the checks
-				bool compoundsAllowed =
-					settings.difficulty >= StatementCompiler.FirstCompoundBand;
-				bool simpleAllowed =
-					settings.difficulty < StatementCompiler.CompoundOnlyBand;
-
-				int memoriesSoFar = chosen.Sum(statement => statement.memoryCount);
-				bool memoryRequired = settings.minMemoryMentions - memoriesSoFar > (waiting.Count - 1) * 2;
+				float memoriesSoFar = chosen.Sum(statement => statement.memoryWeight);
+				// force it once the guards left could only just supply what is missing
+				bool memoryRequired = settings.minMemoryMentions - memoriesSoFar
+					> (waiting.Count - 1) * 2;
 
 				List<Option> narrowing = new List<Option>();
 				List<Option> finishing = new List<Option>();
 				foreach (int guard in waiting)
 				{
 					CollectOptions(rng, guard, targetIndex, worldsLeft, rivalWorlds, rivalsNow,
-						compoundsAllowed, simpleAllowed, memoryRequired,
-						alreadySaid, narrowing, finishing);
+						memoryRequired, alreadySaid, narrowing, finishing);
 				}
 
 				Option picked;
 				if (mustNotFinishYet && narrowing.Count > 0)
 				{
-					// Random while holding back, so rooms do not all look alike
 					picked = narrowing[rng.Next(narrowing.Count)];
 				}
 				else
@@ -204,18 +183,16 @@ namespace LogicSolver
 		}
 
 		private void CollectOptions(Random rng, int guard, int targetIndex, BitSet worldsLeft,
-			BitSet rivalWorlds, int rivalsNow, bool compoundsAllowed, bool simpleAllowed,
+			BitSet rivalWorlds, int rivalsNow,
 			bool memoryRequired, HashSet<string> alreadySaid,
 			List<Option> narrowing, List<Option> finishing)
 		{
-			foreach (Statement statement in Candidates(guard, compoundsAllowed, simpleAllowed, rng))
+			foreach (Statement statement in Candidates(guard, rng))
 			{
-				if (memoryRequired && statement.memoryCount == 0) continue;
+				if (memoryRequired && !statement.IsMemory) continue;
 
-				// No two guards should say the same thing
 				if (alreadySaid.Contains(statement.text)) continue;
 
-				// Skip anything that would rule out the answer itself
 				if (!statement.possibleWorlds[targetIndex]) continue;
 
 				BitSet next = worldsLeft.And(statement.possibleWorlds);
@@ -234,13 +211,11 @@ namespace LogicSolver
 			}
 		}
 
-		// Only offer the kinds of sentence the room still has room for
-		private IEnumerable<Statement> Candidates(int guard, bool compoundsAllowed,
-			bool simpleAllowed, Random rng)
+		private IEnumerable<Statement> Candidates(int guard, Random rng)
 		{
-			List<Statement> offered = new List<Statement>();
-			if (simpleAllowed) offered.AddRange(Sample(pools[guard].simple, settings.sampleSize, rng));
-			if (compoundsAllowed) offered.AddRange(Sample(pools[guard].compound, settings.sampleSize, rng));
+			List<Statement> offered = new List<Statement>(
+				Sample(pools[guard].simple, settings.sampleSize, rng));
+			offered.AddRange(Sample(pools[guard].compound, settings.sampleSize, rng));
 			return offered;
 		}
 
