@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class DoorFrame : ClickableObject
@@ -12,12 +9,9 @@ public class DoorFrame : ClickableObject
             return;
         }
 
-        if (GameManager.Instance.state == GameManager.GameState.INNERROOM && transform.position.x - MainCameraMove.Instance.transform.position.x > 0.1f)
+        if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
         {
-            Vector3 finalPosition = new Vector3(transform.position.x, MainCameraMove.Instance.transform.position.y, GameManager.Instance.mainCameraZBeforeZoom);
-            MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.OUTERROOM);
-
-            GameManager.Instance.state = GameManager.GameState.ZOOMING;
+            Dialogue.Instance.DeferClickCheckToDialogue();
         }
     }
 

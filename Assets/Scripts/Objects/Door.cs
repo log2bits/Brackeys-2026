@@ -33,7 +33,7 @@ public class Door : ClickableObject
             return;
         }
 
-        // Zoom into door
+        // Zoom into door and start dialogue
         if (GameManager.Instance.state == GameManager.GameState.OUTERROOM)
         {
             GameManager.Instance.mainCameraZBeforeZoom = MainCameraMove.Instance.transform.position.z;
@@ -47,12 +47,12 @@ public class Door : ClickableObject
             hasTalkedBefore = true;
         }
 
-        /*else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
+        else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
         {
-            // Zoom out if clicking on a door that isn't focused on
+            // Exit/advance dialogue if clicking on a door that isn't focused on
             if (Mathf.Abs(transform.position.x - MainCameraMove.Instance.transform.position.x) > 0.1f)
             {
-                ZoomOut();
+                Dialogue.Instance.DeferClickCheckToDialogue();
                 return;
             }
 
@@ -63,7 +63,9 @@ public class Door : ClickableObject
 
             CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
             GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
-        }*/
+
+            Dialogue.Instance.EndDialogue(false);
+        }
     }
 
     private void ZoomOut()
