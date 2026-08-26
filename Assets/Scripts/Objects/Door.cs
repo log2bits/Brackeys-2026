@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -16,6 +17,7 @@ public class Door : ClickableObject
     [SerializeField] private float doorZoomZDistance;
 
     private string dialogue = "";
+    private bool safe = false;
     private bool hasTalkedBefore = false;
     private bool open; 
 
@@ -80,6 +82,10 @@ public class Door : ClickableObject
     public void SetDialogue(string dialogue)
     {
         this.dialogue = dialogue;
+    }
+    public void SetIsSafe(bool IsSafe = false)
+    {
+        this.safe = IsSafe;
     }
 
     public void SetNumber(int number)
