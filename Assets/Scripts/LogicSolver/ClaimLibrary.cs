@@ -185,10 +185,6 @@ namespace LogicSolver
 					world => world.Lies(other), 0, 0));
 				list.Add(new Claim(Topic.Liar, "guard " + shown + " is honest",
 					world => !world.Lies(other), 0, 0));
-				list.Add(new Claim(Topic.Liar, "guard " + shown + " is lying exactly when I am",
-					world => world.Lies(other) == world.Lies(speaker), 1, 3));
-				list.Add(new Claim(Topic.Liar, "exactly one of guard " + shown + " and I is lying",
-					world => world.Lies(other) != world.Lies(speaker), 1, 3));
 
 			}
 
@@ -212,9 +208,6 @@ namespace LogicSolver
 				world => world.Lies(world.safeDoor), 0, 2));
 			list.Add(new Claim(both, "the guard at the safe door is honest",
 				world => !world.Lies(world.safeDoor), 0, 2));
-			list.Add(new Claim(both,
-				"the guard at the safe door is lying exactly when I am",
-				world => world.Lies(world.safeDoor) == world.Lies(speaker), 3, 3));
 
 			list.Add(new Claim(both, "at least one guard next to the safe door is lying",
 				world => AnyGuard(numDoors, guard => Next(guard, world.safeDoor) && world.Lies(guard)), 2, 3));
