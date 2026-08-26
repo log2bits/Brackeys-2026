@@ -6,29 +6,18 @@ public class MemorableObjectTemplate : MonoBehaviour
     [SerializeField] private SpriteRenderer[] spriteRenderers;
     private Dictionary<string, string> actualProperties = new Dictionary<string, string>();
     public int room;
-    
-    /*
-    // GenerateEmptyFact
-    // Generates an undeclared solution fact, and adds to shared list
-    public void GenerateEmptyFact(string[] possibleValues, string template)
+
+    private List<ObjectPropertyData> builtFrom;
+
+    public void Place(List<ObjectPropertyData> propertyData)
     {
-        KnownFact emptyFact = new KnownFact();
-        emptyFact.possibleValues = possibleValues;
-        emptyFact.template = template;
-
-        sharedList.Add(emptyFact);
+        builtFrom = propertyData;
+        actualProperties.Clear();
     }
-
-    // SetActualValue
-    // Sets the solution of a knownFact within the array, with given randNum, and the index of that fact
-    public void SetActualValue(int factIdx, int randNum)
+    public bool WasBuiltFrom(List<ObjectPropertyData> propertyData)
     {
-        string potentialValueFound = sharedList[factIdx].possibleValues[randNum];
-        sharedList[factIdx].actualValue = potentialValueFound;
-
-        
+        return builtFrom == propertyData;
     }
-    */
 
     public void SetSprite(int index, Sprite sprite)
     {
@@ -42,5 +31,9 @@ public class MemorableObjectTemplate : MonoBehaviour
     {
         return actualProperties;
     }
-    
+    public string GetActualValue(string propertyName)
+    {
+        string found;
+        return actualProperties.TryGetValue(propertyName, out found) ? found : null;
+    }
 }

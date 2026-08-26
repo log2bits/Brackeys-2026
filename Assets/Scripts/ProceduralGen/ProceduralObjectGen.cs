@@ -11,6 +11,7 @@ namespace ProceduralHelperGen
         {
             MemorableObjectTemplate memObject = givenObject.GetComponent<MemorableObjectTemplate>();
             SpriteRenderer[] allRenderers = memObject.GetSpriteRenderers();
+            memObject.Place(objectPropertyData);
             
             for (int idx = 0; idx < allRenderers.Count(); idx++)
             {

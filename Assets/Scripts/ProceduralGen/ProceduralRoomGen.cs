@@ -80,7 +80,7 @@ public class ProceduralRoomGen : MonoBehaviour
         // Generate room 1, always with two doors
         GenerateNextRoom(transform.position, difficultySettings.minDoors, 0);
         
-        RoomSolution roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[0].roomSettings);
+        RoomSolution roomSolution = DetailBuilder.SolveRoom(0, objectDataTemplates, difficultySettings.detailMentions);
         Debug.Log($"Correct Door Room 1: {roomSolution.safeDoor}");
         AssignDoorData(roomSolution);
 
@@ -101,8 +101,10 @@ public class ProceduralRoomGen : MonoBehaviour
             }
             Debug.Log($"Num doors : {numDoorsForThisRoom}");
             GenerateNextRoom(nextDoorPosition, numDoorsForThisRoom, room);
-            roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[room].roomSettings);
-            Debug.Log($"Correct Door Room {room}: {roomSolution.safeDoor}");
+
+            roomSolution = DetailBuilder.SolveRoom(room, objectDataTemplates, difficultySettings.detailMentions);
+            Debug.Log($"Correct Door Room {room + 1}: {roomSolution.safeDoor}");
+
             AssignDoorData(roomSolution);
         }
     

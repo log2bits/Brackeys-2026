@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: FlowerPotData
   m_EditorClassIdentifier: Assembly-CSharp::ObjectDataTemplate
   objectPrefab: {fileID: 7530830482215578029, guid: 281c4d3e7fb809d409a6d95f4111f248, type: 3}
-  roomTemplate: the potted plant was in room {1}
+  roomTemplate: there was no potted plant in {1}
   objectPropertyDatas:
   - propertyName: flower color
-    template: the flower in {1} was a {0} color
+    template: the flower in {1} was {0}
     values:
     - blue
     - purple
@@ -26,7 +26,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: f31aca4d0b7586849b996713a02e1ca9, type: 3}
     - {fileID: 21300000, guid: 37109c174f73a8547bf1e58db2eb791e, type: 3}
   - propertyName: pot color
-    template: the flower pot in {1} was {0} color
+    template: the flower pot in {1} was {0}
     values:
     - brown
     - gray

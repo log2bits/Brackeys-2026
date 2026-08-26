@@ -20,6 +20,12 @@ namespace LogicSolver
 			this.isTrue = isTrue;
 			this.about = about;
 		}
+
+		public override string ToString()
+		{
+			return (isTrue ? "true  " : "false ") + text
+				+ (about == null ? "" : "   [" + about + "]");
+		}
 	}
 
 	public sealed class RoomSettings
@@ -126,9 +132,12 @@ namespace LogicSolver
 			RoomBuilder builder = new RoomBuilder(space, settings, pools);
 			Random rng = new Random(settings.seed);
 
+			// settle on the safe door before trying, so every door is equally likely
+			int wantDoor = rng.Next(settings.doorCount);
+
 			for (int i = 0; i < settings.maxAttempts; i++)
 			{
-				BuiltRoom room = builder.TryBuild(rng);
+				BuiltRoom room = builder.TryBuild(rng, wantDoor);
 				if (room == null) continue;
 
 				string[] lines = new string[settings.doorCount];

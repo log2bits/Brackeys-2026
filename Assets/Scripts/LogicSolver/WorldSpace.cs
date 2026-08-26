@@ -82,6 +82,15 @@ namespace LogicSolver
 			return found;
 		}
 
+		// worlds are laid out one safe door block at a time, so a door's worlds are
+		// the run starting here
+		public int FirstWorldWithDoor(int door)
+		{
+			return door * (worlds.Count / doorCount);
+		}
+
+		public int WorldsPerDoor { get { return worlds.Count / doorCount; } }
+
 		public BitSet OnlyWorld(int index)
 		{
 			BitSet single = new BitSet(worlds.Count);

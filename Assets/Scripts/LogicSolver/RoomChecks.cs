@@ -57,17 +57,12 @@ namespace LogicSolver
 
 			// a room has to actually reach its own band, or an extreme one could be built
 			// entirely out of easy ingredients
-			// half the room has to sit on its own band or above. one token hard sentence
-			// among four easy ones is an easy room wearing a label
-			int atBand = 0, judged = 0;
+			bool atBand = !anythingAtBand;
 			foreach (Statement statement in chosen)
 			{
-				if (statement.IsMemory) continue;
-				judged++;
-				if (statement.tier >= settings.difficulty) atBand++;
+				if (statement.tier == settings.difficulty) atBand = true;
 			}
-			int wanted = (judged + 1) / 2;
-			if (anythingAtBand && atBand < wanted)
+			if (!atBand)
 			{
 				tally.wrongDifficulty++;
 				return false;

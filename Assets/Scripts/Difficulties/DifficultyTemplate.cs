@@ -14,9 +14,7 @@ public class DifficultyTemplate : ScriptableObject
     public int minDoors = 2; // probably keep this here - chris
     public int maxDoors = 0; // If less than one, there is no max
     public float roomsPerDoorIncrease = 1;
-    
+
     [Header("Complexity")]
-    public int minStatementsBeforeProgress = 1; // not sure
-    public int maxCompoundStatements = 0;
-    public int durationUntilCompoundIncrease = 0;
+    public int detailMentions = 1; // how many things the player has to remember
 }

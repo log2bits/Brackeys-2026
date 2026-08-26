@@ -82,7 +82,12 @@ namespace LogicSolver
 
 		public BuiltRoom TryBuild(Random rng)
 		{
-			int targetIndex = rng.Next(space.worlds.Count);
+			return TryBuild(rng, rng.Next(space.doorCount));
+		}
+
+		public BuiltRoom TryBuild(Random rng, int wantDoor)
+		{
+			int targetIndex = space.FirstWorldWithDoor(wantDoor) + rng.Next(space.WorldsPerDoor);
 			World target = space.worlds[targetIndex];
 
 			List<Statement> chosen = PickStatements(rng, targetIndex);
@@ -155,13 +160,10 @@ namespace LogicSolver
 				// hold back, or the room closes in two lines and the rest waffle
 				bool mustNotFinishYet = waiting.Count > 1;
 
-				// half the room must sit on its own band, so force it once the guards left
-				// could only just supply what is still missing
-				int atBandSoFar = chosen.Count(x => !x.IsMemory && x.tier >= settings.difficulty);
-				int judgedTotal = space.doorCount - (int)settings.detailMentions;
-				int wantedAtBand = (judgedTotal + 1) / 2;
-				bool bandRequired = anythingAtBand
-					&& wantedAtBand - atBandSoFar > waiting.Count - 1;
+				// force a sentence on the room's own band once the guards left could only
+				// just supply one
+				bool haveAtBand = chosen.Any(x => x.tier == settings.difficulty);
+				bool bandRequired = anythingAtBand && !haveAtBand && waiting.Count == 1;
 
 				float memoriesSoFar = chosen.Sum(statement => statement.memoryWeight);
 				bool memoryFull = memoriesSoFar >= settings.detailMentions;
@@ -207,7 +209,7 @@ namespace LogicSolver
 			{
 				if (memoryRequired && !statement.IsMemory) continue;
 				if (memoryFull && statement.IsMemory) continue;
-				if (bandRequired && statement.tier < settings.difficulty) continue;
+				if (bandRequired && statement.tier != settings.difficulty) continue;
 
 				if (alreadySaid.Contains(statement.text)) continue;
 
