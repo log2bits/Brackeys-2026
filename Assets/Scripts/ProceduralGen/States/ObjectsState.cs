@@ -3,10 +3,8 @@ using LogicSolver;
 using System.Collections.Generic;
 using System;
 
-public class ObjectsState
+public class GridState
 {
-    public List<KnownFact> knownFacts;
-
     // all of this is relative to the placement of the next room
     public List<int> availableGrids = new List<int>();
     public float ratio; // applied ratio, 1 being 1 meter, versus 0.5 being 0.5f or half meter
