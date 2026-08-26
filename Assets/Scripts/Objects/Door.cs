@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,6 +16,9 @@ public class Door : ClickableObject
     [SerializeField] private float doorRotateAngle;
     [SerializeField] private float doorZoomZDistance;
 
+    private string dialogue = "";
+    private bool safe = false;
+    private bool hasTalkedBefore = false;
     private bool open; 
 
     protected override void OnMouseDown()
@@ -38,17 +42,17 @@ public class Door : ClickableObject
             MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.INNERROOM);
 
             GameManager.Instance.state = GameManager.GameState.ZOOMING;
+
+            Dialogue.Instance.StartDialogue(dialogue, !hasTalkedBefore, ZoomOut);
+            hasTalkedBefore = true;
         }
 
-        else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
+        /*else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
         {
             // Zoom out if clicking on a door that isn't focused on
             if (Mathf.Abs(transform.position.x - MainCameraMove.Instance.transform.position.x) > 0.1f)
             {
-                Vector3 finalPosition = new Vector3(transform.position.x, MainCameraMove.Instance.transform.position.y, GameManager.Instance.mainCameraZBeforeZoom);
-                MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.OUTERROOM);
-
-                GameManager.Instance.state = GameManager.GameState.ZOOMING;
+                ZoomOut();
                 return;
             }
 
@@ -59,7 +63,15 @@ public class Door : ClickableObject
 
             CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
             GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
-        }
+        }*/
+    }
+
+    private void ZoomOut()
+    {
+        Vector3 finalPosition = new Vector3(transform.position.x, MainCameraMove.Instance.transform.position.y, GameManager.Instance.mainCameraZBeforeZoom);
+        MainCameraMove.Instance.MoveCamera(finalPosition, GameManager.GameState.OUTERROOM);
+
+        GameManager.Instance.state = GameManager.GameState.ZOOMING;
     }
 
     protected override void OnMouseUp()
@@ -67,11 +79,21 @@ public class Door : ClickableObject
         return;
     }
 
+    public void SetDialogue(string dialogue)
+    {
+        this.dialogue = dialogue;
+    }
+    public void SetIsSafe(bool IsSafe = false)
+    {
+        this.safe = IsSafe;
+    }
+
     public void SetNumber(int number)
     {
         if (number >= doorNumbers.Length)
         {
-            throw new Exception("Not enough door numbers on door prefab!");
+            Debug.LogWarning("Not enough door numbers on door prefab!");
+            return;
         }
         doorNumbersRenderer.sprite = doorNumbers[number];
     }
