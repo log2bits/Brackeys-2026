@@ -15,46 +15,68 @@ public class EventBus
         }
     }
 
-    // Action list below (all called once, not constantly) (relative to the player)
-    // DoDeath called when causing death 
-    public event Action OnDeath;
-    public void DoDamage()
+    public enum EventName
     {
-        OnDeath?.Invoke();
+        GameOver,
+        GameStart,
+    }
+
+
+    // Action list below (all called once, not constantly) (relative to the player)
+    // DoGameOver called when causing death 
+    public event Action OnGameOver;
+    public void DoGameOver()
+    {
+        OnGameOver?.Invoke();
+    }
+    // DoGameOver called when causing death 
+    public event Action OnGameStart;
+    public void DoGameStart()
+    {
+        OnGameStart?.Invoke();
     }
 
     // Note: You can do Action<Vector3> for example, but for dictionary storage we would have to change
 
-    private Dictionary<Action, Delegate> activeWrappers = new();
+    private Dictionary<Action, Delegate> activeEventListeners = new();
     // register an action
-    public void Register(string eventName, Action listener)
+    public void Register(EventName eventName, Action listener)
     {
         switch (eventName)
         {
-            case "on-damage":
-                Action handlerOnDeath = () => listener();
-                OnDeath += handlerOnDeath;
-                activeWrappers[listener] = handlerOnDeath;
+            case EventName.GameOver:
+                Action handlerGameOver = () => listener();
+                OnGameOver += handlerGameOver;
+                activeEventListeners[listener] = handlerGameOver;
+                break;
+            case EventName.GameStart:
+                Action handlerGameStart = () => listener();
+                OnGameOver += handlerGameStart;
+                activeEventListeners[listener] = handlerGameStart;
                 break;
             default: throw new Exception("Failed Register: Given eventName does not exist as a register - " + eventName);
         }
+        
     
     }
 
     // unregister an action
-    public void Deregister(string eventName, Action listener)
+    public void Deregister(EventName eventName, Action listener)
     {
-        if (activeWrappers.TryGetValue(listener, out Delegate wrapper))
+        if (activeEventListeners.TryGetValue(listener, out Delegate wrapper))
         {
             switch (eventName)
             {
-                case "on-damage":
-                    OnDeath -= (Action)wrapper;
+                case EventName.GameOver:
+                    OnGameOver -= (Action)wrapper;
+                    break;
+                case EventName.GameStart:
+                    OnGameStart -= (Action)wrapper;
                     break;
                 default:
                 throw new Exception("Failed Deregister: Given eventName does not exist as a Deregister - " + eventName);
             }
         }
-        activeWrappers.Remove(listener);
+        activeEventListeners.Remove(listener);
     }
 }
