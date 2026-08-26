@@ -78,14 +78,16 @@ public class ProceduralRoomGen : MonoBehaviour
 
         // Generate room 1, always with two doors
         GenerateNextRoom(transform.position, 2, 1);
+        
         RoomSolution roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[0].roomSettings);
+        Debug.Log($"Correct Door Room 1: {roomSolution.safeDoor}");
         AssignAllDialogue(roomSolution);
 
         // Generate rest of the rooms. <= cause rooms are one indexed
         for (int room = 2; room <= difficultySettings.roomCount; room++)
         {
             int safeDoorIndex = roomSolution.safeDoor;
-            Debug.Log($"Random int: {safeDoorIndex}");
+            //Debug.Log($"Random int: {safeDoorIndex}");
             Debug.Log($"Current Doors: {currentDoors.Count}");
             Vector3 nextDoorPosition = currentDoors[safeDoorIndex].fullDoor.transform.position;
             nextDoorPosition.z += roomDistance;
@@ -97,9 +99,10 @@ public class ProceduralRoomGen : MonoBehaviour
             }
             GenerateNextRoom(nextDoorPosition, numDoorsForThisRoom, room);
             roomSolution = Solver.Solve(GameManager.Instance.worldState.roomStates[room-1].roomSettings);
+            Debug.Log($"Correct Door Room {room + 1}: {roomSolution.safeDoor}");
             AssignAllDialogue(roomSolution);
         }
-
+    
         // Clear all doors
         currentDoors.Clear();
     }
@@ -120,10 +123,10 @@ public class ProceduralRoomGen : MonoBehaviour
     // 
     private void GenerateNextRoom(Vector3 centralPosition, int doorCount, int room)
     {
-        Debug.Log("New Room");
+        Debug.Log($"New Room: {room + 1}");
         GenerateRoomState(doorCount, centralPosition);
         GenerateObjectsState(room, Mathf.CeilToInt(doorSize * doorCount), objectRatio);
-        PrintGrid(room);
+        //PrintGrid(room);
         GenerateDoors(centralPosition, doorCount, room);
 
         GenerateObjects(doorCount, room);
@@ -144,8 +147,8 @@ public class ProceduralRoomGen : MonoBehaviour
         // Collect door size, offset initially, and width
         float offsetDoorSide = (doorCount % 2 == 0) ? doorSize / 2f : 0;
         float width = doorSize * doorCount;
-        Debug.Log($"Object Size (W): {doorSize}");
-        Debug.Log($"Door Count: {doorCount}");
+        //Debug.Log($"Object Size (W): {doorSize}");
+        //Debug.Log($"Door Count: {doorCount}");
         
         // Iterate through doors
         for (int currDoor = doorCount - 1; currDoor >= 0; currDoor--)
@@ -166,6 +169,8 @@ public class ProceduralRoomGen : MonoBehaviour
             // Save the door
             currentDoors.Add(new DoorData(door, doorScript));
         }
+
+        currentDoors.Reverse();
     }
 
     // AssignAllDialogue
@@ -190,13 +195,13 @@ public class ProceduralRoomGen : MonoBehaviour
         List<int> indices = new List<int>();
         for (int i = 0; i < objectPrefabs.Count; i++) indices.Add(i);
 
-        Debug.Log("Generating Objects");
-        PrintGrid(room);
+        Debug.Log($"Generating Objects: {currTotalObjects}");
+        //PrintGrid(room);
 
         for(int currObject = 0; currObject < currTotalObjects; currObject++)
         {
             int randomIndex = proceduralRandGen.Next(0, indices.Count);
-            Debug.Log($"RandomIndex for Object: {randomIndex}");
+            //Debug.Log($"RandomIndex for Object: {randomIndex}");
             
             float width = GetMaxWidthOfObject(objectPrefabs[randomIndex]);
 
@@ -211,7 +216,7 @@ public class ProceduralRoomGen : MonoBehaviour
         }
 
         
-        PrintGrid(room);
+        //PrintGrid(room);
     }
 
     // SetupRandomizedPlacement
@@ -223,7 +228,7 @@ public class ProceduralRoomGen : MonoBehaviour
 
         // Generate a list of valid starting Grid IDs
         List<int> validIndices = ValidPlacements(objectsState, objectWidth);
-        Debug.Log($"Valid Counts: {validIndices}");
+        //Debug.Log($"Valid Counts: {validIndices}");
         if (validIndices.Count == 0) return new Vector3(0, 0, 0);
 
         // finds the valid grid ID from available options
@@ -260,7 +265,7 @@ public class ProceduralRoomGen : MonoBehaviour
         // the far left index grid of the object, and how far it is
         int startGridID = Mathf.FloorToInt((position.x - (width / 2.0f) - leftEdgeRoomPos) / objectRatio);
 
-        Debug.Log($"start grid id: {startGridID}");
+        //Debug.Log($"start grid id: {startGridID}");
         for (int x = 0; x < placementSize ; x++) objectsState.availableGrids.Remove(x + startGridID);
         
     }
@@ -271,7 +276,7 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         int placementSize = FindPlacementWidth(width + objectToObjectDistance);
         List<int> potentialIndices = new List<int>();
-        Debug.Log($"Object Size: {placementSize}");
+        //Debug.Log($"Object Size: {placementSize}");
         
         int prevIndex = 0;
         for (int x = 1; x < objectsState.availableGrids.Count; x++)
