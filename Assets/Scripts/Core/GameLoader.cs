@@ -4,7 +4,8 @@ public class GameLoader : MonoBehaviour
 {
     private void Start()
     {
-        ProceduralRoomGen.Instance.GenerateProcess();
+        GameManager.Instance.ResetGameManager();
         GameManager.Instance.state = GameManager.GameState.OUTERROOM;
+        ProceduralRoomGen.Instance.GenerateProcess();
     }    
 }

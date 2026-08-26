@@ -22,15 +22,19 @@ namespace LogicSolver
 		// the Detail this came from, if any
 		public readonly object factSource;
 
-		public readonly float difficulty;
+		// the bands this can be said on its own in
+		public readonly int firstBand;
+		public readonly int lastBand;
 
 		public Claim(Topic topic, string text, Func<World, bool> holds,
-			float difficulty = 2f, bool namesAValue = false, object factSource = null)
+			int firstBand = 2, int lastBand = 3, bool namesAValue = false,
+			object factSource = null)
 		{
 			this.topic = topic;
 			this.text = text;
 			this.holds = holds;
-			this.difficulty = difficulty;
+			this.firstBand = firstBand;
+			this.lastBand = lastBand;
 			this.namesAValue = namesAValue;
 			this.factSource = factSource;
 		}
@@ -46,7 +50,7 @@ namespace LogicSolver
 
 		public bool namesAValue;
 
-		public float difficulty;
+		public int tier;
 
 		public float memoryWeight;
 

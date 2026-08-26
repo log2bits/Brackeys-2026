@@ -19,6 +19,7 @@ public class EventBus
     {
         GameOver,
         GameStart,
+        LostLife
     }
 
 
@@ -29,11 +30,18 @@ public class EventBus
     {
         OnGameOver?.Invoke();
     }
-    // DoGameOver called when causing death 
+    // OnGameStart called when  
     public event Action OnGameStart;
     public void DoGameStart()
     {
         OnGameStart?.Invoke();
+    }
+
+    // OnLostLife called when guessing wrong
+    public event Action OnLostLife;
+    public void DoLostLife()
+    {
+        OnLostLife?.Invoke();
     }
 
     // Note: You can do Action<Vector3> for example, but for dictionary storage we would have to change
@@ -51,8 +59,13 @@ public class EventBus
                 break;
             case EventName.GameStart:
                 Action handlerGameStart = () => listener();
-                OnGameOver += handlerGameStart;
+                OnGameStart += handlerGameStart;
                 activeEventListeners[listener] = handlerGameStart;
+                break;
+            case EventName.LostLife:
+                Action handlerLostLife = () => listener();
+                OnLostLife += handlerLostLife;
+                activeEventListeners[listener] = handlerLostLife;
                 break;
             default: throw new Exception("Failed Register: Given eventName does not exist as a register - " + eventName);
         }
@@ -72,6 +85,9 @@ public class EventBus
                     break;
                 case EventName.GameStart:
                     OnGameStart -= (Action)wrapper;
+                    break;
+                case EventName.LostLife:
+                    OnLostLife -= (Action)wrapper;
                     break;
                 default:
                 throw new Exception("Failed Deregister: Given eventName does not exist as a Deregister - " + eventName);
