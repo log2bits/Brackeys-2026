@@ -77,7 +77,7 @@ public class Door : ClickableObject
 
             // Move to next room
             AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
-            MainCameraMove.Instance.MoveCamera(transform.position, GameManager.GameState.OUTERROOM);
+            MainCameraMove.Instance.MoveCamera(transform.position + new Vector3(0, 0, 0.1f), GameManager.GameState.OUTERROOM);
             open = true;
 
             CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));

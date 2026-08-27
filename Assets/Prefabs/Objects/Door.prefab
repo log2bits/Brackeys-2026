@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 2f3635ddbec3b5f408f9a928465ef814, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 94aeec6e46b5b804c81de51a150731db, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f488d5c3c387c79419188863eb05345a, type: 3}
   doorSpriteTransform: {fileID: 7353145880351450545}
   doorNumbersRenderer: {fileID: 7503322821144491428}
-  doorRotateTime: 1
+  doorRotateTime: 0.5
   doorRotateAngle: 60
   doorZoomZDistance: -12
 --- !u!1 &7646837612948708103

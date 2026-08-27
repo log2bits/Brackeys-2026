@@ -103,6 +103,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8417659273300300849}
     m_Modifications:
+    - target: {fileID: 6248835697874624590, guid: 6e69a9d21da25c84e81334628bcc10eb, type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 7530830482215578029, guid: 6e69a9d21da25c84e81334628bcc10eb, type: 3}
       propertyPath: m_Name
       value: DoorFrame
@@ -117,7 +121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8417659273300300849, guid: 6e69a9d21da25c84e81334628bcc10eb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 8417659273300300849, guid: 6e69a9d21da25c84e81334628bcc10eb, type: 3}
       propertyPath: m_LocalRotation.w

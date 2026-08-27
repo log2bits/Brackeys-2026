@@ -31,6 +31,7 @@ public class ProceduralRoomGen : MonoBehaviour
     [SerializeField] private GameObject wallPrefab;
     [SerializeField] private GameObject roomLightsPrefab;
     [SerializeField] private List<ObjectDataTemplate> objectDataTemplates;
+    [SerializeField] private DifficultyTemplate difficultyIfNull;
 
     [Header("Parameters")]
     [SerializeField] private float roomDistance = 20f;
@@ -122,10 +123,16 @@ public class ProceduralRoomGen : MonoBehaviour
         doorSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
         
         seed = GameManager.Instance.currentSeed;
-        difficulty = GameManager.Instance.currentDifficulty;
-        Debug.Log($"Generated Seed: {seed}");
-
         proceduralRandGen = new System.Random(seed);
+
+        if (GameManager.Instance.currentDifficulty == null)
+        {
+            difficulty = difficultyIfNull;
+        }
+        else
+        {
+            difficulty = GameManager.Instance.currentDifficulty;
+        }
 
         objectCount = Mathf.Min(difficulty.minObjects, objectDataTemplates.Count);
     }
