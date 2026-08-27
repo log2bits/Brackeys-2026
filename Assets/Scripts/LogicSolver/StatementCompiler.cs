@@ -6,21 +6,41 @@ namespace LogicSolver
 {
 	public static class StatementCompiler
 	{
-		// plain claims live in 0 to 3, glued ones in 3 to 6
-		// the first band each way of joining two claims can turn up in
-		public const int AndTier = 2;
-		public const int OrTier = 3;
-		public const int XorTier = 4;
-		public const int IffTier = 4;
+		// said on its own. logician is left out, so every sentence there is a compound
+		public static readonly Band Plain = new Band(0, 3);
 
-		// glued sentences start here, and at this band one half must be a detail
-		public const int FirstCompoundBand = 2;
+		// compound, by how the two halves are joined
+		public static readonly Band And = new Band(2, 4);
+		public static readonly Band Or = new Band(3, 4);
+		public static readonly Band Xor = new Band(4, 4);
+		public static readonly Band Iff = new Band(4, 4);
 
-		// nothing is said on its own past this, so logician is all glued sentences
-		public const int LastPlainBand = 3;
+		public static readonly Band CompoundWithDetail = new Band(2, 4);
+		public static readonly Band CompoundAlone = new Band(3, 4);
 
-		// details stop being said plainly here
-		public const int DetailGoesCompoundBand = 2;
+		public static readonly Band PlainDetail = new Band(0, 1);
+
+		public const int CompoundReach = 1;
+
+		public const int TooSmallToGrade = 2;
+
+		public static Band ForBoard(Band band, int doorCount)
+		{
+			return doorCount <= TooSmallToGrade ? new Band(0, Plain.last) : band;
+		}
+
+
+		public static Band CompoundKind(bool anyDetail, int doorCount)
+		{
+			if (anyDetail) return CompoundWithDetail;
+			return doorCount <= TooSmallToGrade ? CompoundWithDetail : CompoundAlone;
+		}
+
+		public static Band AsIngredient(Claim claim, int doorCount)
+		{
+			Band band = ForBoard(claim.band, doorCount);
+			return new Band(band.first, band.last + CompoundReach);
+		}
 
 		public sealed class Pool
 		{
@@ -81,15 +101,15 @@ namespace LogicSolver
 			for (int i = 0; i < usableClaims.Count; i++)
 			{
 				bool isDetail = (usableClaims[i].topic & Topic.Memory) != 0;
-				if (isDetail && settings.difficulty >= DetailGoesCompoundBand) continue;
-				if (settings.difficulty < usableClaims[i].firstBand) continue;
-				if (settings.difficulty > usableClaims[i].lastBand) continue;
+				Band allowed = ForBoard(usableClaims[i].band, space.doorCount).Meet(Plain);
+				if (isDetail) allowed = allowed.Meet(PlainDetail);
+				if (!allowed.Holds(settings.difficulty)) continue;
 				Keep(pool, space, speaker, whereHonest, usableClaims[i].topic, false,
 					usableClaims[i].namesAValue, usableClaims[i].firstBand,
 					isDetail ? 1f : 0f, usableClaims[i].text, trueIn[i]);
 			}
 
-			if (settings.difficulty < FirstCompoundBand) return pool;
+			if (!CompoundWithDetail.Holds(settings.difficulty)) return pool;
 
 			for (int i = 0; i < usableClaims.Count; i++)
 			{
@@ -101,15 +121,10 @@ namespace LogicSolver
 					bool anyDetail = (usableClaims[i].topic & Topic.Memory) != 0
 						|| (usableClaims[j].topic & Topic.Memory) != 0;
 
-					// the first glued sentences a player meets always carry a detail,
-					// so one half is something they can settle on sight
-					if (!anyDetail && settings.difficulty == FirstCompoundBand) continue;
-
-					// a claim carries into a glued sentence one band past where it could
-					// be said on its own, and no further. without this a connective alone
-					// could drag two easy halves all the way up to logician
-					if (!Carries(usableClaims[i], settings.difficulty)) continue;
-					if (!Carries(usableClaims[j], settings.difficulty)) continue;
+					Band compound = AsIngredient(usableClaims[i], space.doorCount)
+						.Meet(AsIngredient(usableClaims[j], space.doorCount))
+						.Meet(CompoundKind(anyDetail, space.doorCount));
+					if (!compound.Holds(settings.difficulty)) continue;
 
 					if (SameSubject(usableClaims[i], usableClaims[j])) continue;
 					Combine(pool, space, speaker, whereHonest, settings.difficulty,
@@ -129,40 +144,34 @@ namespace LogicSolver
 			string a = first.text;
 			string b = second.text;
 
-			Glue(pool, space, speaker, whereHonest, band, topic, details, halves, AndTier,
+			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, And,
 				a + ", and " + b,
 				firstTrue.And(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, band, topic, details, halves, OrTier,
+			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Or,
 				a + ", or " + b + ", or both",
 				firstTrue.Or(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, band, topic, details, halves, XorTier,
+			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Xor,
 				"either " + a + ", or " + b + ", but not both",
 				firstTrue.Xor(secondTrue));
 
-			Glue(pool, space, speaker, whereHonest, band, topic, details, halves, IffTier,
+			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Iff,
 				a + " if and only if " + b,
 				firstTrue.Xor(secondTrue).Not());
 		}
 
-		// a glued sentence is as hard as the hardest thing in it
-		private static void Glue(Pool pool, WorldSpace space, int speaker, BitSet whereHonest,
-			int band, Topic topic, float details, int halves, int connective,
+		// a compound is as hard as the hardest thing in it
+		private static void AddCompound(Pool pool, WorldSpace space, int speaker, BitSet whereHonest,
+			int band, Topic topic, float details, int halves, Band connective,
 			string text, BitSet trueIn)
 		{
-			int tier = Math.Max(halves, connective);
-			if (tier > band) return;
+			if (!connective.Holds(band)) return;
 			Keep(pool, space, speaker, whereHonest, topic, true, false,
-				tier, details, text, trueIn);
+				Math.Max(halves, connective.first), details, text, trueIn);
 		}
 
-		private static bool Carries(Claim claim, int band)
-		{
-			return band <= claim.lastBand + 1;
-		}
-
-		// a claim using a word a connective uses cannot be glued without reading as mush
+		// a claim using a word a connective uses cannot be compounded without reading as mush
 		private static bool Awkward(Claim claim)
 		{
 			string text = claim.text;

@@ -9,7 +9,7 @@ namespace LogicSolver
 		public string text;
 		public bool isTrue;
 
-		// details sharing this are never glued into one sentence
+		// details sharing this never end up in the same compound
 		public string about;
 
 		public Detail() { }
