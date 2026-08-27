@@ -99,10 +99,13 @@ namespace LogicSolver
 				world => world.LiarCount * 2 > numDoors, 1, 2));
 			list.Add(new Claim(Topic.Liar, "more of us are honest than are lying",
 				world => world.LiarCount * 2 < numDoors, 1, 2));
-			list.Add(new Claim(Topic.Liar, "an |odd| number of us are |lying|",
-				world => world.LiarCount % 2 == 1, 2, 3));
-			list.Add(new Claim(Topic.Liar, "an |even| number of us are |lying|",
-				world => world.LiarCount % 2 == 0, 2, 3));
+			if (numDoors >= 3)
+			{
+				list.Add(new Claim(Topic.Liar, "an |odd| number of us are |lying|",
+					world => world.LiarCount % 2 == 1, 2, 3));
+				list.Add(new Claim(Topic.Liar, "an |even| number of us are |lying|",
+					world => world.LiarCount % 2 == 0, 2, 3));
+			}
 		}
 
 		private static void AddLiarClaims(List<Claim> list, int speaker, int numDoors, IEnumerable<int> allDoors)
@@ -350,7 +353,7 @@ namespace LogicSolver
 		}
 
 		private static bool Next(int guard, int other) { return Math.Abs(guard - other) == 1; }
-		
+
 		private static int Below(int numDoors, World world, int mark)
 		{
 			return CountGuards(numDoors, guard => guard < mark && world.Lies(guard));
