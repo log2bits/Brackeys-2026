@@ -142,7 +142,8 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         Debug.Log($"New Room: {room + 1}");
         GenerateRoomState(doorCount, centralPosition);
-        GenerateGridState(room, Mathf.CeilToInt(doorSize * doorCount), objectRatio);
+        GenerateGridState(room, GetRoomWidth(doorCount), objectRatio);
+        //Mathf.FloorToInt(doorSize * doorCount)
         //PrintGrid(room);
         GenerateDoors(centralPosition, doorCount, room);
         GenerateWalls(centralPosition, doorCount, room);
@@ -299,7 +300,7 @@ public class ProceduralRoomGen : MonoBehaviour
     // if someone wants to fix this feel free, it should be more generalized
     // InvalidatePlacements
     // Finds and sets valid indices to invalid with float size of the object, and position
-    private void InvalidatePlacements(GridState objectsState, float width, Vector3 position, int doorCount, int room)
+    private void InvalidatePlacements(GridState gridState, float width, Vector3 position, int doorCount, int room)
     {
         // relevant to grid
         int placementSize = FindPlacementWidth(width + objectInvalidationDistance);
@@ -310,37 +311,44 @@ public class ProceduralRoomGen : MonoBehaviour
         int startGridID = Mathf.FloorToInt((position.x - (width / 2.0f) - leftEdgeRoomPos) / objectRatio);
 
         //Debug.Log($"start grid id: {startGridID}");
-        for (int x = 0; x < placementSize ; x++) objectsState.availableGrids.Remove(x + startGridID);
+        for (int x = 0; x < placementSize ; x++) gridState.availableGrids.Remove(x + startGridID);
         
     }
 
     // ValidPlacements
     // Returns valid list of potential indices in relation to the available grid of objects state
-    private List<int> ValidPlacements(GridState objectsState, float width)
+    private List<int> ValidPlacements(GridState gridState, float width)
     {
         int placementSize = FindPlacementWidth(width + objectToObjectDistance);
         List<int> potentialIndices = new List<int>();
         //Debug.Log($"Object Size: {placementSize}");
         
         int prevIndex = 0;
-        for (int x = 1; x < objectsState.availableGrids.Count; x++)
+        for (int x = 1; x < gridState.availableGrids.Count; x++)
         {
-            if (objectsState.availableGrids[x-1] + 1 != objectsState.availableGrids[x])
+            if (gridState.availableGrids[x-1] + 1 != gridState.availableGrids[x])
             {
                 prevIndex = x;
             }
             
             // Figure out if the length if long enough to fit object
             int length = (x - prevIndex) + 1;
-            if (length >= placementSize)
+            if (length > placementSize)
             {
                 // finds actual grid ID, because it is not ordered
-                potentialIndices.Add(objectsState.availableGrids[x - placementSize + 1]);
+                potentialIndices.Add(gridState.availableGrids[x - placementSize + 1]);
             }
         }
 
         return potentialIndices;
     }
+
+    // FindSideWallPlacementRange
+    // Finds the side wall placement distance and valid index to prevent placement along edge of the room
+    /*private int[] FindSideWallPlacementRange(int placementSize)
+    {
+        
+    }*/
 
     // FindPlacementWidth()
     // Finds how many indices the objects width might take up, rounded up
@@ -351,10 +359,11 @@ public class ProceduralRoomGen : MonoBehaviour
 
     // GenerateGridState()
     // Generates an GridState with given parameter values, and adds to the current GameState
-    private void GenerateGridState(int room, int roomWidth, float ratio = 1.0f)
+    private void GenerateGridState(int room, float roomWidth, float ratio = 1.0f)
     {
         // this grid right here might have an issue with the change in room - 1   - chris
         if (GameManager.Instance.worldState.roomStates.Count -1 > room) throw new Exception("GenerateObjectsState: Exceeded roomStates size in worldState");
+        
         GridState gridState = new GridState();
         gridState.ratio = ratio;
         gridState.InitializeValidPositions(roomWidth);
