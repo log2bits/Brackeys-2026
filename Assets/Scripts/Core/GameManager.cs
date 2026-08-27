@@ -1,3 +1,5 @@
+using System.Text;
+
 public class GameManager
 {
     // Singleton
@@ -34,6 +36,7 @@ public class GameManager
 
     public WorldState worldState;
     public int currentRoom;
+    public int currentSeed;
     public int lives;
     public float mainCameraZBeforeZoom;
 
@@ -42,5 +45,24 @@ public class GameManager
         worldState = new WorldState();
         lives = 3;
         currentRoom = 0;
+    }
+
+    public static string GenerateRandomString()
+    {
+        string randomString = "";
+        string sampleString = "234567890bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ";
+        for (int i = 0; i < 6; i++)
+        {
+            randomString += sampleString[UnityEngine.Random.Range(0, sampleString.Length)];
+        }
+        return randomString;
+    }
+
+    public static int StringToRandomInt(string input)
+    {
+        byte[] bytes = Encoding.UTF8.GetBytes(input);
+        long total = 0;
+        foreach (byte b in bytes) total = (total * 256 + b) % int.MaxValue;
+        return (int)total;
     }
 }

@@ -1,14 +1,31 @@
+using System;
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private RectTransform newGameUIElements;
+    [SerializeField] private RectTransform playUIElements;
+    [SerializeField] private Vector2 newGameHiddenPosition;
+    [SerializeField] private Vector2 newGameShownPosition;
+    [SerializeField] private Vector2 playHiddenPosition;
+    [SerializeField] private Vector2 playShownPosition;
+
+    [SerializeField] private TMP_InputField seedInputField;
+
     [SerializeField] private GameObject optionsMenuUIHolder;
     [SerializeField] private OptionsMenu optionsMenuScript;
 
+    [Header("Parameters")]
+    [SerializeField] private float menuTransitionTime;
+
+
     // For use when scene transitions are added
     private bool goingToMainScene = false;
+    private bool transitioning = false;
 
     private void Start()
     {
@@ -16,15 +33,49 @@ public class MainMenu : MonoBehaviour
         optionsMenuScript.LoadOptions();
     }
 
+    public void NewGame()
+    {
+        if (goingToMainScene || transitioning)
+        {
+            return;
+        }
+
+        StopAllCoroutines();
+        transitioning = true;
+        StartCoroutine(MoveRect(newGameUIElements, newGameShownPosition, newGameHiddenPosition, menuTransitionTime, FinishTransition));
+        StartCoroutine(MoveRect(playUIElements, playHiddenPosition, playShownPosition, menuTransitionTime, FinishTransition));
+
+        seedInputField.text = GameManager.GenerateRandomString();
+    }
+
+    public void BackToNewGame()
+    {
+        if (goingToMainScene || transitioning)
+        {
+            return;
+        }
+
+        StopAllCoroutines();
+        transitioning = true;
+        StartCoroutine(MoveRect(newGameUIElements, newGameHiddenPosition, newGameShownPosition, menuTransitionTime, FinishTransition));
+        StartCoroutine(MoveRect(playUIElements, playShownPosition, playHiddenPosition, menuTransitionTime, FinishTransition));
+    }
+
+    private void FinishTransition()
+    {
+        transitioning = false;
+    }
+
     public void PlayGame()
     {
-        if (goingToMainScene)
+        if (goingToMainScene || transitioning)
         {
             return;
         }
 
         StopAllCoroutines();
         goingToMainScene = true;
+        GameManager.Instance.currentSeed = GameManager.StringToRandomInt(seedInputField.text);
         PlayGameFinish();
     }
 
@@ -33,20 +84,19 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadSceneAsync("Game");
     }
 
-    /*private IEnumerator MoveRect(RectTransform rectTransform, float deltaY, float time, Action moveCompleted = null)
+    private IEnumerator MoveRect(RectTransform rectTransform, Vector2 startPosition, Vector2 endPosition, float time, Action moveCompleted = null)
     {
         float timeStartedFade = Time.time;
-        float startingY = rectTransform.anchoredPosition.y;
-        float ySet;
+        Vector2 positionSet;
         while (Time.time - timeStartedFade < time)
         {
             yield return null;
 
-            ySet = Mathf.SmoothStep(startingY, startingY + deltaY, (Time.time - timeStartedFade) / time);
-            rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, ySet);
+            positionSet = Vector2.Lerp(startPosition, endPosition, (Time.time - timeStartedFade) / time);
+            rectTransform.anchoredPosition = positionSet;
         }
         moveCompleted?.Invoke();
-    }*/
+    }
 
     public void QuitGame()
     {
@@ -56,6 +106,11 @@ public class MainMenu : MonoBehaviour
 
     public void LoadOptions()
     {
+        if (goingToMainScene || transitioning)
+        {
+            return;
+        }
+
         optionsMenuUIHolder.SetActive(true);
     }
 

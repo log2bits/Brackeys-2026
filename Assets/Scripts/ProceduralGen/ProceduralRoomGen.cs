@@ -121,7 +121,7 @@ public class ProceduralRoomGen : MonoBehaviour
         SpriteRenderer doorSpriteRenderer = doorFullPrefab.transform.GetChild(0).GetComponent<SpriteRenderer>();
         doorSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
         
-        seed = (int)(DateTime.UtcNow.Ticks % int.MaxValue);
+        seed = GameManager.Instance.currentSeed;
         Debug.Log($"Generated Seed: {seed}");
 
         proceduralRandGen = new System.Random(seed);
