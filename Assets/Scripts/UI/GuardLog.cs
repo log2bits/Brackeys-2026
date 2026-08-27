@@ -78,6 +78,7 @@ public class GuardLog : MonoBehaviour
                 }
 
                 Vector2 lastCharacterPosition = GetLastCharacterPosition(guardLogText);
+                Debug.Log("lastCharacterPosition: " + lastCharacterPosition);
                 GameObject logInputField = Instantiate(logInputFieldPrefab, transform.position, Quaternion.identity, transform);
                 RectTransform logInputRectTransform = logInputField.GetComponent<RectTransform>();
                 logInputRectTransform.anchoredPosition = lastCharacterPosition;

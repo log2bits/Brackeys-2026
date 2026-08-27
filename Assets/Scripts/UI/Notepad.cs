@@ -32,10 +32,8 @@ public class Notepad : MonoBehaviour
     private void Start()
     {
         notepadOpen = false;
-        UpdateNotepadHolderActive();
 
         guardLogOpen = false;
-        UpdateGuardLogHolderActive();
     }
 
     public void ToggleNotepad()
@@ -53,25 +51,26 @@ public class Notepad : MonoBehaviour
         {
             notepadHolderTransform.gameObject.SetActive(true);
             notepadInputField.ActivateInputField();
+            notepadInputField.interactable = true;
         }
         else
         {
             notepadInputField.DeactivateInputField();
+            notepadInputField.interactable = false;
         }
 
         float finalYPosition = notepadHolderTransform.anchoredPosition.y + (notepadOpen ? verticalMoveDistance : -1 * verticalMoveDistance);
         notepadTransitioning = true;
-        CoroutineManager.Instance.Run(MoveRectTransformYAxis(notepadHolderTransform, finalYPosition, UpdateNotepadHolderActive));
+        CoroutineManager.Instance.Run(MoveRectTransformYAxis(notepadHolderTransform, finalYPosition, EndNotepadTransition));
 
         // Move guard log left/right
         float finalXPosition = guardLogHolderTransform.anchoredPosition.x + (notepadOpen ? horizontalMoveDistance : -1 * horizontalMoveDistance);
         CoroutineManager.Instance.Run(MoveRectTransformXAxis(guardLogHolderTransform, finalXPosition));
     }
 
-    private void UpdateNotepadHolderActive()
+    private void EndNotepadTransition()
     {
         notepadTransitioning = false;
-        notepadHolderTransform.gameObject.SetActive(notepadOpen);
     }
 
     public void ToggleGuardLog()
@@ -92,13 +91,12 @@ public class Notepad : MonoBehaviour
 
         float finalYPosition = guardLogHolderTransform.anchoredPosition.y + (guardLogOpen ? verticalMoveDistance : -1 * verticalMoveDistance);
         guardLogTransitioning = true;
-        CoroutineManager.Instance.Run(MoveRectTransformYAxis(guardLogHolderTransform, finalYPosition, UpdateGuardLogHolderActive));
+        CoroutineManager.Instance.Run(MoveRectTransformYAxis(guardLogHolderTransform, finalYPosition, EndGuardLogTransition));
     }
 
-    private void UpdateGuardLogHolderActive()
+    private void EndGuardLogTransition()
     {
         guardLogTransitioning = false;
-        guardLogHolderTransform.gameObject.SetActive(guardLogOpen);
     }
 
     private IEnumerator MoveRectTransformYAxis(RectTransform transform, float finalYPosition, Action finished = null)
