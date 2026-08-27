@@ -6,29 +6,41 @@ using UnityEngine.UI;
 
 public class Notepad : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private TMP_InputField inputField;
-    [SerializeField] private GameObject notepadHolder;
+    [Header("Notepad References")]
+    [SerializeField] private TMP_InputField notepadInputField;
     [SerializeField] private RectTransform notepadHolderTransform;
     [SerializeField] private Image notepadButtonImage;
     [SerializeField] private Sprite notepadButtonOpen;
     [SerializeField] private Sprite notepadButtonClose;
 
-    [Header("Parameters")]
-    [SerializeField] private float notepadMoveDistance = 300;
-    [SerializeField] private float notepadMoveTime = 0.5f;
+    [Header("Guard Log References")]
+    [SerializeField] private RectTransform guardLogHolderTransform;
+    [SerializeField] private Image guardLogButtonImage;
+    [SerializeField] private Sprite guardLogButtonOpen;
+    [SerializeField] private Sprite guardLogButtonClose;
 
-    private bool transitioning = false;
+    [Header("Parameters")]
+    [SerializeField] private float verticalMoveDistance = 300;
+    [SerializeField] private float horizontalMoveDistance = 300;
+    [SerializeField] private float moveTime = 0.5f;
+
+    private bool notepadTransitioning = false;
     private bool notepadOpen = false;
+    private bool guardLogTransitioning = false;
+    private bool guardLogOpen = false;
 
     private void Start()
     {
-        notepadHolder.SetActive(false);
+        notepadOpen = false;
+        UpdateNotepadHolderActive();
+
+        guardLogOpen = false;
+        UpdateGuardLogHolderActive();
     }
 
     public void ToggleNotepad()
     {
-        if (transitioning)
+        if (notepadTransitioning)
         {
             return;
         }
@@ -39,46 +51,90 @@ public class Notepad : MonoBehaviour
         
         if (notepadOpen)
         {
-            notepadHolder.SetActive(true);
-            inputField.ActivateInputField();
-            inputField.selectionAnchorPosition = inputField.text.Length;
-            inputField.selectionFocusPosition = inputField.text.Length;
-            inputField.caretPosition = inputField.text.Length;
+            notepadHolderTransform.gameObject.SetActive(true);
+            notepadInputField.ActivateInputField();
         }
         else
         {
-            inputField.DeactivateInputField();
+            notepadInputField.DeactivateInputField();
         }
 
-        Vector2 finalPosition = new Vector2(notepadHolderTransform.anchoredPosition.x, notepadHolderTransform.anchoredPosition.y + (notepadOpen ? notepadMoveDistance : -1 * notepadMoveDistance));
-        CoroutineManager.Instance.Run(MoveNotepad(finalPosition, UpdateNotepadHolderActive));
+        float finalYPosition = notepadHolderTransform.anchoredPosition.y + (notepadOpen ? verticalMoveDistance : -1 * verticalMoveDistance);
+        notepadTransitioning = true;
+        CoroutineManager.Instance.Run(MoveRectTransformYAxis(notepadHolderTransform, finalYPosition, UpdateNotepadHolderActive));
+
+        // Move guard log left/right
+        float finalXPosition = guardLogHolderTransform.anchoredPosition.x + (notepadOpen ? horizontalMoveDistance : -1 * horizontalMoveDistance);
+        CoroutineManager.Instance.Run(MoveRectTransformXAxis(guardLogHolderTransform, finalXPosition));
     }
 
     private void UpdateNotepadHolderActive()
     {
-        notepadHolder.SetActive(notepadOpen);
+        notepadTransitioning = false;
+        notepadHolderTransform.gameObject.SetActive(notepadOpen);
     }
 
-    private IEnumerator MoveNotepad(Vector2 position, Action finished)
+    public void ToggleGuardLog()
     {
-        transitioning = true;
-        Vector3 startingPosition = notepadHolderTransform.anchoredPosition;
+        if (guardLogTransitioning)
+        {
+            return;
+        }
+
+        guardLogOpen = !guardLogOpen;
+
+        guardLogButtonImage.sprite = guardLogOpen ? guardLogButtonClose : guardLogButtonOpen;
+        
+        if (guardLogOpen)
+        {
+            guardLogHolderTransform.gameObject.SetActive(true);
+        }
+
+        float finalYPosition = guardLogHolderTransform.anchoredPosition.y + (guardLogOpen ? verticalMoveDistance : -1 * verticalMoveDistance);
+        guardLogTransitioning = true;
+        CoroutineManager.Instance.Run(MoveRectTransformYAxis(guardLogHolderTransform, finalYPosition, UpdateGuardLogHolderActive));
+    }
+
+    private void UpdateGuardLogHolderActive()
+    {
+        guardLogTransitioning = false;
+        guardLogHolderTransform.gameObject.SetActive(guardLogOpen);
+    }
+
+    private IEnumerator MoveRectTransformYAxis(RectTransform transform, float finalYPosition, Action finished = null)
+    {
+        float startingYPosition = transform.anchoredPosition.y;
 
         float i = 0;
-        while (i < notepadMoveTime)
+        while (i < moveTime)
         {
-            notepadHolderTransform.anchoredPosition = Vector2.Lerp(startingPosition, position, Mathf.SmoothStep(0, 1, i / notepadMoveTime));
+            transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, Mathf.Lerp(startingYPosition, finalYPosition, Mathf.SmoothStep(0, 1, i / moveTime)));
             yield return null;
             i += Time.deltaTime;
         }
 
-        notepadHolderTransform.anchoredPosition = position;
-        transitioning = false;
-        finished.Invoke();
+        transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, finalYPosition);;
+        finished?.Invoke();
+    }
+
+    private IEnumerator MoveRectTransformXAxis(RectTransform transform, float finalXPosition, Action finished = null)
+    {
+        float startingXPosition = transform.anchoredPosition.x;
+
+        float i = 0;
+        while (i < moveTime)
+        {
+            transform.anchoredPosition = new Vector2(Mathf.Lerp(startingXPosition, finalXPosition, Mathf.SmoothStep(0, 1, i / moveTime)), transform.anchoredPosition.y);
+            yield return null;
+            i += Time.deltaTime;
+        }
+
+        transform.anchoredPosition = new Vector2(finalXPosition, transform.anchoredPosition.y);;
+        finished?.Invoke();
     }
 
     public void ClearNotepad()
     {
-        inputField.text = "";
+        notepadInputField.text = "";
     }
 }
