@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 857e9ba7ef7803b41a0167b30cda7c35, type: 3}
-  m_Name: DifficultyTemplate
+  m_Name: Logician
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
-  difficultyName: easy
-  solverDifficulty: 1
+  difficultyName: Logician
+  solverDifficulty: 4
   roomCount: 10
   minObjects: 1
   maxObjects: 2
@@ -21,6 +21,4 @@ MonoBehaviour:
   minDoors: 2
   maxDoors: 6
   roomsPerDoorIncrease: 1
-  minStatementsBeforeProgress: 1
-  maxCompoundStatements: 0
-  durationUntilCompoundIncrease: 0
+  detailMentions: 1

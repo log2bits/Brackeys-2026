@@ -35,6 +35,7 @@ public class GameManager
     public GameState state;
 
     public WorldState worldState;
+    public DifficultyTemplate currentDifficulty;
     public int currentRoom;
     public int currentSeed;
     public int lives;

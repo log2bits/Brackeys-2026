@@ -31,7 +31,6 @@ public class ProceduralRoomGen : MonoBehaviour
     [SerializeField] private GameObject wallPrefab;
     [SerializeField] private GameObject roomLightsPrefab;
     [SerializeField] private List<ObjectDataTemplate> objectDataTemplates;
-    [SerializeField] private DifficultyTemplate difficultySettings;
 
     [Header("Parameters")]
     [SerializeField] private float roomDistance = 20f;
@@ -51,6 +50,7 @@ public class ProceduralRoomGen : MonoBehaviour
     private float doorSize;
     private int objectCount = 0;
     private int seed = 0;
+    private DifficultyTemplate difficulty;
     
     // Constants
     
@@ -82,14 +82,14 @@ public class ProceduralRoomGen : MonoBehaviour
         Initialize();
 
         // Generate room 1, always with two doors
-        GenerateNextRoom(transform.position, difficultySettings.minDoors, 0);
+        GenerateNextRoom(transform.position, difficulty.minDoors, 0);
         
-        RoomSolution roomSolution = DetailBuilder.SolveRoom(0, objectDataTemplates, difficultySettings.detailMentions);
+        RoomSolution roomSolution = DetailBuilder.SolveRoom(0, objectDataTemplates, difficulty.detailMentions);
         Debug.Log($"Correct Door Room 1: {roomSolution.safeDoor}");
         AssignDoorData(roomSolution);
 
         // Generate rest of the rooms. <= cause rooms are one indexed
-        for (int room = 1; room < difficultySettings.roomCount; room++)
+        for (int room = 1; room < difficulty.roomCount; room++)
         {
             int safeDoorIndex = roomSolution.safeDoor;
             Debug.Log($"Random int: {safeDoorIndex}");
@@ -98,15 +98,15 @@ public class ProceduralRoomGen : MonoBehaviour
             nextDoorPosition.z += roomDistance;
 
             // this might be wrong - chris
-            int numDoorsForThisRoom = Mathf.FloorToInt((room) / difficultySettings.roomsPerDoorIncrease) + difficultySettings.minDoors;
-            if (difficultySettings.maxDoors > 0)
+            int numDoorsForThisRoom = Mathf.FloorToInt((room) / difficulty.roomsPerDoorIncrease) + difficulty.minDoors;
+            if (difficulty.maxDoors > 0)
             {
-                numDoorsForThisRoom = Mathf.Min(numDoorsForThisRoom, difficultySettings.maxDoors);
+                numDoorsForThisRoom = Mathf.Min(numDoorsForThisRoom, difficulty.maxDoors);
             }
             Debug.Log($"Num doors : {numDoorsForThisRoom}");
             GenerateNextRoom(nextDoorPosition, numDoorsForThisRoom, room);
 
-            roomSolution = DetailBuilder.SolveRoom(room, objectDataTemplates, difficultySettings.detailMentions);
+            roomSolution = DetailBuilder.SolveRoom(room, objectDataTemplates, difficulty.detailMentions);
             Debug.Log($"Correct Door Room {room + 1}: {roomSolution.safeDoor}");
 
             AssignDoorData(roomSolution);
@@ -122,11 +122,12 @@ public class ProceduralRoomGen : MonoBehaviour
         doorSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
         
         seed = GameManager.Instance.currentSeed;
+        difficulty = GameManager.Instance.currentDifficulty;
         Debug.Log($"Generated Seed: {seed}");
 
         proceduralRandGen = new System.Random(seed);
 
-        objectCount = Mathf.Min(difficultySettings.minObjects, objectDataTemplates.Count);
+        objectCount = Mathf.Min(difficulty.minObjects, objectDataTemplates.Count);
     }
 
     // 
@@ -147,7 +148,7 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         // we generate random seed using our seed, for deterministic values, while having each room be different, since right now
         // if we have the same door size, we get the same seed each time
-        GameManager.Instance.worldState.roomStates.Add(new RoomState(proceduralRandGen.Next(), centralPosition, GetRoomWidth(doorCount), doorCount, difficultySettings.solverDifficulty));
+        GameManager.Instance.worldState.roomStates.Add(new RoomState(proceduralRandGen.Next(), centralPosition, GetRoomWidth(doorCount), doorCount, difficulty.solverDifficulty));
     }
 
     private void GenerateDoors(Vector3 centralPosition, int doorCount, int room)
@@ -224,7 +225,7 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         if (GameManager.Instance.worldState.roomStates.Count <= room || GameManager.Instance.worldState.roomStates[room].gridState == null) throw new Exception($"GenerateObjects: roomState index exceeded {GameManager.Instance.worldState.roomStates.Count}, or ObjectsState is null {GameManager.Instance.worldState.roomStates[room].gridState}");
         // iterate the curr objects
-        int currTotalObjects = Mathf.Min(difficultySettings.minObjects + Mathf.FloorToInt(room / difficultySettings.durationUntilObjectIncrease), Mathf.Min(difficultySettings.maxObjects, objectDataTemplates.Count)); 
+        int currTotalObjects = Mathf.Min(difficulty.minObjects + Mathf.FloorToInt(room / difficulty.durationUntilObjectIncrease), Mathf.Min(difficulty.maxObjects, objectDataTemplates.Count)); 
         //if (room % difficultySettings.durationUntilObjectIncrease)
 
         List<int> indices = new List<int>();
