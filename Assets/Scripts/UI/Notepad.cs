@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class Notepad : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class Notepad : MonoBehaviour
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private GameObject notepadHolder;
     [SerializeField] private RectTransform notepadHolderTransform;
+    [SerializeField] private Image notepadButtonImage;
+    [SerializeField] private Sprite notepadButtonOpen;
+    [SerializeField] private Sprite notepadButtonClose;
 
     [Header("Parameters")]
     [SerializeField] private float notepadMoveDistance = 300;
@@ -30,6 +34,8 @@ public class Notepad : MonoBehaviour
         }
 
         notepadOpen = !notepadOpen;
+
+        notepadButtonImage.sprite = notepadOpen ? notepadButtonClose : notepadButtonOpen;
         
         if (notepadOpen)
         {
@@ -44,7 +50,7 @@ public class Notepad : MonoBehaviour
             inputField.DeactivateInputField();
         }
 
-        Vector2 finalPosition = new Vector2(notepadHolderTransform.anchoredPosition.x + (notepadOpen ? notepadMoveDistance : -1 * notepadMoveDistance), notepadHolderTransform.anchoredPosition.y);
+        Vector2 finalPosition = new Vector2(notepadHolderTransform.anchoredPosition.x, notepadHolderTransform.anchoredPosition.y + (notepadOpen ? notepadMoveDistance : -1 * notepadMoveDistance));
         CoroutineManager.Instance.Run(MoveNotepad(finalPosition, UpdateNotepadHolderActive));
     }
 
