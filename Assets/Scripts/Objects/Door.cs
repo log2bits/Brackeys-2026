@@ -44,7 +44,7 @@ public class Door : ClickableObject
 
             GameManager.Instance.state = GameManager.GameState.ZOOMING;
 
-            Dialogue.Instance.StartDialogue(dialogue, !hasTalkedBefore, ZoomOut);
+            Dialogue.Instance.StartDialogue(FormatDialogue(dialogue), !hasTalkedBefore, ZoomOut);
             hasTalkedBefore = true;
         }
 
@@ -135,6 +135,12 @@ public class Door : ClickableObject
         }
 
         doorSpriteTransform.eulerAngles = finalRotation;
+    }
+
+    private string FormatDialogue(string dialogue)
+    {
+        dialogue = dialogue.Replace("|", "");
+        return char.ToUpper(dialogue[0]) + dialogue.Substring(1) + ".";
     }
     
 }
