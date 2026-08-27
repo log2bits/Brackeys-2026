@@ -36,6 +36,8 @@ public class ProceduralRoomGen : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private float roomDistance = 20f;
     [SerializeField] private float objectDoorDistance = 5f; // how much in front of the doors
+    [SerializeField] private float objectGroundDistance = 5f; // how much in front of the doors
+    [SerializeField] private float objectCeilingDistance = 5f; // how much in front of the doors
     [SerializeField] private float objectToObjectDistance = 0; // handles offsets from object to object
     [SerializeField] private float objectInvalidationDistance = 0; // handles offsets for object invalidation
     [SerializeField] private float roomLightsYPosition = 17f;
