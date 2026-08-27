@@ -11,6 +11,29 @@ namespace LogicSolver
 		Memory = 4
 	}
 
+	// a run of bands, used the same way for claims and for kinds of sentence
+	public struct Band
+	{
+		public readonly int first;
+		public readonly int last;
+
+		public Band(int first, int last)
+		{
+			this.first = first;
+			this.last = last;
+		}
+
+		public bool Holds(int band) { return band >= first && band <= last; }
+		public bool IsEmpty { get { return first > last; } }
+
+		public Band Meet(Band other)
+		{
+			return new Band(Math.Max(first, other.first), Math.Min(last, other.last));
+		}
+
+		public override string ToString() { return first + " to " + last; }
+	}
+
 	public sealed class Claim
 	{
 		public readonly Topic topic;
@@ -22,9 +45,11 @@ namespace LogicSolver
 		// the Detail this came from, if any
 		public readonly object factSource;
 
-		// the bands this can be said on its own in
-		public readonly int firstBand;
-		public readonly int lastBand;
+		// the bands this claim may be used in, alone or as half of a longer sentence
+		public readonly Band band;
+
+		public int firstBand { get { return band.first; } }
+		public int lastBand { get { return band.last; } }
 
 		public Claim(Topic topic, string text, Func<World, bool> holds,
 			int firstBand = 2, int lastBand = 3, bool namesAValue = false,
@@ -33,8 +58,7 @@ namespace LogicSolver
 			this.topic = topic;
 			this.text = text;
 			this.holds = holds;
-			this.firstBand = firstBand;
-			this.lastBand = lastBand;
+			this.band = new Band(firstBand, lastBand);
 			this.namesAValue = namesAValue;
 			this.factSource = factSource;
 		}
