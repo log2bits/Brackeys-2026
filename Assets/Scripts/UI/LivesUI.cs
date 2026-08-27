@@ -20,7 +20,6 @@ public class LivesUI : MonoBehaviour
 
     private void UpdateHeartImages()
     {
-        Debug.Log("alksdfbalkjsdf");
         int lives = GameManager.Instance.lives;
         for (int i = 0; i < heartImages.Length; i++)
         {
