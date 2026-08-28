@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Analyst
   solverDifficulty: 2
-  roomCount: 8
+  roomCount: 6
   minObjects: 1
   maxObjects: 2
   durationUntilObjectIncrease: 2
   minDoors: 2
-  maxDoors: 6
-  roomsPerDoorIncrease: 1
+  maxDoors: 5
+  roomsPerDoorIncrease: 1.5
   detailMentions: 1

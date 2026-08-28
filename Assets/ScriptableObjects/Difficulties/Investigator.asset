@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Investigator
   solverDifficulty: 3
-  roomCount: 9
+  roomCount: 5
   minObjects: 1
   maxObjects: 2
   durationUntilObjectIncrease: 2
