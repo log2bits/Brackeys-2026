@@ -1365,16 +1365,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralRoomGen
   doorFullPrefab: {fileID: 7530830482215578029, guid: aac19c4cd22eb4b4db837fd34e555594, type: 3}
   wallPrefab: {fileID: 7530830482215578029, guid: a25b4953a17efec4baccafaf131a0252, type: 3}
+  ceilingTiles: {fileID: 164846444}
   roomLightsPrefab: {fileID: 3994498510218544884, guid: 9a353363b6cbc4c4baff38421172dbd7, type: 3}
   objectDataTemplates:
   - {fileID: 11400000, guid: 0bf19ecc9247deb4691ab39bc0009ec8, type: 2}
   difficultyIfNull: {fileID: 11400000, guid: f77c6904f89e7de48864c74a624c46c7, type: 2}
   roomDistance: 20
   objectDoorDistance: 0.5
+  objectGroundDistance: 10
+  objectCeilingDistance: 10
+  objectRelHeights:
+  - 0
+  - 0
+  - 5
   objectToObjectDistance: -1.8
-  objectInvalidationDistance: -1.8
+  objectInvalidationDoorDistance: 0
   roomLightsYPosition: 17
-  objectRatio: 0.1
 --- !u!1 &676833426
 GameObject:
   m_ObjectHideFlags: 0

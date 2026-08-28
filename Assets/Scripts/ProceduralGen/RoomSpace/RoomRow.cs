@@ -42,6 +42,10 @@ public class RoomRow
         return false;
     }
 
+    // CheckForSpace
+    // spaceTaken - horizontal space
+    // allRoomRows - all rows in the roomSpace (i think - chris)
+    // verticalSpaceTaken - spaces taken
     public static bool CheckForSpace(List<RoomRow> allRoomRows, Range spaceTaken, List<int> verticalSpaceTaken)
     {
         List<Range> shared = GetSharedFreeSpace(allRoomRows, verticalSpaceTaken);
@@ -55,6 +59,9 @@ public class RoomRow
         return false;
     }
 
+    // spaceTaken - horizontal space
+    // allRoomRows - all rows in the roomSpace (i think - chris)
+    // verticalSpaceTaken - spaces taken
     public static bool AddObject(List<RoomRow> allRoomRows, Range spaceTaken, List<int> verticalSpaceTaken)
     {
         if (!CheckForSpace(allRoomRows, spaceTaken, verticalSpaceTaken))

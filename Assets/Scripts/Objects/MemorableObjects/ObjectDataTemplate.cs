@@ -6,6 +6,9 @@ public class ObjectDataTemplate : ScriptableObject
 {
     [SerializeField] private GameObject objectPrefab;
     [SerializeField] private string roomTemplate;
+    [SerializeField] private List<int> rowsTaken; // determines which rows are taken up by this object
+    [SerializeField] private int rowSource; // determines which point of origin in global world is the object placed at
+    [SerializeField] private float invalidationRange;
     [SerializeField] private List<ObjectPropertyData> objectPropertyDatas;
 
     public GameObject GetObjectPrefab()
@@ -20,6 +23,18 @@ public class ObjectDataTemplate : ScriptableObject
     public string GetRoomTemplate()
     {
         return roomTemplate;
+    }
+    public List<int> GetRowsTaken()
+    {
+        return rowsTaken;
+    }
+    public int GetRowSource()
+    {
+        return rowSource;
+    }
+    public float GetInvalidationRange()
+    {
+        return invalidationRange;
     }
     
 }
