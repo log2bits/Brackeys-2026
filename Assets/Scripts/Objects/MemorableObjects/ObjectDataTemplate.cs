@@ -5,6 +5,7 @@ using UnityEngine;
 public class ObjectDataTemplate : ScriptableObject
 {
     [SerializeField] private GameObject objectPrefab;
+    [SerializeField] private float chance;
     [SerializeField] private string roomTemplate;
     [SerializeField] private List<int> rowsTaken; // determines which rows are taken up by this object
     [SerializeField] private int rowSource; // determines which point of origin in global world is the object placed at
@@ -14,6 +15,10 @@ public class ObjectDataTemplate : ScriptableObject
     public GameObject GetObjectPrefab()
     {
         return objectPrefab;
+    }
+    public float GetChance()
+    {
+        return chance;
     }
 
     public List<ObjectPropertyData> GetObjectPropertyDatas()
