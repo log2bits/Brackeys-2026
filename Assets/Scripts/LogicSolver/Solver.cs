@@ -34,26 +34,18 @@ namespace LogicSolver
 
 		// null means the player is told nothing about how many lie
 		public int[] liarCounts = null;
-
 		public List<Detail> details = new List<Detail>();
-
 		public int seed = 0;
-
 		public int statementsToMakeProgress = -1;
 
 		// 0 easy, 1 medium, 2 hard, 3 extreme, 4 logician
 		public int difficulty = 1;
 
-
 		// how many details the room should carry, clamped down on small boards
 		public int detailMentions = 1;
-
 		public int minMemoryImpact = 2;
-
 		public int sampleSize = 60;
-
 		public int maxAttempts = 20000;
-
 		public int liarCount
 		{
 			get { return liarCounts != null && liarCounts.Length > 0 ? liarCounts[0] : 1; }
@@ -64,16 +56,78 @@ namespace LogicSolver
 	public sealed class RoomSolution
 	{
 		public int safeDoor;
-
 		public int[] liars;
-
-		public string[] statements;
-
+		public DoorStatement[] doorStatements;
 		public RoomStats stats;
 	}
 
 	public static class Solver
 	{
+		private static DoorStatement Split(Statement said, StatementCompiler.Pool pool)
+		{
+			DoorStatement sentence = new DoorStatement
+			{
+				speaker = said.speaker,
+				sentence = said.text
+			};
+
+			List<string> pieces = new List<string>();
+			List<string> answers = new List<string>();
+			ReadParts(said.text, pieces, answers);
+
+			for (int gap = 0; gap < answers.Count; gap++)
+			{
+				List<string> options = new List<string>();
+				options.Add(answers[gap]);
+
+				foreach (Statement other in pool.All)
+				{
+					if (other.isCompound != said.isCompound) continue;
+					List<string> otherPieces = new List<string>();
+					List<string> otherAnswers = new List<string>();
+					ReadParts(other.text, otherPieces, otherAnswers);
+					if (otherAnswers.Count != answers.Count) continue;
+					if (!Same(pieces, otherPieces)) continue;
+
+					// every other gap has to match, or it is a different sentence
+					bool onlyThisGapDiffers = true;
+					for (int i = 0; i < answers.Count; i++)
+					{
+						if (i != gap && answers[i] != otherAnswers[i]) onlyThisGapDiffers = false;
+					}
+					if (!onlyThisGapDiffers) continue;
+					if (!options.Contains(otherAnswers[gap])) options.Add(otherAnswers[gap]);
+				}
+
+				options.Sort(StringComparer.Ordinal);
+				sentence.dropdownContents.Add(options);
+			}
+
+			return sentence;
+		}
+
+		private static void ReadParts(string marked, List<string> pieces, List<string> answers)
+		{
+			int at = 0;
+			while (true)
+			{
+				int open = marked.IndexOf('|', at);
+				if (open < 0) { pieces.Add(marked.Substring(at)); return; }
+				int close = marked.IndexOf('|', open + 1);
+				if (close < 0) { pieces.Add(marked.Substring(at)); return; }
+				pieces.Add(marked.Substring(at, open - at));
+				answers.Add(marked.Substring(open + 1, close - open - 1));
+				at = close + 1;
+			}
+		}
+
+		private static bool Same(List<string> a, List<string> b)
+		{
+			if (a.Count != b.Count) return false;
+			for (int i = 0; i < a.Count; i++) if (a[i] != b[i]) return false;
+			return true;
+		}
+
 		// even the pool up, or a guard mentioning a detail is probably lying
 		private static List<Detail> Balanced(List<Detail> given, Random rng)
 		{
@@ -140,17 +194,18 @@ namespace LogicSolver
 				BuiltRoom room = builder.TryBuild(rng, wantDoor);
 				if (room == null) continue;
 
-				string[] lines = new string[settings.doorCount];
+				DoorStatement[] sentences = new DoorStatement[settings.doorCount];
 				foreach (Statement statement in room.statements)
 				{
-					lines[statement.speaker] = statement.text;
+					DoorStatement sentence = Split(statement, pools[statement.speaker]);
+					sentences[statement.speaker] = sentence;
 				}
 
 				return new RoomSolution
 				{
 					safeDoor = room.safeDoor,
 					liars = room.liars,
-					statements = lines,
+					doorStatements = sentences,
 					stats = room.stats
 				};
 			}

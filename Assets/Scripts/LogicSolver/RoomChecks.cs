@@ -16,7 +16,6 @@ namespace LogicSolver
 			public int weakMemory;
 			public int wrongDifficulty;
 			public int doorGivenAway;
-			public int statementTooHard;
 
 			public override string ToString()
 			{
@@ -26,7 +25,6 @@ namespace LogicSolver
 					+ ", weak memory " + weakMemory
 					+ ", wrong difficulty " + wrongDifficulty
 					+ ", door given away " + doorGivenAway
-					+ ", statement too hard " + statementTooHard
 ;
 			}
 		}
