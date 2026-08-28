@@ -127,12 +127,10 @@ public class ProceduralRoomGen : MonoBehaviour
 
         if (GameManager.Instance.currentDifficulty == null)
         {
-            difficulty = difficultyIfNull;
+            GameManager.Instance.currentDifficulty = difficultyIfNull;
         }
-        else
-        {
-            difficulty = GameManager.Instance.currentDifficulty;
-        }
+
+        difficulty = GameManager.Instance.currentDifficulty;
 
         objectCount = Mathf.Min(difficulty.minObjects, objectDataTemplates.Count);
     }
@@ -182,7 +180,6 @@ public class ProceduralRoomGen : MonoBehaviour
 
             Door doorScript = door.transform.GetChild(1).GetComponent<Door>();
             if (doorScript == null) throw new Exception("ProceduralRoomGen: Door script not found on instantiated door");
-            doorScript.SetDialogue("Missing Dialogue");
             doorScript.SetNumber(currDoor);
 
             // Invalidate the position of the door in the grid
@@ -202,7 +199,7 @@ public class ProceduralRoomGen : MonoBehaviour
         currentDoors[roomSolution.safeDoor].doorComponent.SetIsSafe(true);
         for (int currDoor = 0; currDoor < currentDoors.Count; currDoor++)
         {
-            currentDoors[currDoor].doorComponent.SetDialogue(roomSolution.statements[currDoor]);
+            currentDoors[currDoor].doorComponent.SetDialogue(roomSolution.doorStatements[currDoor]);
         }
     }
 

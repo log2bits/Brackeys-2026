@@ -1,9 +1,9 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using LogicSolver;
+using System.Text;
 
 public class Door : ClickableObject
 {
@@ -17,7 +17,7 @@ public class Door : ClickableObject
     [SerializeField] private float doorRotateAngle;
     [SerializeField] private float doorZoomZDistance;
 
-    private string dialogue = "";
+    private DoorStatement doorStatement;
     private bool safe = false;
     private bool hasTalkedBefore = false;
     private bool open; 
@@ -45,10 +45,10 @@ public class Door : ClickableObject
 
             GameManager.Instance.state = GameManager.GameState.ZOOMING;
 
-            Dialogue.Instance.StartDialogue(ExtraFormatDialogue(dialogue), !hasTalkedBefore, ZoomOut);
+            Dialogue.Instance.StartDialogue(ExtraFormatDialogue(doorStatement.sentence), !hasTalkedBefore, ZoomOut);
             if (!hasTalkedBefore)
             {
-                GuardLog.Instance.AddToLog("Door " + (doorNumber + 1) + ": " + FormatDialogue(dialogue));
+                GuardLog.Instance.AddToLog(doorStatement, doorNumber);
             }
             hasTalkedBefore = true;
         }
@@ -108,10 +108,12 @@ public class Door : ClickableObject
         return;
     }
 
-    public void SetDialogue(string dialogue)
+    public void SetDialogue(DoorStatement doorStatement)
     {
-        this.dialogue = dialogue;
+        this.doorStatement = doorStatement;
+        this.doorStatement.sentence = FormatDialogue(this.doorStatement.sentence);
     }
+
     public void SetIsSafe(bool IsSafe = false)
     {
         this.safe = IsSafe;
@@ -146,7 +148,6 @@ public class Door : ClickableObject
 
     private string ExtraFormatDialogue(string dialogue)
     {
-        dialogue = FormatDialogue(dialogue);
         int barCount = 0;
         int barIndex = dialogue.IndexOf('|');
         while (barIndex != -1 && barCount < 1000)
@@ -170,7 +171,22 @@ public class Door : ClickableObject
 
     private string FormatDialogue(string dialogue)
     {
-        return char.ToUpper(dialogue[0]) + dialogue.Substring(1) + ".";
+        return CapitalizeFirstLetter(dialogue) + ".";
+    }
+
+    private string CapitalizeFirstLetter(string dialogue)
+    {
+        StringBuilder stringBuilder = new StringBuilder(dialogue);
+        string sampleString = "abcdefghijklmnopqrstuvwxyz";
+        for (int i = 0; i < dialogue.Length; i++)
+        {
+            if (sampleString.Contains(dialogue[i]))
+            {
+                stringBuilder[i] = char.ToUpper(dialogue[i]);
+                return stringBuilder.ToString();
+            }
+        }
+        return dialogue;
     }
     
 }

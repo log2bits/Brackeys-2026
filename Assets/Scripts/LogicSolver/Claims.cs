@@ -35,12 +35,12 @@ namespace LogicSolver
 		public override string ToString() { return first + " to " + last; }
 	}
 
-	public sealed class Sentence {
+	public sealed class DoorStatement {
 		public int speaker;
 		// "every door numbered |higher| than me is |lying|"
 		public string sentence;
 		// // [ ["higher", "lower"], ["lying", "honest"] ]
-		public List<List<string>> dropdown = new List<List<string>>();
+		public List<List<string>> dropdownContents = new List<List<string>>();
 		public string Spoken { get { return sentence.Replace("|", ""); } }
 		public override string ToString() { return Spoken; }
 	}

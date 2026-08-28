@@ -45,9 +45,9 @@ public class LogicSolverDemo : MonoBehaviour
 		}
 
 		StringBuilder text = new StringBuilder();
-		for (int guard = 0; guard < room.statements.Length; guard++)
+		for (int guard = 0; guard < room.doorStatements.Length; guard++)
 		{
-			text.AppendLine("Door " + (guard + 1) + ": \"" + room.statements[guard].Replace("|", "") + "\"");
+			text.AppendLine("Door " + (guard + 1) + ": \"" + room.doorStatements[guard].Spoken + "\"");
 		}
 			text.AppendLine("ANSWER: ||door " + (room.safeDoor + 1)
 				+ ", lying doors: " + Join(room.liars) + "||");

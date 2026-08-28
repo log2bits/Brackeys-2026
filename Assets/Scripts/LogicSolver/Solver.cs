@@ -57,16 +57,15 @@ namespace LogicSolver
 	{
 		public int safeDoor;
 		public int[] liars;
-		public string[] statements;
-		public Sentence[] sentences;
+		public DoorStatement[] doorStatements;
 		public RoomStats stats;
 	}
 
 	public static class Solver
 	{
-		private static Sentence Split(Statement said, StatementCompiler.Pool pool)
+		private static DoorStatement Split(Statement said, StatementCompiler.Pool pool)
 		{
-			Sentence sentence = new Sentence
+			DoorStatement sentence = new DoorStatement
 			{
 				speaker = said.speaker,
 				sentence = said.text
@@ -101,7 +100,7 @@ namespace LogicSolver
 				}
 
 				options.Sort(StringComparer.Ordinal);
-				sentence.dropdown.Add(options);
+				sentence.dropdownContents.Add(options);
 			}
 
 			return sentence;
@@ -195,21 +194,18 @@ namespace LogicSolver
 				BuiltRoom room = builder.TryBuild(rng, wantDoor);
 				if (room == null) continue;
 
-				string[] lines = new string[settings.doorCount];
-				Sentence[] sentences = new Sentence[settings.doorCount];
+				DoorStatement[] sentences = new DoorStatement[settings.doorCount];
 				foreach (Statement statement in room.statements)
 				{
-					Sentence sentence = Split(statement, pools[statement.speaker]);
+					DoorStatement sentence = Split(statement, pools[statement.speaker]);
 					sentences[statement.speaker] = sentence;
-					lines[statement.speaker] = sentence.Spoken;
 				}
 
 				return new RoomSolution
 				{
 					safeDoor = room.safeDoor,
 					liars = room.liars,
-					statements = lines,
-					sentences = sentences,
+					doorStatements = sentences,
 					stats = room.stats
 				};
 			}
