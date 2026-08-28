@@ -8,6 +8,7 @@ public class DifficultyTemplate : ScriptableObject
     public int solverDifficulty;
 
     public int roomCount = 2;
+    public float objectMultiplier = 1.0f;
     public int minObjects = 1;
     public int maxObjects = 2;
     public int durationUntilObjectIncrease = 2;

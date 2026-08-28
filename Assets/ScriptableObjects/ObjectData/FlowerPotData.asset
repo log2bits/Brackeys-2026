@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: FlowerPotData
   m_EditorClassIdentifier: Assembly-CSharp::ObjectDataTemplate
   objectPrefab: {fileID: 7530830482215578029, guid: 281c4d3e7fb809d409a6d95f4111f248, type: 3}
+  chance: 0.2
   roomTemplate: there was no potted plant in {1}
+  rowsTaken: 01000000
+  rowSource: 1
+  invalidationRange: -0.5
   objectPropertyDatas:
   - propertyName: flower color
     template: there was a {0} flower in {1}
