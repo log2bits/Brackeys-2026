@@ -28,6 +28,7 @@ public class GuardLog : MonoBehaviour
     [Header("References")]
     [SerializeField] private TextMeshProUGUI guardLogText;
     [SerializeField] private GameObject statementDropdownPrefab;
+    [SerializeField] private GameObject scrollContainer;
 
     private DoorStatement[] doorStatements;
     private List<TMP_Dropdown>[] statementDropdowns;
@@ -122,7 +123,7 @@ public class GuardLog : MonoBehaviour
                     statementDropdownRectTransform.sizeDelta = new Vector2(addedStringWidth, statementDropdownRectTransform.sizeDelta.y);
                 }
             }
-            finalGuardLogText += "\n";
+            finalGuardLogText += "\n\n";
         }
         
         guardLogText.text = finalGuardLogText;      
@@ -136,7 +137,7 @@ public class GuardLog : MonoBehaviour
             return statementDropdowns[doorID][dropdownIndex];
         }
 
-        GameObject statementDropdownGameObject = Instantiate(statementDropdownPrefab, transform.position, Quaternion.identity, transform);
+        GameObject statementDropdownGameObject = Instantiate(statementDropdownPrefab, transform.position, Quaternion.identity, scrollContainer.transform);
         statementDropdown = statementDropdownGameObject.GetComponentInChildren<TMP_Dropdown>();
         if (statementDropdown == null)
         {
