@@ -4,13 +4,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using LogicSolver;
 using System.Text;
+using TMPro;
 
 public class Door : ClickableObject
 {
     [Header("References")]
-    [SerializeField] private Sprite[] doorNumbers;
     [SerializeField] private Transform doorSpriteTransform;
-    [SerializeField] private SpriteRenderer doorNumbersRenderer;
+    [SerializeField] private TextMeshProUGUI doorNumbersText;
 
     [Header("Parameters")]
     [SerializeField] private float doorRotateTime;
@@ -121,13 +121,10 @@ public class Door : ClickableObject
 
     public void SetNumber(int number)
     {
-        doorNumber = number;
-        if (number >= doorNumbers.Length)
-        {
-            Debug.LogWarning("Not enough door numbers on door prefab!");
-            return;
-        }
-        doorNumbersRenderer.sprite = doorNumbers[number];
+        this.doorNumber = number;
+
+        string doorNumber = "<b>" + number.ToString();
+        doorNumbersText.text = doorNumber;
     }
 
     private IEnumerator RotateDoor(float rotateAmount)

@@ -128,9 +128,11 @@ public class ProceduralRoomGen : MonoBehaviour
         SpriteRenderer doorFullSpriteRenderer = doorFullPrefab.transform.GetChild(0).GetComponent<SpriteRenderer>();
         doorFullSize = doorFullSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorFullSpriteRenderer.transform.localScale.x);
         
-        SpriteRenderer doorSpriteRenderer = doorFullPrefab.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
-        doorCompSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
-
+        SpriteRenderer doorSpriteRenderer = doorFullPrefab.transform.GetChild(1).GetChild(0).GetComponent<SpriteRenderer>();
+        //Debug.Log("doorSpriteRenderer: " + doorSpriteRenderer.gameObject.name);
+        //doorCompSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
+        doorCompSize = 3.2f;
+        
         seed = GameManager.Instance.currentSeed;
         proceduralRandGen = new System.Random(seed);
 
