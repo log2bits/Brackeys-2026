@@ -15,6 +15,7 @@ namespace LogicSolver
 			public int tooFewMemories;
 			public int weakMemory;
 			public int wrongDifficulty;
+			public int doorGivenAway;
 			public int statementTooHard;
 
 			public override string ToString()
@@ -24,6 +25,7 @@ namespace LogicSolver
 					+ ", too few memories " + tooFewMemories
 					+ ", weak memory " + weakMemory
 					+ ", wrong difficulty " + wrongDifficulty
+					+ ", door given away " + doorGivenAway
 					+ ", statement too hard " + statementTooHard
 ;
 			}
@@ -55,8 +57,12 @@ namespace LogicSolver
 				return false;
 			}
 
-			// a room has to actually reach its own band, or an extreme one could be built
-			// entirely out of easy ingredients
+			if (GivesTheDoorAway(space, chosen))
+			{
+				tally.doorGivenAway++;
+				return false;
+			}
+
 			bool atBand = !anythingAtBand;
 			foreach (Statement statement in chosen)
 			{
@@ -132,6 +138,37 @@ namespace LogicSolver
 				weakest = Math.Min(weakest, space.CountPossibleDoors(space.AllowedByAll(rest)));
 			}
 			return weakest == int.MaxValue ? space.doorCount : weakest;
+		}
+
+		private static bool GivesTheDoorAway(WorldSpace space, List<Statement> chosen)
+		{
+			List<Statement> aboutDoor = new List<Statement>();
+			foreach (Statement statement in chosen)
+			{
+				if ((statement.topic & Topic.Door) != 0) aboutDoor.Add(statement);
+			}
+			if (aboutDoor.Count == 0) return false;
+
+			int readings = 1 << aboutDoor.Count;
+			int settled = 0;
+			for (int reading = 0; reading < readings; reading++)
+			{
+				BitSet left = space.everyWorld;
+				for (int i = 0; i < aboutDoor.Count; i++)
+				{
+					Statement statement = aboutDoor[i];
+					BitSet lies = space.whereGuardLies[statement.speaker];
+					BitSet side = (reading & (1 << i)) != 0 ? lies : lies.Not();
+					left = left.And(statement.possibleWorlds).And(side);
+				}
+				if (left.IsEmpty) continue;
+				if (space.CountPossibleDoors(left) == 1)
+				{
+					settled++;
+					if (settled > 1) return false;
+				}
+			}
+			return settled == 1;
 		}
 
 		private static IEnumerable<List<Statement>> GroupsOfSize(List<Statement> source, int size)

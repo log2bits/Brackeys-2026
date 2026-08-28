@@ -49,21 +49,21 @@ namespace LogicSolver
 			if (speaker > 0 && speaker < numDoors - 1)
 			{
 				list.Add(new Claim(Topic.Door, "the safe door |is| next to me",
-					world => Math.Abs(world.safeDoor - speaker) == 1, 0, 0));
+					world => Math.Abs(world.safeDoor - speaker) == 1, 0, 1));
 				list.Add(new Claim(Topic.Door, "the safe door |is not| next to me",
-					world => Math.Abs(world.safeDoor - speaker) != 1, 0, 0));
+					world => Math.Abs(world.safeDoor - speaker) != 1, 0, 1));
 			}
 
 			if (numDoors >= 4)
 			{
 				list.Add(new Claim(Topic.Door, "the safe door is |at| an end of the room",
-					world => world.safeDoor == 0 || world.safeDoor == numDoors - 1, 0, 0));
+					world => world.safeDoor == 0 || world.safeDoor == numDoors - 1, 0, 1));
 				list.Add(new Claim(Topic.Door, "the safe door is |not at| an end of the room",
-					world => world.safeDoor != 0 && world.safeDoor != numDoors - 1, 0, 0));
+					world => world.safeDoor != 0 && world.safeDoor != numDoors - 1, 0, 1));
 				list.Add(new Claim(Topic.Door, "the safe door is |odd| numbered",
-					world => world.safeDoor % 2 == 0, 0, 0));
+					world => world.safeDoor % 2 == 0, 0, 1));
 				list.Add(new Claim(Topic.Door, "the safe door is |even| numbered",
-					world => world.safeDoor % 2 == 1, 0, 0));
+					world => world.safeDoor % 2 == 1, 0, 1));
 			}
 
 		}
@@ -213,13 +213,13 @@ namespace LogicSolver
 			const Topic both = Topic.Door | Topic.Liar;
 
 			list.Add(new Claim(both, "every unsafe door is |lying|",
-				world => !AnyGuard(numDoors, guard => guard != world.safeDoor && !world.Lies(guard)), 2, 3));
+				world => !AnyGuard(numDoors, guard => guard != world.safeDoor && !world.Lies(guard)), 0, 3));
 			list.Add(new Claim(both, "every unsafe door is |honest|",
-				world => !AnyGuard(numDoors, guard => guard != world.safeDoor && world.Lies(guard)), 2, 3));
+				world => !AnyGuard(numDoors, guard => guard != world.safeDoor && world.Lies(guard)), 0, 3));
 			list.Add(new Claim(both, "at least one unsafe door is |lying|",
-				world => AnyGuard(numDoors, guard => guard != world.safeDoor && world.Lies(guard)), 2, 3));
+				world => AnyGuard(numDoors, guard => guard != world.safeDoor && world.Lies(guard)), 0, 3));
 			list.Add(new Claim(both, "at least one unsafe door is |honest|",
-				world => AnyGuard(numDoors, guard => guard != world.safeDoor && !world.Lies(guard)), 2, 3));
+				world => AnyGuard(numDoors, guard => guard != world.safeDoor && !world.Lies(guard)), 0, 3));
 
 			list.Add(new Claim(both, "the safe door is |lying|",
 				world => world.Lies(world.safeDoor), 0, 2));
