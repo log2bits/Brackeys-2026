@@ -255,31 +255,40 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         if (GameManager.Instance.worldState.roomStates.Count <= room || GameManager.Instance.worldState.roomStates[room].roomSpace == null) throw new Exception($"GenerateObjects: roomState index exceeded {GameManager.Instance.worldState.roomStates.Count}, or ObjectsState is null {GameManager.Instance.worldState.roomStates[room].roomSpace}");
         // iterate the curr objects
-        int currTotalObjects = Mathf.Min(difficulty.minObjects + Mathf.FloorToInt(room / difficulty.durationUntilObjectIncrease), Mathf.Min(difficulty.maxObjects, objectDataTemplates.Count)); 
+        // this is originally designed for if we ever have a max current objects and a total max objects
+        //int currTotalObjects = Mathf.Min(difficulty.minObjects + Mathf.FloorToInt(room / difficulty.durationUntilObjectIncrease), Mathf.Min(difficulty.maxObjects, objectDataTemplates.Count)); 
+        // this is for our current itertation, being no limit for max, rather all is tied to room currently
+        int currTotalObjects = objectDataTemplates.Count;
 
         List<int> indices = new List<int>();
-        for (int i = 0; i < objectDataTemplates.Count; i++) indices.Add(i);
+        for (int i = 0; i < objectDataTemplates.Count; i++) 
+        {
+            float objectBaseChance = objectDataTemplates[i].GetChance() * doorCount * difficulty.objectMultiplier;
+            if (objectBaseChance < (float)proceduralRandGen.NextDouble()) indices.Add(i);
+        }
 
         Debug.Log($"Generating Objects: {currTotalObjects}");
         //PrintGrid(room);
 
-        for(int currObject = 0; currObject < currTotalObjects; currObject++)
+        for(int currObject = 0; currObject < indices.Count; currObject++)
         {
-            int randomIndex = proceduralRandGen.Next(0, indices.Count);
+            // also old random index, save just in case
+            //int randomIndex = proceduralRandGen.Next(0, indices.Count);
             //Debug.Log($"RandomIndex for Object: {randomIndex}");
+            // new random int is not curr object, which isnt random, rather it takes what was calculated above
             
-            float width = GetMaxWidthOfObject(objectDataTemplates[randomIndex].GetObjectPrefab()) + objectDataTemplates[randomIndex].GetInvalidationRange();
+            float width = GetMaxWidthOfObject(objectDataTemplates[currObject].GetObjectPrefab()) + objectDataTemplates[currObject].GetInvalidationRange();
 
             RoomSpace roomSpace = GameManager.Instance.worldState.roomStates[room].roomSpace;
-            Vector3 placementPosition = SetupRandomizedPlacement(roomSpace, objectDataTemplates[randomIndex], GameManager.Instance.worldState.roomStates[room].globalPosition, width, GetRoomWidth(doorCount));
+            Vector3 placementPosition = SetupRandomizedPlacement(roomSpace, objectDataTemplates[currObject], GameManager.Instance.worldState.roomStates[room].globalPosition, width, GetRoomWidth(doorCount));
             if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
-            GameObject objectGenerated = Instantiate(objectDataTemplates[randomIndex].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
+            GameObject objectGenerated = Instantiate(objectDataTemplates[currObject].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
             GameManager.Instance.worldState.roomStates[room].objects.Add(objectGenerated);
             
-            ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, objectDataTemplates[randomIndex].GetObjectPropertyDatas(), proceduralRandGen);
+            ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, objectDataTemplates[currObject].GetObjectPropertyDatas(), proceduralRandGen);
 
             // prevents duplicate prefabs
-            indices.RemoveAt(randomIndex);
+            indices.RemoveAt(currObject);
         }
 
         
@@ -315,55 +324,6 @@ public class ProceduralRoomGen : MonoBehaviour
             centerRoomPosition.z - distancePlacement);
         return position;
     }
-
-    /*
-    // if someone wants to fix this feel free, it should be more generalized
-    // InvalidatePlacements
-    // Finds and sets valid indices to invalid with float size of the object, and position
-    private void InvalidatePlacements(RoomSpace roomSpace, float width, Vector3 position, int doorCount, int room)
-    {
-        // relevant to grid
-        int placementSize = FindPlacementWidth(width + objectInvalidationDistance);
-        float roomWidth = GetRoomWidth(doorCount);
-        // the edge position of the room in global coordinates
-        float leftEdgeRoomPos = GameManager.Instance.worldState.roomStates[room].globalPosition.x - (roomWidth / 2.0f);
-        // the far left index grid of the object, and how far it is
-        int startGridID = Mathf.FloorToInt((position.x - (width / 2.0f) - leftEdgeRoomPos) / objectRatio);
-
-        //Debug.Log($"start grid id: {startGridID}");
-        for (int x = 0; x < placementSize ; x++) roomSpace.roomRows.Remove(x + startGridID);
-        
-    }*/
-
-    /*
-    // ValidPlacements
-    // Returns valid list of potential indices in relation to the available grid of objects state
-    private List<int> ValidPlacements(RoomSpace roomSpace, float width)
-    {
-        int placementSize = FindPlacementWidth(width + objectToObjectDistance);
-        List<int> potentialIndices = new List<int>();
-        //Debug.Log($"Object Size: {placementSize}");
-        
-        int prevIndex = 0;
-        for (int x = 1; x < roomSpace.roomRows.Count; x++)
-        {
-            if (roomSpace.roomRows[x-1] + 1 != roomSpace.roomRows[x])
-            {
-                prevIndex = x;
-            }
-            
-            // Figure out if the length if long enough to fit object
-            int length = (x - prevIndex) + 1;
-            if (length > placementSize)
-            {
-                // finds actual grid ID, because it is not ordered
-                potentialIndices.Add(roomSpace.roomRows[x - placementSize + 1]);
-            }
-        }
-
-        return potentialIndices;
-    }
-    */
 
     // GenerateRoomSpace()
     // Generates an RoomSpace with given parameter values, and adds to the current GameState
