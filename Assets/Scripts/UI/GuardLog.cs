@@ -49,10 +49,7 @@ public class GuardLog : MonoBehaviour
     {
         for (int i = 0; i < doorStatements.Length; i++)
         {
-            if (statementDropdowns[i] == null)
-            {
-                continue;
-            }
+            if (statementDropdowns[i] == null) continue;
 
             foreach (TMP_Dropdown dropdown in statementDropdowns[i])
             {
@@ -72,10 +69,7 @@ public class GuardLog : MonoBehaviour
         for (int doorID = 0; doorID < doorStatements.Length; doorID++)
         {
             DoorStatement statement = doorStatements[doorID];
-            if (statement == null)
-            {
-                continue;
-            }
+            if (statement == null) continue;
 
             finalGuardLogText += "Door " + (doorID + 1) + ": ";
             string[] doorStatementStringParts = statement.sentence.Split("|");
@@ -94,7 +88,7 @@ public class GuardLog : MonoBehaviour
                     // Find longest string in possibilities
                     int longestLength = int.MinValue;
                     string longestString = "";
-                    foreach (string dropdownStatement in doorStatements[doorID].dropdownContents[(partIndex % 2) - 1])
+                    foreach (string dropdownStatement in doorStatements[doorID].dropdownContents[Mathf.FloorToInt(partIndex / 2)])
                     {
                         if (dropdownStatement.Length > longestLength)
                         {
@@ -104,6 +98,8 @@ public class GuardLog : MonoBehaviour
                     }
                     //Vector2 longestStringSize = guardLogText.GetPreferredValues(longestString);
 
+                    guardLogText.text = finalGuardLogText;
+                    guardLogText.ForceMeshUpdate();
                     Vector2 beforeLastCharacterPosition = GetLastCharacterPosition(guardLogText);
                     finalGuardLogText += longestString.Replace(" ", "_");
                     guardLogText.text = finalGuardLogText;
@@ -117,7 +113,7 @@ public class GuardLog : MonoBehaviour
                         addedStringWidth = afterLastCharacterPosition.x - guardLogText.rectTransform.anchoredPosition.x;
                     }
 
-                    TMP_Dropdown statementDropdown = GetOrMakeDropdown(doorID, (partIndex % 2) - 1);
+                    TMP_Dropdown statementDropdown = GetOrMakeDropdown(doorID, Mathf.FloorToInt(partIndex / 2));
 
                     RectTransform statementDropdownParentRectTransform = statementDropdown.transform.parent.GetComponent<RectTransform>();
                     statementDropdownParentRectTransform.anchoredPosition = afterLastCharacterPosition;
