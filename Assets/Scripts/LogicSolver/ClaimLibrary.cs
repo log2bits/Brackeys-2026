@@ -89,9 +89,9 @@ namespace LogicSolver
 			}
 			foreach (int howMany in Enumerable.Range(2, Math.Max(0, numDoors - 2)))
 			{
-				list.Add(new Claim(Topic.Liar, "at least |" + howMany + "| of us are lying",
+				list.Add(new Claim(Topic.Liar, "|" + howMany + "| or |more| of us are lying",
 					world => world.LiarCount >= howMany, 1, 2, true));
-				list.Add(new Claim(Topic.Liar, "at most |" + howMany + "| of us are lying",
+				list.Add(new Claim(Topic.Liar, "|" + howMany + "| or |fewer| of us are lying",
 					world => world.LiarCount <= howMany, 1, 2, true));
 			}
 
@@ -270,25 +270,25 @@ namespace LogicSolver
 
 			if (numDoors >= 3)
 			{
-				list.Add(new Claim(both, "the |first| lying door in the room is the safe door",
+				list.Add(new Claim(both, "the |lowest| numbered lying door is the safe door",
 					world => FirstLiar(numDoors, world) == world.safeDoor, 2, 3));
-				list.Add(new Claim(both, "the |last| lying door in the room is the safe door",
+				list.Add(new Claim(both, "the |highest| numbered lying door is the safe door",
 					world => LastLiar(numDoors, world) == world.safeDoor, 2, 3));
-				list.Add(new Claim(Topic.Liar, "the |first| lying door in the room is next to me",
+				list.Add(new Claim(Topic.Liar, "the |lowest| numbered lying door is next to me",
 					world => FirstLiar(numDoors, world) >= 0
 						&& Next(FirstLiar(numDoors, world), speaker), 1, 3));
-				list.Add(new Claim(Topic.Liar, "the |first| honest door in the room is next to me",
+				list.Add(new Claim(Topic.Liar, "the |lowest| numbered honest door is next to me",
 					world => FirstHonest(numDoors, world) >= 0
 						&& Next(FirstHonest(numDoors, world), speaker), 1, 3));
-				list.Add(new Claim(Topic.Liar, "the |last| honest door in the room is next to me",
+				list.Add(new Claim(Topic.Liar, "the |highest| numbered honest door is next to me",
 					world => LastHonest(numDoors, world) >= 0
 						&& Next(LastHonest(numDoors, world), speaker), 1, 3));
-				list.Add(new Claim(Topic.Liar, "the |last| lying door in the room is next to me",
+				list.Add(new Claim(Topic.Liar, "the |highest| numbered lying door is next to me",
 					world => LastLiar(numDoors, world) >= 0
 						&& Next(LastLiar(numDoors, world), speaker), 1, 3));
-				list.Add(new Claim(both, "the |first| honest door in the room is the safe door",
+				list.Add(new Claim(both, "the |lowest| numbered honest door is the safe door",
 					world => FirstHonest(numDoors, world) == world.safeDoor, 2, 3));
-				list.Add(new Claim(both, "the |last| honest door in the room is the safe door",
+				list.Add(new Claim(both, "the |highest| numbered honest door is the safe door",
 					world => LastHonest(numDoors, world) == world.safeDoor, 2, 3));
 			}
 
