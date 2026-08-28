@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Novice
   solverDifficulty: 0
-  roomCount: 6
+  roomCount: 5
   minObjects: 1
   maxObjects: 1
   durationUntilObjectIncrease: 2

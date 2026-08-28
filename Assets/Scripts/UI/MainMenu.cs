@@ -3,13 +3,16 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Difficulty References")]
     [SerializeField] private DifficultyTemplate[] difficulties;
     [SerializeField] private TextMeshProUGUI difficultiesText;
+    [SerializeField] private Slider difficultiesSlider;
 
+    [Header("New Game/Play References")]
     [SerializeField] private RectTransform newGameUIElements;
     [SerializeField] private RectTransform playUIElements;
     [SerializeField] private Vector2 newGameHiddenPosition;
@@ -17,9 +20,12 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Vector2 playHiddenPosition;
     [SerializeField] private Vector2 playShownPosition;
 
+    [Header("Misc References")]
+    [SerializeField] private GameObject optionsMenuUIHolder;
+
     [SerializeField] private TMP_InputField seedInputField;
 
-    [SerializeField] private GameObject optionsMenuUIHolder;
+    [SerializeField] private GameObject creditsMenuUIHolder;
     [SerializeField] private OptionsMenu optionsMenuScript;
 
     [Header("Parameters")]
@@ -90,10 +96,15 @@ public class MainMenu : MonoBehaviour
 
     public void SetDifficulty(float difficulty)
     {
-        int difficultyIndex = Mathf.FloorToInt(difficulty);
+        int difficultyIndex = Mathf.RoundToInt(difficulty);
         this.difficultyIndex = difficultyIndex;
 
         difficultiesText.text = difficulties[difficultyIndex].difficultyName;
+    }
+
+    public void FinishSetDifficulty()
+    {
+        difficultiesSlider.value = difficultyIndex;
     }
 
     private IEnumerator MoveRect(RectTransform rectTransform, Vector2 startPosition, Vector2 endPosition, float time, Action moveCompleted = null)
@@ -114,6 +125,21 @@ public class MainMenu : MonoBehaviour
     {
         Debug.Log("Quitting game... will not work in Unity game preview (only in a built version of the game)");
         Application.Quit();
+    }
+
+    public void LoadCredits()
+    {
+        if (goingToMainScene || transitioning)
+        {
+            return;
+        }
+
+        creditsMenuUIHolder.SetActive(true);
+    }
+
+    public void ReturnFromCredits()
+    {
+        creditsMenuUIHolder.SetActive(false);
     }
 
     public void LoadOptions()

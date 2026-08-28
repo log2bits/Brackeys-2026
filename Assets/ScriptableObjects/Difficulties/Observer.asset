@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Observer
   solverDifficulty: 1
-  roomCount: 7
+  roomCount: 6
   minObjects: 1
   maxObjects: 1
   durationUntilObjectIncrease: 2
   minDoors: 2
   maxDoors: 5
-  roomsPerDoorIncrease: 1.5
+  roomsPerDoorIncrease: 2
   detailMentions: 1

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Logician
   solverDifficulty: 4
-  roomCount: 10
+  roomCount: 5
   minObjects: 1
   maxObjects: 2
   durationUntilObjectIncrease: 2

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class MainCameraMove : MonoBehaviour
@@ -39,6 +40,11 @@ public class MainCameraMove : MonoBehaviour
         }
 
         if (Time.timeScale == 0)
+        {
+            return;
+        }
+
+        if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }

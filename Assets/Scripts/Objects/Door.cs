@@ -21,6 +21,7 @@ public class Door : ClickableObject
     private bool safe = false;
     private bool hasTalkedBefore = false;
     private bool open; 
+    private int doorNumber;
 
     protected override void OnMouseDown()
     {
@@ -44,7 +45,11 @@ public class Door : ClickableObject
 
             GameManager.Instance.state = GameManager.GameState.ZOOMING;
 
-            Dialogue.Instance.StartDialogue(FormatDialogue(dialogue), !hasTalkedBefore, ZoomOut);
+            Dialogue.Instance.StartDialogue(ExtraFormatDialogue(dialogue), !hasTalkedBefore, ZoomOut);
+            if (!hasTalkedBefore)
+            {
+                GuardLog.Instance.AddToLog("Door " + (doorNumber + 1) + ": " + FormatDialogue(dialogue));
+            }
             hasTalkedBefore = true;
         }
 
@@ -86,6 +91,7 @@ public class Door : ClickableObject
             GameManager.Instance.currentRoom += 1;
 
             Dialogue.Instance.EndDialogue(false);
+            GuardLog.Instance.ClearLog();
         }
     }
 
@@ -113,6 +119,7 @@ public class Door : ClickableObject
 
     public void SetNumber(int number)
     {
+        doorNumber = number;
         if (number >= doorNumbers.Length)
         {
             Debug.LogWarning("Not enough door numbers on door prefab!");
@@ -137,9 +144,32 @@ public class Door : ClickableObject
         doorSpriteTransform.eulerAngles = finalRotation;
     }
 
+    private string ExtraFormatDialogue(string dialogue)
+    {
+        dialogue = FormatDialogue(dialogue);
+        int barCount = 0;
+        int barIndex = dialogue.IndexOf('|');
+        while (barIndex != -1 && barCount < 1000)
+        {
+            if (barCount % 2 == 0)
+            {
+                dialogue = dialogue.Insert(barIndex + 1, "<b>");
+            }
+            else
+            {
+                dialogue = dialogue.Insert(barIndex + 1, "</b>");
+            }
+            dialogue = dialogue.Remove(barIndex, 1);
+
+            barIndex = dialogue.IndexOf('|');
+            barCount += 1;
+        }
+
+        return dialogue;
+    }
+
     private string FormatDialogue(string dialogue)
     {
-        dialogue = dialogue.Replace("|", "");
         return char.ToUpper(dialogue[0]) + dialogue.Substring(1) + ".";
     }
     
