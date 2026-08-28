@@ -293,12 +293,15 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         // Generate a list of valid starting Grid IDs
         List<Range> validRanges = RoomRow.GetSharedFreeSpace(roomSpace.roomRows, objectDataTemplate.GetRowsTaken());
+        validRanges.RemoveAll(r => r.Length < objectWidth);
         Debug.Log($"Valid Counts: {validRanges.Count}");
         if (validRanges.Count == 0) return new Vector3(0, 0, 0);
 
         // finds the valid grid ID from available options
         int randomIndex = proceduralRandGen.Next(0, validRanges.Count);
         Range randomRange = validRanges[randomIndex];
+        float start = randomRange.Start + (float)proceduralRandGen.NextDouble() * (randomRange.Length - objectWidth);
+        randomRange = new Range(start, start + objectWidth);
         RoomRow.AddObject(roomSpace.roomRows, randomRange, objectDataTemplate.GetRowsTaken());
 
         // finds parition size the object takes up
