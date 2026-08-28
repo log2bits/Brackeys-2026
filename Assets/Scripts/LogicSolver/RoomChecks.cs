@@ -43,7 +43,7 @@ namespace LogicSolver
 				return false;
 			}
 
-			if (settings.difficulty >= 1 && SpareGuards(space, chosen).Count > 0)
+			if (SpareGuards(space, chosen).Count > 0)
 			{
 				tally.spareStatement++;
 				return false;

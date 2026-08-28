@@ -5,9 +5,6 @@ using LogicSolver;
 // Drop this on any GameObject and press Play. It prints a room at every size and band
 public class LogicSolverDemo : MonoBehaviour
 {
-	[Header("Turn on to try solving them yourself")]
-	public bool hideAnswers = false;
-
 	private static readonly int[] DoorCounts = { 2, 3, 4, 5, 6 };
 
 	private static readonly string[] BandNames =
@@ -50,13 +47,10 @@ public class LogicSolverDemo : MonoBehaviour
 		StringBuilder text = new StringBuilder();
 		for (int guard = 0; guard < room.statements.Length; guard++)
 		{
-			text.AppendLine("Guard " + (guard + 1) + ": \"" + room.statements[guard] + "\"");
+			text.AppendLine("Door " + (guard + 1) + ": \"" + room.statements[guard].Replace("|", "") + "\"");
 		}
-		if (!hideAnswers)
-		{
 			text.AppendLine("ANSWER: ||door " + (room.safeDoor + 1)
-				+ ", lying guards: " + Join(room.liars) + "||");
-		}
+				+ ", lying doors: " + Join(room.liars) + "||");
 		return text.ToString();
 	}
 
