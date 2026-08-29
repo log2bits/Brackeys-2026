@@ -101,9 +101,9 @@ namespace LogicSolver
 				world => world.LiarCount * 2 < numDoors, 1, 2));
 			if (numDoors >= 3)
 			{
-				list.Add(new Claim(Topic.Liar, "an |odd| amount us are lying",
+				list.Add(new Claim(Topic.Liar, "an |odd| amount of us are lying",
 					world => world.LiarCount % 2 == 1, 2, 3));
-				list.Add(new Claim(Topic.Liar, "an |even| amount us are lying",
+				list.Add(new Claim(Topic.Liar, "an |even| amount of us are lying",
 					world => world.LiarCount % 2 == 0, 2, 3));
 			}
 		}
