@@ -24,14 +24,11 @@ public class ProceduralAmbientManager : MonoBehaviour
     private int currentRoom = 1;
     private float secRatio = 1.0f;
 
-    // Action for when audio ambience is done playing
-    Action ambienceFinishedPlaying;
-
 
     // keeps track of what ambient events have been played
     private HashSet<int> eventsNotEncountered = new HashSet<int>();
+    private float nextAmbientTime;
     private float randomResetSec = 0f;
-    // important calculation variables
     private float totalWeight = 0.0f;
     
     // Constructor, mainly for calculating totalWeight and eventsNotEncoutnered
@@ -98,6 +95,7 @@ public class ProceduralAmbientManager : MonoBehaviour
         StopLoop();
         StopFade();
         EventBus.Instance.Deregister(EventBus.EventName.CutsceneEnd, CutsceneEnd);
+        EventBus.Instance.Deregister(EventBus.EventName.RoomMove, RoomMove);
     }
 
     // Audioloop
@@ -107,32 +105,46 @@ public class ProceduralAmbientManager : MonoBehaviour
         yield return new WaitForSeconds(initialStartDelay);
         while (isRunning)
         {
+            EventReference nextEvent = ProceduralAmbientGenerator((float)audioRandom.NextDouble(), (float)audioRandom.NextDouble(), (float)audioRandom.NextDouble());
+            FMOD.Studio.EventInstance ambientInstance = AudioManager.Instance.CreateInstance(nextEvent);
+            ambientInstance.start();
+
+            FMOD.Studio.PLAYBACK_STATE playbackState;
+            do
+            {
+                ambientInstance.getPlaybackState(out playbackState);
+                yield return null; 
+            } 
+            while (playbackState != FMOD.Studio.PLAYBACK_STATE.STOPPING && playbackState != FMOD.Studio.PLAYBACK_STATE.STOPPED);
+            
+            ambientInstance.release();
+
             // Unity's Random.Range is inclusive for floats
             randomResetSec = minResetSec + (float)audioRandom.NextDouble() * (maxResetSec - minResetSec);
-            
-            // This natively respects Time.timeScale (pausing the game)
+            nextAmbientTime = Time.time + randomResetSec;
+
+            // natively respect Time.timeScale (for pause game)
             yield return new WaitForSeconds(randomResetSec);
 
-            ProceduralAmbientGenerator((float)audioRandom.NextDouble(), (float)audioRandom.NextDouble(), (float)audioRandom.NextDouble());
         }
         
     }
     private IEnumerator AudioFade()
     {
-        yield return new WaitForSeconds(soundFadeSec);
-
+        yield return new WaitUntil(() => Time.time >= (nextAmbientTime - 1f));
+        
+        Debug.Log("1 second left! Fading now...");
     }
 
 
 
     /// Procedural Generation
     // each float given is between 0-1
-    public void ProceduralAmbientGenerator(float eventsNumber, float resetSec, float ambientValue)
+    public EventReference ProceduralAmbientGenerator(float eventsNumber, float resetSec, float ambientValue)
     {
-       if (eventsNumber < eventChance) GenerateAmbientEvent(ambientValue);
-       else GenerateAmbientEnvironment(ambientValue);
-
-       randomResetSec = minResetSec + (resetSec * (maxResetSec - minResetSec));
+        randomResetSec = minResetSec + (resetSec * (maxResetSec - minResetSec));
+        if (eventsNumber < eventChance) return GenerateAmbientEvent(ambientValue);
+        else return GenerateAmbientEnvironment(ambientValue);
 
     }
 
@@ -175,5 +187,8 @@ public class ProceduralAmbientManager : MonoBehaviour
     {
         currentRoom+=1;
 
+        if (currentRoom == roomResetRatio) secRatio = roomSecRatio;
+        
+        if (currentRoom == roomSoundFade) StartFade();
     }
 }

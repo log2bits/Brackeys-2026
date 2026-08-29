@@ -49,6 +49,31 @@ public class GameManager
         currentRoom = 0;
     }
 
+    public void ChangeGameState(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.MAINMENU:
+                break;
+            case GameState.CUTSCENE:
+                EventBus.Instance.DoGameStart();
+                break;
+            case GameState.INNERROOM:
+                if (state == GameState.CUTSCENE) EventBus.Instance.DoCutsceneEnd();
+                break;
+            case GameState.OUTERROOM:
+                break;
+            case GameState.TRANSITIONROOM:
+                EventBus.Instance.DoRoomMove();
+                break;
+            case GameState.ZOOMING:
+                break;
+            case GameState.GAMEOVER: 
+                break;
+
+        }
+    }
+
     public static string GenerateRandomString()
     {
         string randomString = "";
