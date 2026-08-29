@@ -11,10 +11,21 @@ public class ProceduralAmbientManager : MonoBehaviour
     [SerializeField] private float minResetSec = 15f;
     [SerializeField] private float maxResetSec = 30f;
     [SerializeField] private float eventChance = 0.1f;
+    [SerializeField] private float roomSecRatio = 1.5f; // multiplied after roomResetRatio hit, to all min and max
+    [SerializeField] private int roomResetRatio = 2; // when ambience reset is changed
+    [SerializeField] private float soundFadeSec = 30f; // seconds until ambience ends
+    [SerializeField] private int roomSoundFade = 3; // when ambience will start to end
     // Coroutine to keep an active loop
     private IEnumerator activeLoop;
+    private IEnumerator activeFade;
     private System.Random audioRandom;
     private bool isRunning;
+    private bool isFadeRunning;
+    private int currentRoom = 1;
+    private float secRatio = 1.0f;
+
+    // Action for when audio ambience is done playing
+    Action ambienceFinishedPlaying;
 
 
     // keeps track of what ambient events have been played
@@ -31,6 +42,10 @@ public class ProceduralAmbientManager : MonoBehaviour
         foreach(int num in Enumerable.Range(0, FmodEvents.Instance.ambientEvents.Count)) { eventsNotEncountered.Add(num); }
     
         audioRandom = new System.Random(GameManager.Instance.currentSeed);
+
+        // setup event action
+        EventBus.Instance.Register(EventBus.EventName.CutsceneEnd, CutsceneEnd);
+        EventBus.Instance.Register(EventBus.EventName.RoomMove, RoomMove);
     }
     
 
@@ -46,21 +61,43 @@ public class ProceduralAmbientManager : MonoBehaviour
 
     /// Foundation for audio coroutines
     
-    public void Start()
+    public void StartLoop()
     {
         if (isRunning) return;
         
         isRunning = true;
         activeLoop = AudioLoop();
-        CoroutineManager.Instance.Run(AudioLoop());
+        CoroutineManager.Instance.Run(activeLoop);
     }
-    public void Stop()
+    public void StartFade()
+    {
+        if (isFadeRunning) return;
+        
+        isFadeRunning = true;
+        activeFade = AudioFade();
+        CoroutineManager.Instance.Run(activeFade);
+    }
+    public void StopLoop()
     {
         if (!isRunning) return;
 
         CoroutineManager.Instance.Stop(activeLoop);
         activeLoop = null;
         isRunning = false;
+    }
+    public void StopFade()
+    {
+        if (!isFadeRunning) return;
+
+        CoroutineManager.Instance.Stop(activeFade);
+        activeFade = null;
+        isFadeRunning = false;
+    }
+    public void OnDestroy()
+    {
+        StopLoop();
+        StopFade();
+        EventBus.Instance.Deregister(EventBus.EventName.CutsceneEnd, CutsceneEnd);
     }
 
     // Audioloop
@@ -79,6 +116,11 @@ public class ProceduralAmbientManager : MonoBehaviour
             ProceduralAmbientGenerator((float)audioRandom.NextDouble(), (float)audioRandom.NextDouble(), (float)audioRandom.NextDouble());
         }
         
+    }
+    private IEnumerator AudioFade()
+    {
+        yield return new WaitForSeconds(soundFadeSec);
+
     }
 
 
@@ -123,4 +165,15 @@ public class ProceduralAmbientManager : MonoBehaviour
         return FmodEvents.Instance.ambientEnvironments[^1].GetAmbience();
     }
     
+    /// Actions
+    // CutsceneEnd is called when the cutscene ends and it is now safe to play more ambience
+    public void CutsceneEnd()
+    {
+        StartLoop();
+    }
+    public void RoomMove()
+    {
+        currentRoom+=1;
+
+    }
 }
