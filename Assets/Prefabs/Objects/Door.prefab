@@ -1015,8 +1015,10 @@ MonoBehaviour:
   doorNumbersText: {fileID: 6809809862127425655}
   honestToggle: {fileID: 1312484526518118615}
   lyingToggle: {fileID: 2576531535565273539}
+  doorLightUpAmount: 0.015
   doorRotateTime: 0.3
-  doorRotateAngle: 60
+  safeDoorRotateAngle: 60
+  unsafeDoorRotateAngle: 30
   doorZoomZDistance: -12
 --- !u!65 &7455144755632654756
 BoxCollider:

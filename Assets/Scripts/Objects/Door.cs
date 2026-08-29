@@ -20,7 +20,8 @@ public class Door : MonoBehaviour, IClickableObject
     [Header("Parameters")]
     [SerializeField] private float doorLightUpAmount = 0.015f;
     [SerializeField] private float doorRotateTime;
-    [SerializeField] private float doorRotateAngle;
+    [SerializeField] private float safeDoorRotateAngle;
+    [SerializeField] private float unsafeDoorRotateAngle;
     [SerializeField] private float doorZoomZDistance;
 
     private DoorStatement doorStatement;
@@ -77,8 +78,7 @@ public class Door : MonoBehaviour, IClickableObject
                 Dialogue.Instance.DeferClickCheckToDialogue();
                 return;
             }
-
-            CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
+            
             open = true;
 
             // You lose a life
@@ -97,11 +97,15 @@ public class Door : MonoBehaviour, IClickableObject
                 
                 EventBus.Instance.DoLostLife();
                 Dialogue.Instance.EndDialogue(true);
+
+                CoroutineManager.Instance.Run(RotateDoor(unsafeDoorRotateAngle));
                 
                 return;
             }
 
             // Move to next room
+            CoroutineManager.Instance.Run(RotateDoor(safeDoorRotateAngle));
+
             AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
             MainCameraMove.Instance.MoveCamera(transform.position + new Vector3(0, 0, 0.1f), GameManager.GameState.OUTERROOM);
 
