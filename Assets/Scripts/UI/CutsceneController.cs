@@ -6,6 +6,7 @@ public class CutsceneController : MonoBehaviour
 {
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private string[] dialogueLines;
+    [SerializeField] private FlashbangEffect flashbangEffect;
 
     private int currentLine = 0;
 
@@ -39,5 +40,6 @@ public class CutsceneController : MonoBehaviour
     private void EndCutscene()
     {
         gameObject.SetActive(false);
+        flashbangEffect.TriggerFlashbang();
     }
 }
