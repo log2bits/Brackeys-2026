@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Analyst
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Analyst
+  difficultyDescription: Harder statements and puzzles. Five max doors.
   solverDifficulty: 2
   roomCount: 6
+  objectMultiplier: 1
   minObjects: 1
   maxObjects: 2
   durationUntilObjectIncrease: 2

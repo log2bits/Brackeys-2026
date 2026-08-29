@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
     [Header("Difficulty References")]
     [SerializeField] private DifficultyTemplate[] difficulties;
     [SerializeField] private TextMeshProUGUI difficultiesText;
+    [SerializeField] private TextMeshProUGUI difficultiesDescription;
     [SerializeField] private Slider difficultiesSlider;
 
     [Header("New Game/Play References")]
@@ -100,6 +101,7 @@ public class MainMenu : MonoBehaviour
         this.difficultyIndex = difficultyIndex;
 
         difficultiesText.text = difficulties[difficultyIndex].difficultyName;
+        difficultiesDescription.text = difficulties[difficultyIndex].difficultyDescription;
     }
 
     public void FinishSetDifficulty()

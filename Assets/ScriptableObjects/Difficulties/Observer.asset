@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Observer
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Observer
+  difficultyDescription: Average statement difficulty. Five max doors.
   solverDifficulty: 1
   roomCount: 6
+  objectMultiplier: 1
   minObjects: 1
   maxObjects: 1
   durationUntilObjectIncrease: 2
