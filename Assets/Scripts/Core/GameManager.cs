@@ -24,7 +24,8 @@ public class GameManager
 
     public enum GameState
     {
-        PREGAME,
+        MAINMENU,
+        CUTSCENE,
         INNERROOM,
         OUTERROOM,
         TRANSITIONROOM,
