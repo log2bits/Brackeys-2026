@@ -43,16 +43,23 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (pauseInput.WasPressedThisFrame())
+        if (GameManager.Instance.state == GameManager.GameState.CUTSCENE)
         {
-            if (isPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
+            return;
+        }
+        
+        if (!pauseInput.WasPressedThisFrame())
+        {
+            return;
+        }
+
+        if (isPaused)
+        {
+            Resume();
+        }
+        else
+        {
+            Pause();
         }
     }
 

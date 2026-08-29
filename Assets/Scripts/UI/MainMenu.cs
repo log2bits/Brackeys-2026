@@ -39,7 +39,7 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.state = GameManager.GameState.PREGAME;
+        GameManager.Instance.state = GameManager.GameState.MAINMENU;
         optionsMenuScript.LoadOptions();
         SetDifficulty(0);
     }
@@ -86,6 +86,7 @@ public class MainMenu : MonoBehaviour
 
         if (difficultyIndex > GetHighestUnlockedDifficulty())
         {
+            MainCameraMove.Instance.ShakeCamera(0.35f, 0.15f, 0.015f, 0.85f);
             return;
         }
 

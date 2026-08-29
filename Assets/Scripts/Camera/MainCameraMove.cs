@@ -24,17 +24,38 @@ public class MainCameraMove : MonoBehaviour
     }
     // Singleton -------------------------------
 
+    [Header("References")]
+    [SerializeField] private GameObject cameraShakeGameobject;
+
     [Header("Parameters")]
+    [SerializeField] private bool movementEnabled = true;
     [SerializeField] private float cameraWallMargin;
     [SerializeField] private float cameraMoveTime;
     [SerializeField] private float cameraDragStrength = 0.2f;
 
     private bool inputEnabled = true;
     private bool mouseHeldLastFrame = false;
+    private IEnumerator lastShakeCoroutine;
+
+    private void OnEnable()
+    {
+        EventBus.Instance.Register(EventBus.EventName.LostLife, LostLifeShake);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Instance.Deregister(EventBus.EventName.LostLife, LostLifeShake);
+    }
+
+    private void LostLifeShake()
+    {
+        // Magic numbers go brrrrr
+        ShakeCamera(0.35f, 0.3f, 0.015f, 0.85f);
+    }
 
     private void Update()
     {
-        if (!inputEnabled)
+        if (!inputEnabled || !movementEnabled)
         {
             return;
         }
@@ -58,7 +79,7 @@ public class MainCameraMove : MonoBehaviour
 
         if (mouseHeldLastFrame)
         {
-            transform.position = new Vector3(transform.position.x + (mouseDelta.x * cameraDragStrength), transform.position.y, transform.position.z);
+            transform.localPosition = new Vector3(transform.localPosition.x + (mouseDelta.x * cameraDragStrength), transform.localPosition.y, transform.localPosition.z);
         }
 
         mouseHeldLastFrame = Mouse.current.leftButton.isPressed;
@@ -75,8 +96,8 @@ public class MainCameraMove : MonoBehaviour
         {
             throw new System.Exception("MainCameraMove: Game currently inside an invalid room!");
         }
-        float clampedX = Mathf.Clamp(transform.position.x, currentRoomState.globalPosition.x + cameraWallMargin - (currentRoomState.roomWidth/2), currentRoomState.globalPosition.x - cameraWallMargin + (currentRoomState.roomWidth/2));
-        transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
+        float clampedX = Mathf.Clamp(transform.localPosition.x, currentRoomState.globalPosition.x + cameraWallMargin - (currentRoomState.roomWidth/2), currentRoomState.globalPosition.x - cameraWallMargin + (currentRoomState.roomWidth/2));
+        transform.localPosition = new Vector3(clampedX, transform.localPosition.y, transform.localPosition.z);
     }
 
     public void MoveCamera(Vector3 position, GameManager.GameState finalState)
@@ -97,9 +118,37 @@ public class MainCameraMove : MonoBehaviour
             i += Time.deltaTime;
         }
 
-        transform.position = position;
+        transform.localPosition = position;
         inputEnabled = true;
 
         GameManager.Instance.state = finalState;
     }
+
+    public void ShakeCamera(float shakeDuration, float shakeAmount, float timeBetweenShakes, float shakeDecay)
+	{
+        if (lastShakeCoroutine != null)
+        {
+		    CoroutineManager.Instance.Stop(lastShakeCoroutine);
+        }
+
+        lastShakeCoroutine = ShakeCameraCoroutine(shakeDuration, shakeAmount, timeBetweenShakes, shakeDecay);
+        CoroutineManager.Instance.Run(lastShakeCoroutine);
+	}
+
+    private IEnumerator ShakeCameraCoroutine(float shakeDuration, float shakeAmount, float timeBetweenShakes, float shakeDecay)
+	{
+		float shakeStartTime = Time.time;
+        float lastShakeTime = 0f;
+        while (Time.time - shakeStartTime < shakeDuration)
+		{
+            if (Time.time - lastShakeTime > timeBetweenShakes)
+			{
+				cameraShakeGameobject.transform.position = Random.insideUnitSphere * shakeAmount;
+                shakeAmount *= shakeDecay;
+                lastShakeTime = Time.time;
+			}
+			yield return null;
+		}
+        cameraShakeGameobject.transform.position = Vector3.zero;
+	}
 }
