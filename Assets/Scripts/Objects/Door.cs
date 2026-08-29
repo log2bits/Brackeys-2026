@@ -1,23 +1,23 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using LogicSolver;
+using System.Text;
+using TMPro;
 
 public class Door : ClickableObject
 {
     [Header("References")]
-    [SerializeField] private Sprite[] doorNumbers;
     [SerializeField] private Transform doorSpriteTransform;
-    [SerializeField] private SpriteRenderer doorNumbersRenderer;
+    [SerializeField] private TextMeshProUGUI doorNumbersText;
 
     [Header("Parameters")]
     [SerializeField] private float doorRotateTime;
     [SerializeField] private float doorRotateAngle;
     [SerializeField] private float doorZoomZDistance;
 
-    private string dialogue = "";
+    private DoorStatement doorStatement;
     private bool safe = false;
     private bool hasTalkedBefore = false;
     private bool open; 
@@ -45,10 +45,10 @@ public class Door : ClickableObject
 
             GameManager.Instance.state = GameManager.GameState.ZOOMING;
 
-            Dialogue.Instance.StartDialogue(ExtraFormatDialogue(dialogue), !hasTalkedBefore, ZoomOut);
+            Dialogue.Instance.StartDialogue(ExtraFormatDialogue(doorStatement.sentence), !hasTalkedBefore, ZoomOut);
             if (!hasTalkedBefore)
             {
-                GuardLog.Instance.AddToLog("Door " + (doorNumber + 1) + ": " + FormatDialogue(dialogue));
+                GuardLog.Instance.AddToLog(doorStatement, doorNumber);
             }
             hasTalkedBefore = true;
         }
@@ -92,7 +92,35 @@ public class Door : ClickableObject
 
             Dialogue.Instance.EndDialogue(false);
             GuardLog.Instance.ClearLog();
+
+            
+            // Cutscenes or whatever will go here
+            if (GameManager.Instance.currentRoom >= GameManager.Instance.worldState.roomStates.Count)
+            {
+                CoroutineManager.Instance.Run(EndGame());
+            }
         }
+    }
+
+    private IEnumerator EndGame()
+    {
+        yield return new WaitForSeconds(5f);
+
+        MainMenu.HighestBeatenDifficulty getHighestBeatenDifficulty = SaveSystem.GetHighestBeatenDifficulty();
+        int highestDifficulty = -1;
+        if (getHighestBeatenDifficulty != null)
+        {
+            highestDifficulty = getHighestBeatenDifficulty.highestBeatenDifficulty;
+        }
+        if (highestDifficulty >= GameManager.Instance.currentDifficulty.solverDifficulty)
+        {
+            yield break;
+        }
+
+        MainMenu.HighestBeatenDifficulty highestBeatenDifficulty = new MainMenu.HighestBeatenDifficulty(GameManager.Instance.currentDifficulty.solverDifficulty);
+        SaveSystem.SaveHighestBeatenDifficulty(highestBeatenDifficulty);
+
+        SceneManager.LoadSceneAsync("MainMenu");
     }
 
     private void ZoomOut()
@@ -108,10 +136,12 @@ public class Door : ClickableObject
         return;
     }
 
-    public void SetDialogue(string dialogue)
+    public void SetDialogue(DoorStatement doorStatement)
     {
-        this.dialogue = dialogue;
+        this.doorStatement = doorStatement;
+        this.doorStatement.sentence = FormatDialogue(this.doorStatement.sentence);
     }
+
     public void SetIsSafe(bool IsSafe = false)
     {
         this.safe = IsSafe;
@@ -119,13 +149,10 @@ public class Door : ClickableObject
 
     public void SetNumber(int number)
     {
-        doorNumber = number;
-        if (number >= doorNumbers.Length)
-        {
-            Debug.LogWarning("Not enough door numbers on door prefab!");
-            return;
-        }
-        doorNumbersRenderer.sprite = doorNumbers[number];
+        this.doorNumber = number;
+
+        string doorNumber = "<b>" + (number + 1).ToString();
+        doorNumbersText.text = doorNumber;
     }
 
     private IEnumerator RotateDoor(float rotateAmount)
@@ -146,7 +173,6 @@ public class Door : ClickableObject
 
     private string ExtraFormatDialogue(string dialogue)
     {
-        dialogue = FormatDialogue(dialogue);
         int barCount = 0;
         int barIndex = dialogue.IndexOf('|');
         while (barIndex != -1 && barCount < 1000)
@@ -170,7 +196,22 @@ public class Door : ClickableObject
 
     private string FormatDialogue(string dialogue)
     {
-        return char.ToUpper(dialogue[0]) + dialogue.Substring(1) + ".";
+        return CapitalizeFirstLetter(dialogue) + ".";
+    }
+
+    private string CapitalizeFirstLetter(string dialogue)
+    {
+        StringBuilder stringBuilder = new StringBuilder(dialogue);
+        string sampleString = "abcdefghijklmnopqrstuvwxyz";
+        for (int i = 0; i < dialogue.Length; i++)
+        {
+            if (sampleString.Contains(dialogue[i]))
+            {
+                stringBuilder[i] = char.ToUpper(dialogue[i]);
+                return stringBuilder.ToString();
+            }
+        }
+        return dialogue;
     }
     
 }

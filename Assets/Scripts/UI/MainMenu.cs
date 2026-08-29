@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,7 @@ public class MainMenu : MonoBehaviour
     [Header("Difficulty References")]
     [SerializeField] private DifficultyTemplate[] difficulties;
     [SerializeField] private TextMeshProUGUI difficultiesText;
+    [SerializeField] private TextMeshProUGUI difficultiesDescription;
     [SerializeField] private Slider difficultiesSlider;
 
     [Header("New Game/Play References")]
@@ -82,6 +84,11 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
+        if (difficultyIndex > GetHighestUnlockedDifficulty())
+        {
+            return;
+        }
+
         StopAllCoroutines();
         goingToMainScene = true;
         GameManager.Instance.currentSeed = GameManager.StringToRandomInt(seedInputField.text);
@@ -98,13 +105,40 @@ public class MainMenu : MonoBehaviour
     {
         int difficultyIndex = Mathf.RoundToInt(difficulty);
         this.difficultyIndex = difficultyIndex;
+        
+        if (difficultyIndex > GetHighestUnlockedDifficulty())
+        {
+            difficultiesText.text = "Locked";
+            difficultiesDescription.text = "???";
+            return;
+        }
 
         difficultiesText.text = difficulties[difficultyIndex].difficultyName;
+        difficultiesDescription.text = difficulties[difficultyIndex].difficultyDescription;
     }
 
     public void FinishSetDifficulty()
     {
         difficultiesSlider.value = difficultyIndex;
+    }
+
+    private int GetHighestUnlockedDifficulty()
+    {
+        HighestBeatenDifficulty highestBeatenDifficulty = SaveSystem.GetHighestBeatenDifficulty();
+        int highestDifficulty = -1;
+        if (highestBeatenDifficulty != null)
+        {
+            highestDifficulty = highestBeatenDifficulty.highestBeatenDifficulty;
+        }
+        
+        foreach (DifficultyTemplate difficulty in difficulties)
+        {
+            if (difficulty.difficultyRequiredToUnlock > highestDifficulty)
+            {
+                return difficulty.solverDifficulty - 1;
+            }
+        }
+        return difficulties.Length - 1;
     }
 
     private IEnumerator MoveRect(RectTransform rectTransform, Vector2 startPosition, Vector2 endPosition, float time, Action moveCompleted = null)
@@ -156,5 +190,16 @@ public class MainMenu : MonoBehaviour
     public void ReturnFromOptions()
     {
         optionsMenuUIHolder.SetActive(false);
+    }
+
+    [System.Serializable]
+    public class HighestBeatenDifficulty
+    {
+        public int highestBeatenDifficulty;
+
+        public HighestBeatenDifficulty(int highestBeatenDifficulty)
+        {
+            this.highestBeatenDifficulty = highestBeatenDifficulty;
+        }
     }
 }

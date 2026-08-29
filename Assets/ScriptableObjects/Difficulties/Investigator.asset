@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Investigator
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Investigator
+  difficultyDescription: The logical limit for most. Six max doors.
+  difficultyRequiredToUnlock: 1
   solverDifficulty: 3
   roomCount: 5
+  objectMultiplier: 1
   minObjects: 1
   maxObjects: 2
   durationUntilObjectIncrease: 2

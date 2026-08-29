@@ -59,10 +59,10 @@ namespace LogicSolver
 			List<Detail> details)
 		{
 			Pool[] pools = new Pool[space.doorCount];
-			for (int guard = 0; guard < space.doorCount; guard++)
+			for (int door = 0; door < space.doorCount; door++)
 			{
-				pools[guard] = CompileFor(space, settings, guard,
-					ClaimLibrary.Build(guard, settings, details));
+				pools[door] = CompileFor(space, settings, door,
+					ClaimLibrary.Build(door, settings, details));
 			}
 			return pools;
 		}
@@ -70,7 +70,7 @@ namespace LogicSolver
 		private static Pool CompileFor(WorldSpace space, RoomSettings settings,
 			int speaker, List<Claim> claims)
 		{
-			BitSet whereHonest = space.whereGuardLies[speaker].Not();
+			BitSet whereHonest = space.whereDoorLies[speaker].Not();
 			Pool pool = new Pool();
 
 
@@ -111,6 +111,9 @@ namespace LogicSolver
 
 			if (!CompoundWithDetail.Holds(settings.difficulty)) return pool;
 
+			HashSet<BitSet> everyPlainTruth = new HashSet<BitSet>();
+			for (int i = 0; i < trueIn.Count; i++) everyPlainTruth.Add(trueIn[i]);
+
 			for (int i = 0; i < usableClaims.Count; i++)
 			{
 				if (Awkward(usableClaims[i])) continue;
@@ -128,7 +131,7 @@ namespace LogicSolver
 
 					if (SameSubject(usableClaims[i], usableClaims[j])) continue;
 					Combine(pool, space, speaker, whereHonest, settings.difficulty,
-						usableClaims[i], trueIn[i], usableClaims[j], trueIn[j]);
+						usableClaims[i], trueIn[i], usableClaims[j], trueIn[j], everyPlainTruth);
 				}
 			}
 			return pool;
@@ -136,7 +139,8 @@ namespace LogicSolver
 
 		private static void Combine(Pool pool, WorldSpace space, int speaker,
 			BitSet whereHonest, int band,
-			Claim first, BitSet firstTrue, Claim second, BitSet secondTrue)
+			Claim first, BitSet firstTrue, Claim second, BitSet secondTrue,
+			HashSet<BitSet> everyPlainTruth)
 		{
 			Topic topic = first.topic | second.topic;
 			float details = DetailWeightOf(first, second);
@@ -144,29 +148,50 @@ namespace LogicSolver
 			string a = first.text;
 			string b = second.text;
 
-			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, And,
-				a + ", and " + b,
-				firstTrue.And(secondTrue));
+			BitSet bothTrue = firstTrue.And(secondTrue);
+			BitSet eitherTrue = firstTrue.Or(secondTrue);
+			bool cannotOverlap = bothTrue.IsEmpty;
+			bool cannotBothFail = eitherTrue.Equals(space.everyWorld);
 
-			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Or,
-				a + ", or " + b + ", or both",
-				firstTrue.Or(secondTrue));
+			bool eitherIsDetail = (first.topic & Topic.Memory) != 0
+				|| (second.topic & Topic.Memory) != 0;
+			bool andIsAHalf = !eitherIsDetail
+				&& (bothTrue.Equals(firstTrue) || bothTrue.Equals(secondTrue));
+			bool orIsAHalf = !eitherIsDetail
+				&& (eitherTrue.Equals(firstTrue) || eitherTrue.Equals(secondTrue));
 
-			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Xor,
-				"either " + a + ", or " + b + ", but not both",
-				firstTrue.Xor(secondTrue));
+			if (!cannotOverlap && !andIsAHalf)
+			{
+				AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, And,
+					a + ", and " + b, bothTrue, everyPlainTruth);
+			}
 
-			AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Iff,
-				a + " if and only if " + b,
-				firstTrue.Xor(secondTrue).Not());
+			if (!cannotBothFail && !orIsAHalf)
+			{
+				AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Or,
+					a + ", or " + b + ", or both", eitherTrue, everyPlainTruth);
+			}
+
+			if (!cannotOverlap && !cannotBothFail)
+			{
+				AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Xor,
+					"either " + a + ", or " + b + ", but not both",
+					firstTrue.Xor(secondTrue), everyPlainTruth);
+
+				AddCompound(pool, space, speaker, whereHonest, band, topic, details, halves, Iff,
+					a + " if and only if " + b,
+					firstTrue.Xor(secondTrue).Not(), everyPlainTruth);
+			}
 		}
 
 		// a compound is as hard as the hardest thing in it
 		private static void AddCompound(Pool pool, WorldSpace space, int speaker, BitSet whereHonest,
 			int band, Topic topic, float details, int halves, Band connective,
-			string text, BitSet trueIn)
+			string text, BitSet trueIn, HashSet<BitSet> everyPlainTruth)
 		{
 			if (!connective.Holds(band)) return;
+
+			if (details == 0f && everyPlainTruth.Contains(trueIn)) return;
 			Keep(pool, space, speaker, whereHonest, topic, true, false,
 				Math.Max(halves, connective.first), details, text, trueIn);
 		}
@@ -201,7 +226,7 @@ namespace LogicSolver
 			BitSet whereHonest, Topic topic, bool isCompound, bool namesAValue, int tier,
 			float memoryWeight, string text, BitSet trueIn)
 		{
-			// a guard could say this wherever its truth matches their honesty
+			// a door could say this wherever its truth matches their honesty
 			BitSet couldHaveSaidIt = trueIn.Xor(whereHonest).Not();
 
 			if (couldHaveSaidIt.IsEmpty || couldHaveSaidIt.Equals(space.everyWorld)) return;
@@ -209,7 +234,7 @@ namespace LogicSolver
 			// drop anything that settles its own speaker, it is a free answer
 			if (memoryWeight == 0f)
 			{
-				int lying = couldHaveSaidIt.And(space.whereGuardLies[speaker]).Count;
+				int lying = couldHaveSaidIt.And(space.whereDoorLies[speaker]).Count;
 				if (lying == 0 || lying == couldHaveSaidIt.Count) return;
 			}
 

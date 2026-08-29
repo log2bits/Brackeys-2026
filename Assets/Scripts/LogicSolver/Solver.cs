@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LogicSolver
 {
-	// anything a guard can lie about, and whether it is actually so
+	// anything a door can lie about, and whether it is actually so
 	public sealed class Detail
 	{
 		public string text;
@@ -34,26 +34,18 @@ namespace LogicSolver
 
 		// null means the player is told nothing about how many lie
 		public int[] liarCounts = null;
-
 		public List<Detail> details = new List<Detail>();
-
 		public int seed = 0;
-
 		public int statementsToMakeProgress = -1;
 
 		// 0 easy, 1 medium, 2 hard, 3 extreme, 4 logician
 		public int difficulty = 1;
 
-
 		// how many details the room should carry, clamped down on small boards
 		public int detailMentions = 1;
-
 		public int minMemoryImpact = 2;
-
 		public int sampleSize = 60;
-
 		public int maxAttempts = 20000;
-
 		public int liarCount
 		{
 			get { return liarCounts != null && liarCounts.Length > 0 ? liarCounts[0] : 1; }
@@ -64,17 +56,105 @@ namespace LogicSolver
 	public sealed class RoomSolution
 	{
 		public int safeDoor;
-
 		public int[] liars;
-
-		public string[] statements;
-
+		public DoorStatement[] doorStatements;
 		public RoomStats stats;
 	}
 
 	public static class Solver
 	{
-		// even the pool up, or a guard mentioning a detail is probably lying
+		private static DoorStatement Split(Statement said, List<Claim> everyClaim)
+		{
+			DoorStatement sentence = new DoorStatement
+			{
+				speaker = said.speaker,
+				sentence = said.text
+			};
+
+			foreach (string half in Halves(said.text))
+			{
+				List<string> pieces = new List<string>();
+				List<string> answers = new List<string>();
+				ReadParts(half, pieces, answers);
+
+				for (int gap = 0; gap < answers.Count; gap++)
+				{
+					List<string> options = new List<string>();
+					options.Add(answers[gap]);
+
+					foreach (Claim other in everyClaim)
+					{
+						List<string> otherPieces = new List<string>();
+						List<string> otherAnswers = new List<string>();
+						ReadParts(other.text, otherPieces, otherAnswers);
+						if (otherAnswers.Count != answers.Count) continue;
+						if (!Same(pieces, otherPieces)) continue;
+
+						// every other gap has to match, or it is a different sentence
+						bool onlyThisGapDiffers = true;
+						for (int i = 0; i < answers.Count; i++)
+						{
+							if (i != gap && answers[i] != otherAnswers[i]) onlyThisGapDiffers = false;
+						}
+						if (!onlyThisGapDiffers) continue;
+						if (!options.Contains(otherAnswers[gap])) options.Add(otherAnswers[gap]);
+					}
+
+					options.Sort(CompareOptions);
+					sentence.dropdownContents.Add(options);
+				}
+			}
+
+			return sentence;
+		}
+
+		private static List<string> Halves(string text)
+		{
+			if (text.StartsWith("either ")) text = text.Substring("either ".Length);
+			foreach (string tail in new[] { ", but not both", ", or both" })
+			{
+				if (text.EndsWith(tail)) text = text.Substring(0, text.Length - tail.Length);
+			}
+			foreach (string join in new[] { " if and only if ", ", and ", ", or " })
+			{
+				int at = text.IndexOf(join);
+				if (at < 0) continue;
+				return new List<string> { text.Substring(0, at), text.Substring(at + join.Length) };
+			}
+			return new List<string> { text };
+		}
+
+		// numbers in order, then words alphabetically
+		private static int CompareOptions(string a, string b)
+		{
+			int x, y;
+			if (int.TryParse(a, out x) && int.TryParse(b, out y)) return x.CompareTo(y);
+			return string.CompareOrdinal(a, b);
+		}
+
+		private static void ReadParts(string marked, List<string> pieces, List<string> answers)
+		{
+			int at = 0;
+			while (true)
+			{
+				int open = marked.IndexOf('|', at);
+				if (open < 0) { pieces.Add(marked.Substring(at)); return; }
+				int close = marked.IndexOf('|', open + 1);
+				if (close < 0) { pieces.Add(marked.Substring(at)); return; }
+				pieces.Add(marked.Substring(at, open - at));
+				answers.Add(marked.Substring(open + 1, close - open - 1));
+				at = close + 1;
+			}
+		}
+
+		private static bool Same(List<string> a, List<string> b)
+		{
+			if (a.Count != b.Count) return false;
+			for (int i = 0; i < a.Count; i++) if (a[i] != b[i]) return false;
+			return true;
+		}
+
+		// even the pool up, or a door mentioning a detail is probably lying
 		private static List<Detail> Balanced(List<Detail> given, Random rng)
 		{
 			if (given == null) return new List<Detail>();
@@ -132,7 +212,6 @@ namespace LogicSolver
 			RoomBuilder builder = new RoomBuilder(space, settings, pools);
 			Random rng = new Random(settings.seed);
 
-			// settle on the safe door before trying, so every door is equally likely
 			int wantDoor = rng.Next(settings.doorCount);
 
 			for (int i = 0; i < settings.maxAttempts; i++)
@@ -140,17 +219,18 @@ namespace LogicSolver
 				BuiltRoom room = builder.TryBuild(rng, wantDoor);
 				if (room == null) continue;
 
-				string[] lines = new string[settings.doorCount];
+				DoorStatement[] sentences = new DoorStatement[settings.doorCount];
 				foreach (Statement statement in room.statements)
 				{
-					lines[statement.speaker] = statement.text;
+					DoorStatement sentence = Split(statement, ClaimLibrary.Build(statement.speaker, settings, settings.details));
+					sentences[statement.speaker] = sentence;
 				}
 
 				return new RoomSolution
 				{
 					safeDoor = room.safeDoor,
 					liars = room.liars,
-					statements = lines,
+					doorStatements = sentences,
 					stats = room.stats
 				};
 			}

@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Novice
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Novice
+  difficultyDescription: Every logician starts somewhere. Five max doors.
+  difficultyRequiredToUnlock: -1
   solverDifficulty: 0
   roomCount: 5
+  objectMultiplier: 1
   minObjects: 1
   maxObjects: 1
   durationUntilObjectIncrease: 2

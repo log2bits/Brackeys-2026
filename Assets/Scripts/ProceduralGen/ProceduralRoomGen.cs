@@ -128,20 +128,20 @@ public class ProceduralRoomGen : MonoBehaviour
         SpriteRenderer doorFullSpriteRenderer = doorFullPrefab.transform.GetChild(0).GetComponent<SpriteRenderer>();
         doorFullSize = doorFullSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorFullSpriteRenderer.transform.localScale.x);
         
-        SpriteRenderer doorSpriteRenderer = doorFullPrefab.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
-        doorCompSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
-
+        SpriteRenderer doorSpriteRenderer = doorFullPrefab.transform.GetChild(1).GetChild(0).GetComponent<SpriteRenderer>();
+        //Debug.Log("doorSpriteRenderer: " + doorSpriteRenderer.gameObject.name);
+        //doorCompSize = doorSpriteRenderer.sprite.bounds.size.x * Mathf.Abs(doorSpriteRenderer.transform.localScale.x);
+        doorCompSize = 3.2f;
+        
         seed = GameManager.Instance.currentSeed;
         proceduralRandGen = new System.Random(seed);
 
         if (GameManager.Instance.currentDifficulty == null)
         {
-            difficulty = difficultyIfNull;
+            GameManager.Instance.currentDifficulty = difficultyIfNull;
         }
-        else
-        {
-            difficulty = GameManager.Instance.currentDifficulty;
-        }
+
+        difficulty = GameManager.Instance.currentDifficulty;
 
         objectCount = Mathf.Min(difficulty.minObjects, objectDataTemplates.Count);
     }
@@ -191,7 +191,6 @@ public class ProceduralRoomGen : MonoBehaviour
 
             Door doorScript = door.transform.GetChild(1).GetComponent<Door>();
             if (doorScript == null) throw new Exception("ProceduralRoomGen: Door script not found on instantiated door");
-            doorScript.SetDialogue("Missing Dialogue");
             doorScript.SetNumber(currDoor);
 
             // Invalidate the position of the door in the grid
@@ -212,7 +211,7 @@ public class ProceduralRoomGen : MonoBehaviour
         currentDoors[roomSolution.safeDoor].doorComponent.SetIsSafe(true);
         for (int currDoor = 0; currDoor < currentDoors.Count; currDoor++)
         {
-            currentDoors[currDoor].doorComponent.SetDialogue(roomSolution.statements[currDoor]);
+            currentDoors[currDoor].doorComponent.SetDialogue(roomSolution.doorStatements[currDoor]);
         }
     }
 
