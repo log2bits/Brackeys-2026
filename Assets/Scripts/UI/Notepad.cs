@@ -10,18 +10,13 @@ public class Notepad : MonoBehaviour
     [SerializeField] private TMP_InputField notepadInputField;
     [SerializeField] private RectTransform notepadHolderTransform;
     [SerializeField] private Image notepadButtonImage;
-    [SerializeField] private Sprite notepadButtonOpen;
-    [SerializeField] private Sprite notepadButtonClose;
 
     [Header("Guard Log References")]
     [SerializeField] private RectTransform guardLogHolderTransform;
     [SerializeField] private Image guardLogButtonImage;
-    [SerializeField] private Sprite guardLogButtonOpen;
-    [SerializeField] private Sprite guardLogButtonClose;
 
     [Header("Parameters")]
     [SerializeField] private float verticalMoveDistance = 300;
-    [SerializeField] private float horizontalMoveDistance = 300;
     [SerializeField] private float moveTime = 0.5f;
 
     private bool notepadTransitioning = false;
@@ -44,8 +39,6 @@ public class Notepad : MonoBehaviour
         }
 
         notepadOpen = !notepadOpen;
-
-        notepadButtonImage.sprite = notepadOpen ? notepadButtonClose : notepadButtonOpen;
         
         if (notepadOpen)
         {
@@ -64,8 +57,8 @@ public class Notepad : MonoBehaviour
         CoroutineManager.Instance.Run(MoveRectTransformYAxis(notepadHolderTransform, finalYPosition, EndNotepadTransition));
 
         // Move guard log left/right
-        float finalXPosition = guardLogHolderTransform.anchoredPosition.x + (notepadOpen ? horizontalMoveDistance : -1 * horizontalMoveDistance);
-        CoroutineManager.Instance.Run(MoveRectTransformXAxis(guardLogHolderTransform, finalXPosition));
+        //float finalXPosition = guardLogHolderTransform.anchoredPosition.x + (notepadOpen ? horizontalMoveDistance : -1 * horizontalMoveDistance);
+        //CoroutineManager.Instance.Run(MoveRectTransformXAxis(guardLogHolderTransform, finalXPosition));
     }
 
     private void EndNotepadTransition()
@@ -81,8 +74,6 @@ public class Notepad : MonoBehaviour
         }
 
         guardLogOpen = !guardLogOpen;
-
-        guardLogButtonImage.sprite = guardLogOpen ? guardLogButtonClose : guardLogButtonOpen;
         
         if (guardLogOpen)
         {
@@ -115,7 +106,7 @@ public class Notepad : MonoBehaviour
         finished?.Invoke();
     }
 
-    private IEnumerator MoveRectTransformXAxis(RectTransform transform, float finalXPosition, Action finished = null)
+    /*private IEnumerator MoveRectTransformXAxis(RectTransform transform, float finalXPosition, Action finished = null)
     {
         float startingXPosition = transform.anchoredPosition.x;
 
@@ -129,7 +120,7 @@ public class Notepad : MonoBehaviour
 
         transform.anchoredPosition = new Vector2(finalXPosition, transform.anchoredPosition.y);;
         finished?.Invoke();
-    }
+    }*/
 
     public void ClearNotepad()
     {
