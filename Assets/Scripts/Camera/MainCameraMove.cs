@@ -64,7 +64,13 @@ public class MainCameraMove : MonoBehaviour
         mouseHeldLastFrame = Mouse.current.leftButton.isPressed;
 
         // Clamp camera within room bounds
-        RoomState currentRoomState = GameManager.Instance.worldState.roomStates[GameManager.Instance.currentRoom];
+        int currentRoom = GameManager.Instance.currentRoom;
+        if (currentRoom >= GameManager.Instance.worldState.roomStates.Count)
+        {
+            currentRoom = GameManager.Instance.worldState.roomStates.Count - 1;
+        }
+
+        RoomState currentRoomState = GameManager.Instance.worldState.roomStates[currentRoom];
         if (currentRoomState == null)
         {
             throw new System.Exception("MainCameraMove: Game currently inside an invalid room!");

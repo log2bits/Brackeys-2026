@@ -39,4 +39,35 @@ public static class SaveSystem
 		OptionsMenu.OptionsData optionsData = JsonUtility.FromJson<OptionsMenu.OptionsData>(json);
 		return optionsData;
 	}
+
+	// Highest Difficulty --------------------------------------------------------
+
+	private static string HighestBeatenDifficultyPath()
+	{
+		return SaveFolderPath() + "HighestBeatenDifficulty.json";
+	}
+
+	public static void SaveHighestBeatenDifficulty(MainMenu.HighestBeatenDifficulty highestBeatenDifficulty)
+	{
+		string json = JsonUtility.ToJson(highestBeatenDifficulty);
+
+		string path = Path.Combine(Application.persistentDataPath, HighestBeatenDifficultyPath());
+		Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+		File.WriteAllText(path, json);
+	}
+
+	public static MainMenu.HighestBeatenDifficulty GetHighestBeatenDifficulty()
+	{
+		string path = Path.Combine(Application.persistentDataPath, HighestBeatenDifficultyPath());
+		if (!File.Exists(path))
+		{
+			return null;
+		}
+
+		string json = File.ReadAllText(path);
+
+		MainMenu.HighestBeatenDifficulty highestBeatenDifficulty = JsonUtility.FromJson<MainMenu.HighestBeatenDifficulty>(json);
+		return highestBeatenDifficulty;
+	}
 }

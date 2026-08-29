@@ -4141,7 +4141,7 @@ MonoBehaviour:
   playUIElements: {fileID: 1543091091}
   newGameHiddenPosition: {x: 0, y: -840}
   newGameShownPosition: {x: 0, y: 0}
-  playHiddenPosition: {x: 960, y: 0}
+  playHiddenPosition: {x: 1350, y: 0}
   playShownPosition: {x: 0, y: 0}
   optionsMenuUIHolder: {fileID: 1755384212}
   seedInputField: {fileID: 1777764741}
@@ -5196,7 +5196,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &7228274398496814165
 MonoBehaviour:
   m_ObjectHideFlags: 0

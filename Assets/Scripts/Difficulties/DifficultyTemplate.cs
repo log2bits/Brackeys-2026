@@ -6,6 +6,7 @@ public class DifficultyTemplate : ScriptableObject
     [Header("Basic Configurations")]
     public string difficultyName;
     public string difficultyDescription;
+    public int difficultyRequiredToUnlock;
 
     public int solverDifficulty;
     public int roomCount = 2;

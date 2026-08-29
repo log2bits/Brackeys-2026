@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyTemplate
   difficultyName: Logician
   difficultyDescription: For perfectly rational beings. Compound statements only.
+  difficultyRequiredToUnlock: 2
   solverDifficulty: 4
   roomCount: 5
   objectMultiplier: 1
