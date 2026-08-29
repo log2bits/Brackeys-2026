@@ -123,7 +123,7 @@ public class Door : ClickableObject
     {
         this.doorNumber = number;
 
-        string doorNumber = "<b>" + number.ToString();
+        string doorNumber = "<b>" + (number + 1).ToString();
         doorNumbersText.text = doorNumber;
     }
 
