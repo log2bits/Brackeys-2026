@@ -29,6 +29,9 @@ public class CoroutineManager : MonoBehaviour
 
     public void Stop(IEnumerator coroutine)
     {
-        StopCoroutine(coroutine);
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+        }
     }
 }

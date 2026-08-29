@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{68977ad0-1abf-4bd9-85c5-7662ab26fdb3}">
+		<property name="name">
+			<value>BaseChance</value>
+		</property>
+		<relationship name="folder">
+			<destination>{ba0115a9-9857-4713-91c4-6086456737c2}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{92d7de42-287f-45ac-9cfc-edf9b8566c34}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{92d7de42-287f-45ac-9cfc-edf9b8566c34}">
+		<property name="isGlobal">
+			<value>true</value>
+		</property>
+		<property name="isReadOnly">
+			<value>true</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+		<property name="isExposedRecursively">
+			<value>false</value>
+		</property>
+	</object>
+</objects>
