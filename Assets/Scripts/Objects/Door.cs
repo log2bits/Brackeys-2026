@@ -83,15 +83,16 @@ public class Door : ClickableObject
                 int lives = GameManager.Instance.lives;
                 lives -= 1;
                 GameManager.Instance.lives = lives;
+
                 if (lives < 1)
                 {
                     GameManager.Instance.currentSeed = GameManager.StringToRandomInt(GameManager.GenerateRandomString());
                     SceneManager.LoadScene("MainMenu");
+                    return;
                 }
-                else
-                {
-                    EventBus.Instance.DoLostLife();
-                }
+                
+                EventBus.Instance.DoLostLife();
+                
                 return;
             }
 

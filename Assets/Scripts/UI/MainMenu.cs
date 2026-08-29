@@ -86,6 +86,7 @@ public class MainMenu : MonoBehaviour
 
         if (difficultyIndex > GetHighestUnlockedDifficulty())
         {
+            MainCameraMove.Instance.ShakeCamera(0.35f, 0.15f, 0.015f, 0.85f);
             return;
         }
 
