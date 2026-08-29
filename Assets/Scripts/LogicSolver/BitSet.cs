@@ -2,8 +2,8 @@ using System;
 
 namespace LogicSolver
 {
-	// A set of worlds, stored as bits. 5 doors and 5 guards needs 160 bits, hence the ulong[]
-	public struct BitSet
+	// A set of worlds, stored as bits. 5 doors needs 160 bits, hence the ulong[]
+	public struct BitSet : IEquatable<BitSet>
 	{
 		private readonly ulong[] words;
 		private readonly int size;
@@ -112,6 +112,18 @@ namespace LogicSolver
 				if (words[i] != other.words[i]) return false;
 			}
 			return true;
+		}
+
+		public override bool Equals(object other)
+		{
+			return other is BitSet && Equals((BitSet)other);
+		}
+
+		public override int GetHashCode()
+		{
+			ulong mixed = (ulong)size;
+			for (int i = 0; i < words.Length; i++) mixed = mixed * 1099511628211UL ^ words[i];
+			return (int)(mixed ^ (mixed >> 32));
 		}
 
 		private static int PopCount(ulong bits)

@@ -95,7 +95,7 @@ namespace LogicSolver
 
 		public override string ToString()
 		{
-			return "Guard " + (speaker + 1) + ": \"" + text + "\"";
+			return "Door " + (speaker + 1) + ": \"" + text + "\"";
 		}
 	}
 }

@@ -82,7 +82,7 @@ namespace LogicSolver
 			list.Add(new Claim(Topic.Liar, "|at most one| of us is lying",
 				world => world.LiarCount <= 1, 0, 2, true));
 
-			foreach (int howMany in Enumerable.Range(2, Math.Max(0, numDoors - 2)))
+			foreach (int howMany in Enumerable.Range(1, Math.Max(0, numDoors)))
 			{
 				list.Add(new Claim(Topic.Liar, "exactly |" + howMany + "| of us are lying",
 					world => world.LiarCount == howMany, 1, 2, true));
@@ -101,9 +101,9 @@ namespace LogicSolver
 				world => world.LiarCount * 2 < numDoors, 1, 2));
 			if (numDoors >= 3)
 			{
-				list.Add(new Claim(Topic.Liar, "an |odd| number of us are |lying|",
+				list.Add(new Claim(Topic.Liar, "an |odd| amount of us are lying",
 					world => world.LiarCount % 2 == 1, 2, 3));
-				list.Add(new Claim(Topic.Liar, "an |even| number of us are |lying|",
+				list.Add(new Claim(Topic.Liar, "an |even| amount of us are lying",
 					world => world.LiarCount % 2 == 0, 2, 3));
 			}
 		}
@@ -113,84 +113,98 @@ namespace LogicSolver
 			if (speaker > 0 && speaker < numDoors - 1)
 			{
 				list.Add(new Claim(Topic.Liar, "at least one door next to me is |lying|",
-					world => AnyGuard(numDoors, guard => Next(guard, speaker) && world.Lies(guard)), 0, 2));
+					world => AnyDoor(numDoors, room => Next(room, speaker) && world.Lies(room)), 0, 2));
 				list.Add(new Claim(Topic.Liar, "at least one door next to me is |honest|",
-					world => AnyGuard(numDoors, guard => Next(guard, speaker) && !world.Lies(guard)), 0, 2));
+					world => AnyDoor(numDoors, room => Next(room, speaker) && !world.Lies(room)), 0, 2));
 				list.Add(new Claim(Topic.Liar, "both doors next to me are |honest|",
-					world => !AnyGuard(numDoors, guard => Next(guard, speaker) && world.Lies(guard)), 0, 2));
+					world => !AnyDoor(numDoors, room => Next(room, speaker) && world.Lies(room)), 0, 2));
 				list.Add(new Claim(Topic.Liar, "both doors next to me are |lying|",
-					world => !AnyGuard(numDoors, guard => Next(guard, speaker) && !world.Lies(guard)), 0, 2));
+					world => !AnyDoor(numDoors, room => Next(room, speaker) && !world.Lies(room)), 0, 2));
 				list.Add(new Claim(Topic.Liar, "exactly one door next to me is |lying|",
-					world => CountGuards(numDoors, guard => Next(guard, speaker) && world.Lies(guard)) == 1, 0, 2));
+					world => CountDoors(numDoors, room => Next(room, speaker) && world.Lies(room)) == 1, 0, 2));
+				list.Add(new Claim(Topic.Liar, "exactly one door next to me is |honest|",
+					world => CountDoors(numDoors, room => Next(room, speaker) && !world.Lies(room)) == 1, 0, 2));
 			}
 
 			if (speaker >= 2)
 			{
 				list.Add(new Claim(Topic.Liar, "at least one door numbered |lower| than me is |lying|",
-					world => AnyGuard(numDoors, guard => guard < speaker && world.Lies(guard)), 1, 2));
+					world => AnyDoor(numDoors, room => room < speaker && world.Lies(room)), 1, 2));
+				list.Add(new Claim(Topic.Liar, "at least one door numbered |lower| than me is |honest|",
+					world => AnyDoor(numDoors, room => room < speaker && !world.Lies(room)), 1, 2));
 				list.Add(new Claim(Topic.Liar, "every door numbered |lower| than me is |honest|",
-					world => !AnyGuard(numDoors, guard => guard < speaker && world.Lies(guard)), 0, 1));
+					world => !AnyDoor(numDoors, room => room < speaker && world.Lies(room)), 0, 1));
 				list.Add(new Claim(Topic.Liar, "every door numbered |lower| than me is |lying|",
-					world => !AnyGuard(numDoors, guard => guard < speaker && !world.Lies(guard)), 0, 1));
+					world => !AnyDoor(numDoors, room => room < speaker && !world.Lies(room)), 0, 1));
 				list.Add(new Claim(Topic.Liar, "exactly one door numbered |lower| than me is |lying|",
-					world => CountGuards(numDoors, guard => guard < speaker && world.Lies(guard)) == 1, 1, 3));
+					world => CountDoors(numDoors, room => room < speaker && world.Lies(room)) == 1, 1, 3));
+				list.Add(new Claim(Topic.Liar, "exactly one door numbered |lower| than me is |honest|",
+					world => CountDoors(numDoors, room => room < speaker && !world.Lies(room)) == 1, 1, 3));
 			}
 			if (speaker <= numDoors - 3)
 			{
 				list.Add(new Claim(Topic.Liar, "at least one door numbered |higher| than me is |lying|",
-					world => AnyGuard(numDoors, guard => guard > speaker && world.Lies(guard)), 1, 2));
+					world => AnyDoor(numDoors, room => room > speaker && world.Lies(room)), 1, 2));
+				list.Add(new Claim(Topic.Liar, "at least one door numbered |higher| than me is |honest|",
+					world => AnyDoor(numDoors, room => room > speaker && !world.Lies(room)), 1, 2));
 				list.Add(new Claim(Topic.Liar, "every door numbered |higher| than me is |honest|",
-					world => !AnyGuard(numDoors, guard => guard > speaker && world.Lies(guard)), 0, 1));
+					world => !AnyDoor(numDoors, room => room > speaker && world.Lies(room)), 0, 1));
 				list.Add(new Claim(Topic.Liar, "every door numbered |higher| than me is |lying|",
-					world => !AnyGuard(numDoors, guard => guard > speaker && !world.Lies(guard)), 0, 1));
+					world => !AnyDoor(numDoors, room => room > speaker && !world.Lies(room)), 0, 1));
 				list.Add(new Claim(Topic.Liar, "exactly one door numbered |higher| than me is |lying|",
-					world => CountGuards(numDoors, guard => guard > speaker && world.Lies(guard)) == 1, 1, 3));
+					world => CountDoors(numDoors, room => room > speaker && world.Lies(room)) == 1, 1, 3));
+				list.Add(new Claim(Topic.Liar, "exactly one door numbered |higher| than me is |honest|",
+					world => CountDoors(numDoors, room => room > speaker && !world.Lies(room)) == 1, 1, 3));
 			}
 
 			if (numDoors >= 3)
 			{
 				list.Add(new Claim(Topic.Liar, "two |lying| doors are next to each other",
-					world => AnyGuard(numDoors, guard => guard + 1 < numDoors
-						&& world.Lies(guard) && world.Lies(guard + 1)), 1, 2));
+					world => AnyDoor(numDoors, room => room + 1 < numDoors
+						&& world.Lies(room) && world.Lies(room + 1)), 1, 2));
 				list.Add(new Claim(Topic.Liar, "no two |lying| doors are next to each other",
-					world => !AnyGuard(numDoors, guard => guard + 1 < numDoors
-						&& world.Lies(guard) && world.Lies(guard + 1)), 1, 2));
+					world => !AnyDoor(numDoors, room => room + 1 < numDoors
+						&& world.Lies(room) && world.Lies(room + 1)), 1, 2));
 				list.Add(new Claim(Topic.Liar, "two |honest| doors are next to each other",
-					world => AnyGuard(numDoors, guard => guard + 1 < numDoors
-						&& !world.Lies(guard) && !world.Lies(guard + 1)), 1, 2));
+					world => AnyDoor(numDoors, room => room + 1 < numDoors
+						&& !world.Lies(room) && !world.Lies(room + 1)), 1, 2));
 				list.Add(new Claim(Topic.Liar, "no two |honest| doors are next to each other",
-					world => !AnyGuard(numDoors, guard => guard + 1 < numDoors
-						&& !world.Lies(guard) && !world.Lies(guard + 1)), 1, 2));
+					world => !AnyDoor(numDoors, room => room + 1 < numDoors
+						&& !world.Lies(room) && !world.Lies(room + 1)), 1, 2));
 
-				list.Add(new Claim(Topic.Liar, "at least one end of the room has a |lying| door",
+				list.Add(new Claim(Topic.Liar, "at least one end of the room has a lying door",
 					world => world.Lies(0) || world.Lies(numDoors - 1), 0, 2));
 				list.Add(new Claim(Topic.Liar, "the doors at both ends of the room are |honest|",
 					world => !world.Lies(0) && !world.Lies(numDoors - 1), 0, 2));
 				list.Add(new Claim(Topic.Liar, "the doors at both ends of the room are |lying|",
 					world => world.Lies(0) && world.Lies(numDoors - 1), 0, 2));
-				list.Add(new Claim(Topic.Liar, "at least one end of the room has an |honest| door",
+				list.Add(new Claim(Topic.Liar, "at least one end of the room has an honest door",
 					world => !world.Lies(0) || !world.Lies(numDoors - 1), 0, 2));
 
 				list.Add(new Claim(Topic.Liar, "every |lying| door is |odd| numbered",
-					world => !AnyGuard(numDoors, guard => world.Lies(guard) && guard % 2 == 1), 1, 2));
+					world => !AnyDoor(numDoors, room => world.Lies(room) && room % 2 == 1), 1, 2));
 				list.Add(new Claim(Topic.Liar, "every |lying| door is |even| numbered",
-					world => !AnyGuard(numDoors, guard => world.Lies(guard) && guard % 2 == 0), 1, 2));
+					world => !AnyDoor(numDoors, room => world.Lies(room) && room % 2 == 0), 1, 2));
 				list.Add(new Claim(Topic.Liar, "at least one |lying| door is |even| numbered",
-					world => AnyGuard(numDoors, guard => world.Lies(guard) && guard % 2 == 1), 1, 2));
+					world => AnyDoor(numDoors, room => world.Lies(room) && room % 2 == 1), 1, 2));
+				list.Add(new Claim(Topic.Liar, "at least one |honest| door is |even| numbered",
+					world => AnyDoor(numDoors, room => !world.Lies(room) && room % 2 == 1), 1, 2));
 				list.Add(new Claim(Topic.Liar, "at least one |lying| door is |odd| numbered",
-					world => AnyGuard(numDoors, guard => world.Lies(guard) && guard % 2 == 0), 1, 2));
+					world => AnyDoor(numDoors, room => world.Lies(room) && room % 2 == 0), 1, 2));
+				list.Add(new Claim(Topic.Liar, "at least one |honest| door is |odd| numbered",
+					world => AnyDoor(numDoors, room => !world.Lies(room) && room % 2 == 0), 1, 2));
 				list.Add(new Claim(Topic.Liar, "every |honest| door is |odd| numbered",
-					world => !AnyGuard(numDoors, guard => !world.Lies(guard) && guard % 2 == 1), 1, 2));
+					world => !AnyDoor(numDoors, room => !world.Lies(room) && room % 2 == 1), 1, 2));
 				list.Add(new Claim(Topic.Liar, "every |honest| door is |even| numbered",
-					world => !AnyGuard(numDoors, guard => !world.Lies(guard) && guard % 2 == 0), 1, 2));
+					world => !AnyDoor(numDoors, room => !world.Lies(room) && room % 2 == 0), 1, 2));
 
-				list.Add(new Claim(Topic.Liar, "at least one |honest| door is directly between two |lying| doors",
+				list.Add(new Claim(Topic.Liar, "at least one honest door is directly between two lying doors",
 					world => HonestWithLiarsEitherSide(numDoors, world), 2, 3));
-				list.Add(new Claim(Topic.Liar, "no |honest| door is directly between two |lying| doors",
+				list.Add(new Claim(Topic.Liar, "no honest door is directly between two lying doors",
 					world => !HonestWithLiarsEitherSide(numDoors, world), 2, 3));
-				list.Add(new Claim(Topic.Liar, "at least one |lying| door is directly between two |honest| doors",
+				list.Add(new Claim(Topic.Liar, "at least one lying door is directly between two honest doors",
 					world => LiarWithHonestEitherSide(numDoors, world), 2, 3));
-				list.Add(new Claim(Topic.Liar, "no |lying| door is directly between two |honest| doors",
+				list.Add(new Claim(Topic.Liar, "no lying door is directly between two honest doors",
 					world => !LiarWithHonestEitherSide(numDoors, world), 2, 3));
 			}
 
@@ -213,13 +227,13 @@ namespace LogicSolver
 			const Topic both = Topic.Door | Topic.Liar;
 
 			list.Add(new Claim(both, "every unsafe door is |lying|",
-				world => !AnyGuard(numDoors, guard => guard != world.safeDoor && !world.Lies(guard)), 0, 3));
+				world => !AnyDoor(numDoors, room => room != world.safeDoor && !world.Lies(room)), 0, 3));
 			list.Add(new Claim(both, "every unsafe door is |honest|",
-				world => !AnyGuard(numDoors, guard => guard != world.safeDoor && world.Lies(guard)), 0, 3));
+				world => !AnyDoor(numDoors, room => room != world.safeDoor && world.Lies(room)), 0, 3));
 			list.Add(new Claim(both, "at least one unsafe door is |lying|",
-				world => AnyGuard(numDoors, guard => guard != world.safeDoor && world.Lies(guard)), 0, 3));
+				world => AnyDoor(numDoors, room => room != world.safeDoor && world.Lies(room)), 0, 3));
 			list.Add(new Claim(both, "at least one unsafe door is |honest|",
-				world => AnyGuard(numDoors, guard => guard != world.safeDoor && !world.Lies(guard)), 0, 3));
+				world => AnyDoor(numDoors, room => room != world.safeDoor && !world.Lies(room)), 0, 3));
 
 			list.Add(new Claim(both, "the safe door is |lying|",
 				world => world.Lies(world.safeDoor), 0, 2));
@@ -227,45 +241,51 @@ namespace LogicSolver
 				world => !world.Lies(world.safeDoor), 0, 2));
 
 			list.Add(new Claim(both, "at least one door next to the safe door is |lying|",
-				world => AnyGuard(numDoors, guard => Next(guard, world.safeDoor) && world.Lies(guard)), 2, 3));
+				world => AnyDoor(numDoors, room => Next(room, world.safeDoor) && world.Lies(room)), 2, 3));
 			list.Add(new Claim(both, "at least one door next to the safe door is |honest|",
-				world => AnyGuard(numDoors, guard => Next(guard, world.safeDoor) && !world.Lies(guard)), 2, 3));
+				world => AnyDoor(numDoors, room => Next(room, world.safeDoor) && !world.Lies(room)), 2, 3));
 			list.Add(new Claim(both, "every door next to the safe door is |honest|",
-				world => !AnyGuard(numDoors, guard => Next(guard, world.safeDoor) && world.Lies(guard)), 2, 3));
+				world => !AnyDoor(numDoors, room => Next(room, world.safeDoor) && world.Lies(room)), 2, 3));
 			list.Add(new Claim(both, "every door next to the safe door is |lying|",
-				world => AnyGuard(numDoors, guard => Next(guard, world.safeDoor))
-					&& !AnyGuard(numDoors, guard => Next(guard, world.safeDoor) && !world.Lies(guard)), 2, 3));
+				world => AnyDoor(numDoors, room => Next(room, world.safeDoor))
+					&& !AnyDoor(numDoors, room => Next(room, world.safeDoor) && !world.Lies(room)), 2, 3));
 			list.Add(new Claim(both, "exactly one door next to the safe door is |lying|",
-				world => CountGuards(numDoors, guard => Next(guard, world.safeDoor) && world.Lies(guard)) == 1, 2, 3));
+				world => CountDoors(numDoors, room => Next(room, world.safeDoor) && world.Lies(room)) == 1, 2, 3));
+			list.Add(new Claim(both, "exactly one door next to the safe door is |honest|",
+				world => CountDoors(numDoors, room => Next(room, world.safeDoor) && !world.Lies(room)) == 1, 2, 3));
 			if (numDoors >= 3)
 			{
-				list.Add(new Claim(both, "there is a |lying| door on each side of the safe door",
-					world => AnyGuard(numDoors, guard => guard < world.safeDoor && world.Lies(guard))
-						&& AnyGuard(numDoors, guard => guard > world.safeDoor && world.Lies(guard)), 3, 3));
+				list.Add(new Claim(both, "there is a lying door on each side of the safe door",
+					world => AnyDoor(numDoors, room => room < world.safeDoor && world.Lies(room))
+						&& AnyDoor(numDoors, room => room > world.safeDoor && world.Lies(room)), 3, 3));
 			}
 
 			if (numDoors >= 3)
 			{
 				list.Add(new Claim(both, "at least one |lying| door is numbered |lower| than the safe door",
-					world => AnyGuard(numDoors, guard => guard < world.safeDoor && world.Lies(guard)), 3, 3));
+					world => AnyDoor(numDoors, room => room < world.safeDoor && world.Lies(room)), 3, 3));
 				list.Add(new Claim(both, "at least one |lying| door is numbered |higher| than the safe door",
-					world => AnyGuard(numDoors, guard => guard > world.safeDoor && world.Lies(guard)), 3, 3));
+					world => AnyDoor(numDoors, room => room > world.safeDoor && world.Lies(room)), 3, 3));
 				list.Add(new Claim(both, "at least one |honest| door is numbered |lower| than the safe door",
-					world => AnyGuard(numDoors, guard => guard < world.safeDoor && !world.Lies(guard)), 3, 3));
+					world => AnyDoor(numDoors, room => room < world.safeDoor && !world.Lies(room)), 3, 3));
 				list.Add(new Claim(both, "at least one |honest| door is numbered |higher| than the safe door",
-					world => AnyGuard(numDoors, guard => guard > world.safeDoor && !world.Lies(guard)), 3, 3));
+					world => AnyDoor(numDoors, room => room > world.safeDoor && !world.Lies(room)), 3, 3));
 				list.Add(new Claim(both, "every |lying| door is numbered |lower| than the safe door",
-					world => !AnyGuard(numDoors, guard => guard >= world.safeDoor && world.Lies(guard)), 3, 3));
+					world => !AnyDoor(numDoors, room => room >= world.safeDoor && world.Lies(room)), 3, 3));
 				list.Add(new Claim(both, "every |lying| door is numbered |higher| than the safe door",
-					world => !AnyGuard(numDoors, guard => guard <= world.safeDoor && world.Lies(guard)), 3, 3));
+					world => !AnyDoor(numDoors, room => room <= world.safeDoor && world.Lies(room)), 3, 3));
 				list.Add(new Claim(both, "exactly one |lying| door is numbered |lower| than the safe door",
-					world => CountGuards(numDoors, guard => guard < world.safeDoor && world.Lies(guard)) == 1, 4, 4));
+					world => CountDoors(numDoors, room => room < world.safeDoor && world.Lies(room)) == 1, 4, 4));
+				list.Add(new Claim(both, "exactly one |honest| door is numbered |lower| than the safe door",
+					world => CountDoors(numDoors, room => room < world.safeDoor && !world.Lies(room)) == 1, 4, 4));
 				list.Add(new Claim(both, "exactly one |lying| door is numbered |higher| than the safe door",
-					world => CountGuards(numDoors, guard => guard > world.safeDoor && world.Lies(guard)) == 1, 4, 4));
+					world => CountDoors(numDoors, room => room > world.safeDoor && world.Lies(room)) == 1, 4, 4));
+				list.Add(new Claim(both, "exactly one |honest| door is numbered |higher| than the safe door",
+					world => CountDoors(numDoors, room => room > world.safeDoor && !world.Lies(room)) == 1, 4, 4));
 				list.Add(new Claim(both, "every |honest| door is numbered |lower| than the safe door",
-					world => !AnyGuard(numDoors, guard => guard >= world.safeDoor && !world.Lies(guard)), 3, 3));
+					world => !AnyDoor(numDoors, room => room >= world.safeDoor && !world.Lies(room)), 3, 3));
 				list.Add(new Claim(both, "every |honest| door is numbered |higher| than the safe door",
-					world => !AnyGuard(numDoors, guard => guard <= world.safeDoor && !world.Lies(guard)), 3, 3));
+					world => !AnyDoor(numDoors, room => room <= world.safeDoor && !world.Lies(room)), 3, 3));
 			}
 
 			if (numDoors >= 3)
@@ -296,10 +316,19 @@ namespace LogicSolver
 			{
 				list.Add(new Claim(both, "more |lying| doors are numbered |lower| than the safe door than are numbered higher",
 					world => Below(numDoors, world, world.safeDoor) > Above(numDoors, world, world.safeDoor), 4, 4));
+				list.Add(new Claim(both, "more |honest| doors are numbered |lower| than the safe door than are numbered higher",
+					world => CountDoors(numDoors, room => room < world.safeDoor && !world.Lies(room))
+						> CountDoors(numDoors, room => room > world.safeDoor && !world.Lies(room)), 4, 4));
 				list.Add(new Claim(both, "more |lying| doors are numbered |higher| than the safe door than are numbered lower",
 					world => Above(numDoors, world, world.safeDoor) > Below(numDoors, world, world.safeDoor), 4, 4));
+				list.Add(new Claim(both, "more |honest| doors are numbered |higher| than the safe door than are numbered lower",
+					world => CountDoors(numDoors, room => room > world.safeDoor && !world.Lies(room))
+						> CountDoors(numDoors, room => room < world.safeDoor && !world.Lies(room)), 4, 4));
 				list.Add(new Claim(both, "as many |lying| doors are numbered |lower| than the safe door as are numbered higher",
 					world => Below(numDoors, world, world.safeDoor) == Above(numDoors, world, world.safeDoor), 4, 4));
+				list.Add(new Claim(both, "as many |honest| doors are numbered |lower| than the safe door as are numbered higher",
+					world => CountDoors(numDoors, room => room < world.safeDoor && !world.Lies(room))
+						== CountDoors(numDoors, room => room > world.safeDoor && !world.Lies(room)), 4, 4));
 			}
 
 			if (numDoors >= 3)
@@ -308,9 +337,9 @@ namespace LogicSolver
 					world => world.LiarCount > world.safeDoor + 1, 4, 4));
 				list.Add(new Claim(both, "there are |fewer| lying doors than the safe door's number",
 					world => world.LiarCount < world.safeDoor + 1, 4, 4));
-				list.Add(new Claim(both, "the safe door's number is the number of lying doors",
+				list.Add(new Claim(both, "the safe door's number is the amount of lying doors",
 					world => world.LiarCount == world.safeDoor + 1, 4, 4));
-				list.Add(new Claim(both, "the safe door's number is the number of honest doors",
+				list.Add(new Claim(both, "the safe door's number is the amount of honest doors",
 					world => numDoors - world.LiarCount == world.safeDoor + 1, 4, 4));
 			}
 		}
@@ -352,50 +381,50 @@ namespace LogicSolver
 			}
 		}
 
-		private static bool Next(int guard, int other) { return Math.Abs(guard - other) == 1; }
+		private static bool Next(int room, int other) { return Math.Abs(room - other) == 1; }
 
 		private static int Below(int numDoors, World world, int mark)
 		{
-			return CountGuards(numDoors, guard => guard < mark && world.Lies(guard));
+			return CountDoors(numDoors, room => room < mark && world.Lies(room));
 		}
 
 		private static int Above(int numDoors, World world, int mark)
 		{
-			return CountGuards(numDoors, guard => guard > mark && world.Lies(guard));
+			return CountDoors(numDoors, room => room > mark && world.Lies(room));
 		}
 
 		private static int FirstLiar(int numDoors, World world)
 		{
-			for (int guard = 0; guard < numDoors; guard++)
+			for (int room = 0; room < numDoors; room++)
 			{
-				if (world.Lies(guard)) return guard;
+				if (world.Lies(room)) return room;
 			}
 			return -1;
 		}
 
 		private static int LastLiar(int numDoors, World world)
 		{
-			for (int guard = numDoors - 1; guard >= 0; guard--)
+			for (int room = numDoors - 1; room >= 0; room--)
 			{
-				if (world.Lies(guard)) return guard;
+				if (world.Lies(room)) return room;
 			}
 			return -1;
 		}
 
 		private static int FirstHonest(int numDoors, World world)
 		{
-			for (int guard = 0; guard < numDoors; guard++)
+			for (int room = 0; room < numDoors; room++)
 			{
-				if (!world.Lies(guard)) return guard;
+				if (!world.Lies(room)) return room;
 			}
 			return -1;
 		}
 
 		private static int LastHonest(int numDoors, World world)
 		{
-			for (int guard = numDoors - 1; guard >= 0; guard--)
+			for (int room = numDoors - 1; room >= 0; room--)
 			{
-				if (!world.Lies(guard)) return guard;
+				if (!world.Lies(room)) return room;
 			}
 			return -1;
 		}
@@ -403,39 +432,39 @@ namespace LogicSolver
 		// directly between, so the two either side of it and nothing further out
 		private static bool HonestWithLiarsEitherSide(int numDoors, World world)
 		{
-			for (int guard = 1; guard < numDoors - 1; guard++)
+			for (int room = 1; room < numDoors - 1; room++)
 			{
-				if (world.Lies(guard)) continue;
-				if (world.Lies(guard - 1) && world.Lies(guard + 1)) return true;
+				if (world.Lies(room)) continue;
+				if (world.Lies(room - 1) && world.Lies(room + 1)) return true;
 			}
 			return false;
 		}
 
 		private static bool LiarWithHonestEitherSide(int numDoors, World world)
 		{
-			for (int guard = 1; guard < numDoors - 1; guard++)
+			for (int room = 1; room < numDoors - 1; room++)
 			{
-				if (!world.Lies(guard)) continue;
-				if (!world.Lies(guard - 1) && !world.Lies(guard + 1)) return true;
+				if (!world.Lies(room)) continue;
+				if (!world.Lies(room - 1) && !world.Lies(room + 1)) return true;
 			}
 			return false;
 		}
 
-		private static int CountGuards(int numDoors, Func<int, bool> test)
+		private static int CountDoors(int numDoors, Func<int, bool> test)
 		{
 			int count = 0;
-			for (int guard = 0; guard < numDoors; guard++)
+			for (int room = 0; room < numDoors; room++)
 			{
-				if (test(guard)) count++;
+				if (test(room)) count++;
 			}
 			return count;
 		}
 
-		private static bool AnyGuard(int numDoors, Func<int, bool> test)
+		private static bool AnyDoor(int numDoors, Func<int, bool> test)
 		{
-			for (int guard = 0; guard < numDoors; guard++)
+			for (int room = 0; room < numDoors; room++)
 			{
-				if (test(guard)) return true;
+				if (test(room)) return true;
 			}
 			return false;
 		}

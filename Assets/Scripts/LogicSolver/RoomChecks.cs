@@ -41,7 +41,7 @@ namespace LogicSolver
 				return false;
 			}
 
-			if (SpareGuards(space, chosen).Count > 0)
+			if (SpareDoors(space, chosen).Count > 0)
 			{
 				tally.spareStatement++;
 				return false;
@@ -88,7 +88,7 @@ namespace LogicSolver
 			return true;
 		}
 
-		public static List<int> SpareGuards(WorldSpace space, List<Statement> statements)
+		public static List<int> SpareDoors(WorldSpace space, List<Statement> statements)
 		{
 			List<int> spare = new List<int>();
 			foreach (Statement dropped in statements)
@@ -115,9 +115,9 @@ namespace LogicSolver
 
 					if (group.Any(statement => statement.IsMemory)) continue;
 					int total = left.Count;
-					for (int guard = 0; guard < space.doorCount; guard++)
+					for (int door = 0; door < space.doorCount; door++)
 					{
-						int lying = left.And(space.whereGuardLies[guard]).Count;
+						int lying = left.And(space.whereDoorLies[door]).Count;
 						if (lying == 0 || lying == total) return size;
 					}
 				}
@@ -155,7 +155,7 @@ namespace LogicSolver
 				for (int i = 0; i < aboutDoor.Count; i++)
 				{
 					Statement statement = aboutDoor[i];
-					BitSet lies = space.whereGuardLies[statement.speaker];
+					BitSet lies = space.whereDoorLies[statement.speaker];
 					BitSet side = (reading & (1 << i)) != 0 ? lies : lies.Not();
 					left = left.And(statement.possibleWorlds).And(side);
 				}

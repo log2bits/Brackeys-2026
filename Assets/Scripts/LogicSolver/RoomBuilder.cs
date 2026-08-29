@@ -15,7 +15,7 @@ namespace LogicSolver
 
 		public int statementsToMakeProgress;
 
-		public int[] spareGuards = new int[0];
+		public int[] spareDoors = new int[0];
 
 		public int compoundStatements;
 		public float memoryClaims;
@@ -25,9 +25,9 @@ namespace LogicSolver
 
 		public override string ToString()
 		{
-			string spare = spareGuards.Length == 0
+			string spare = spareDoors.Length == 0
 				? "none"
-				: string.Join(", ", spareGuards.Select(guard => (guard + 1).ToString()).ToArray());
+				: string.Join(", ", spareDoors.Select(door => (door + 1).ToString()).ToArray());
 			return "doors " + doorCount + ", liars " + liarCount
 				+ ", worlds " + worldsConsidered
 				+ "\nhardest tier " + hardestTier
@@ -35,7 +35,7 @@ namespace LogicSolver
 				+ "\ncompound " + compoundStatements
 				+ ", memory claims " + memoryClaims.ToString("F1")
 				+ ", door mentions " + doorMentions
-				+ "\nspare guards " + spare
+				+ "\nspare doors " + spare
 				+ "\ndoors left if the memory is forgotten " + doorsLeftIfForgotten;
 		}
 	}
@@ -78,7 +78,7 @@ namespace LogicSolver
 			}
 		}
 
-		public int PoolSizeFor(int guard) { return pools[guard].Count; }
+		public int PoolSizeFor(int door) { return pools[door].Count; }
 
 		public BuiltRoom TryBuild(Random rng)
 		{
@@ -126,7 +126,7 @@ namespace LogicSolver
 				if ((statement.topic & Topic.Door) != 0) stats.doorMentions++;
 			}
 
-			stats.spareGuards = RoomChecks.SpareGuards(space, chosen).ToArray();
+			stats.spareDoors = RoomChecks.SpareDoors(space, chosen).ToArray();
 
 			List<Statement> withoutMemory = chosen
 				.Where(statement => !statement.IsMemory).ToList();
@@ -160,22 +160,22 @@ namespace LogicSolver
 				// hold back, or the room closes in two lines and the rest waffle
 				bool mustNotFinishYet = waiting.Count > 1;
 
-				// force a sentence on the room's own band once the guards left could only
+				// force a sentence on the room's own band once the doors left could only
 				// just supply one
 				bool haveAtBand = chosen.Any(x => x.tier == settings.difficulty);
 				bool bandRequired = anythingAtBand && !haveAtBand && waiting.Count == 1;
 
 				float memoriesSoFar = chosen.Sum(statement => statement.memoryWeight);
 				bool memoryFull = memoriesSoFar >= settings.detailMentions;
-				// force it once the guards left could only just supply what is missing
+				// force it once the doors left could only just supply what is missing
 				bool memoryRequired = settings.detailMentions - memoriesSoFar
 					> (waiting.Count - 1) * 2;
 
 				List<Option> narrowing = new List<Option>();
 				List<Option> finishing = new List<Option>();
-				foreach (int guard in waiting)
+				foreach (int door in waiting)
 				{
-					CollectOptions(rng, guard, targetIndex, worldsLeft, rivalWorlds, rivalsNow,
+					CollectOptions(rng, door, targetIndex, worldsLeft, rivalWorlds, rivalsNow,
 						memoryRequired, memoryFull, bandRequired, alreadySaid,
 						narrowing, finishing);
 				}
@@ -200,12 +200,12 @@ namespace LogicSolver
 			return chosen;
 		}
 
-		private void CollectOptions(Random rng, int guard, int targetIndex, BitSet worldsLeft,
+		private void CollectOptions(Random rng, int door, int targetIndex, BitSet worldsLeft,
 			BitSet rivalWorlds, int rivalsNow,
 			bool memoryRequired, bool memoryFull, bool bandRequired, HashSet<string> alreadySaid,
 			List<Option> narrowing, List<Option> finishing)
 		{
-			foreach (Statement statement in Candidates(guard, rng))
+			foreach (Statement statement in Candidates(door, rng))
 			{
 				if (memoryRequired && !statement.IsMemory) continue;
 				if (memoryFull && statement.IsMemory) continue;
@@ -222,7 +222,7 @@ namespace LogicSolver
 				Option option = new Option
 				{
 					statement = statement,
-					speaker = guard,
+					speaker = door,
 					rivalsLeft = rivalsLeft,
 					worldsLeft = next
 				};
@@ -231,11 +231,11 @@ namespace LogicSolver
 			}
 		}
 
-		private IEnumerable<Statement> Candidates(int guard, Random rng)
+		private IEnumerable<Statement> Candidates(int door, Random rng)
 		{
 			List<Statement> offered = new List<Statement>(
-				Sample(pools[guard].simple, settings.sampleSize, rng));
-			offered.AddRange(Sample(pools[guard].compound, settings.sampleSize, rng));
+				Sample(pools[door].simple, settings.sampleSize, rng));
+			offered.AddRange(Sample(pools[door].compound, settings.sampleSize, rng));
 			return offered;
 		}
 
