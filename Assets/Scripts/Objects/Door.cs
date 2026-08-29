@@ -7,18 +7,21 @@ using System.Text;
 using TMPro;
 using UnityEngine.UI;
 
-public class Door : ClickableObject
+public class Door : MonoBehaviour, IClickableObject
 {
     [Header("References")]
     [SerializeField] private Transform doorSpriteTransform;
+    [SerializeField] private SpriteRenderer doorSpriteOverlay;
     [SerializeField] private TextMeshProUGUI doorNumbersText;
 
     [SerializeField] private Toggle honestToggle;
     [SerializeField] private Toggle lyingToggle;
 
     [Header("Parameters")]
+    [SerializeField] private float doorLightUpAmount = 0.015f;
     [SerializeField] private float doorRotateTime;
-    [SerializeField] private float doorRotateAngle;
+    [SerializeField] private float safeDoorRotateAngle;
+    [SerializeField] private float unsafeDoorRotateAngle;
     [SerializeField] private float doorZoomZDistance;
 
     private DoorStatement doorStatement;
@@ -37,15 +40,14 @@ public class Door : ClickableObject
 
     private HonestyStatus honestyStatus = HonestyStatus.Undecided;
 
+    private void Start()
+    {
+        doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
+    }
 
-    protected override void OnMouseDown()
+    public void OnMouseDown()
     {
         if (EventSystem.current.IsPointerOverGameObject())
-        {
-            return;
-        }
-
-        if (open)
         {
             return;
         }
@@ -70,12 +72,14 @@ public class Door : ClickableObject
 
         else if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
         {
-            // Exit/advance dialogue if clicking on a door that isn't focused on
-            if (Mathf.Abs(transform.position.x - MainCameraMove.Instance.transform.position.x) > 0.1f)
+            // Exit/advance dialogue if clicking on a door that isn't focused on or door is already open
+            if (open || Mathf.Abs(transform.position.x - MainCameraMove.Instance.transform.position.x) > 0.1f)
             {
                 Dialogue.Instance.DeferClickCheckToDialogue();
                 return;
             }
+            
+            open = true;
 
             // You lose a life
             if (!safe)
@@ -92,16 +96,18 @@ public class Door : ClickableObject
                 }
                 
                 EventBus.Instance.DoLostLife();
+                Dialogue.Instance.EndDialogue(true);
+
+                CoroutineManager.Instance.Run(RotateDoor(unsafeDoorRotateAngle));
                 
                 return;
             }
 
             // Move to next room
+            CoroutineManager.Instance.Run(RotateDoor(safeDoorRotateAngle));
+
             AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
             MainCameraMove.Instance.MoveCamera(transform.position + new Vector3(0, 0, 0.1f), GameManager.GameState.OUTERROOM);
-            open = true;
-
-            CoroutineManager.Instance.Run(RotateDoor(doorRotateAngle));
 
             GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
             GameManager.Instance.currentRoom += 1;
@@ -147,9 +153,25 @@ public class Door : ClickableObject
         GameManager.Instance.state = GameManager.GameState.ZOOMING;
     }
 
-    protected override void OnMouseUp()
+    public void OnMouseUp()
     {
-        return;
+        doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
+    }
+
+    public void OnMouseOver()
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
+            return;
+        }
+
+        doorSpriteOverlay.color = new Color(1f, 1f, 1f, doorLightUpAmount);
+    }
+
+    public void OnMouseExit()
+    {
+        doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
     }
 
     public void SetDialogue(DoorStatement doorStatement)
