@@ -7,7 +7,7 @@ namespace LogicSolver
 	public readonly struct World
 	{
 		public readonly int safeDoor;
-		public readonly int liarMask; // bit g set means guard g lies
+		public readonly int liarMask; // bit g set means door g lies
 
 		public World(int safeDoor, int liarMask)
 		{
@@ -15,8 +15,8 @@ namespace LogicSolver
 			this.liarMask = liarMask;
 		}
 
-		public bool Lies(int guard) { return (liarMask & (1 << guard)) != 0; }
-		public bool Honest(int guard) { return !Lies(guard); }
+		public bool Lies(int door) { return (liarMask & (1 << door)) != 0; }
+		public bool Honest(int door) { return !Lies(door); }
 
 		public int LiarCount
 		{
@@ -43,7 +43,7 @@ namespace LogicSolver
 
 		public readonly BitSet[] withSafeDoor;
 
-		public readonly BitSet[] whereGuardLies;
+		public readonly BitSet[] whereDoorLies;
 
 		public WorldSpace(int doorCount, int[] liarCounts)
 		{
@@ -58,10 +58,10 @@ namespace LogicSolver
 				withSafeDoor[door] = Where(world => world.safeDoor == door);
 			}
 
-			whereGuardLies = new BitSet[doorCount];
-			foreach (int guard in Enumerable.Range(0, doorCount))
+			whereDoorLies = new BitSet[doorCount];
+			foreach (int door in Enumerable.Range(0, doorCount))
 			{
-				whereGuardLies[guard] = Where(world => world.Lies(guard));
+				whereDoorLies[door] = Where(world => world.Lies(door));
 			}
 		}
 
@@ -121,9 +121,9 @@ namespace LogicSolver
 		public int[] LiarsIn(World world)
 		{
 			List<int> liars = new List<int>();
-			for (int guard = 0; guard < doorCount; guard++)
+			for (int door = 0; door < doorCount; door++)
 			{
-				if (world.Lies(guard)) liars.Add(guard);
+				if (world.Lies(door)) liars.Add(door);
 			}
 			return liars.ToArray();
 		}
