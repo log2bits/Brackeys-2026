@@ -1293,7 +1293,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 552277575}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -97.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3071,6 +3071,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneController
   dialogueText: {fileID: 810083626}
+  flashbangEffect: {fileID: 2078307221}
   dialogueLines:
   - Hello Patient #JH129!
   - I'm your friend #####.
@@ -3082,7 +3083,7 @@ MonoBehaviour:
   - But be careful, not many of the doors here are trustworthy.
   - Good luck, friend!
   - '##END TRANSMISSION##'
-  flashbangEffect: {fileID: 2078307221}
+  textShowDelay: 0.04
 --- !u!114 &1624973402
 MonoBehaviour:
   m_ObjectHideFlags: 0
