@@ -2307,8 +2307,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1438383397992806513, guid: 2174ca3c35709ab48b217d9290f95fe4, type: 3}
+      propertyPath: swayAmplitude
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1438383397992806513, guid: 2174ca3c35709ab48b217d9290f95fe4, type: 3}
       propertyPath: movementEnabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1438383397992806513, guid: 2174ca3c35709ab48b217d9290f95fe4, type: 3}
+      propertyPath: bobCyclesPerUnit
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 1943722381144612878, guid: 2174ca3c35709ab48b217d9290f95fe4, type: 3}
       propertyPath: m_Name
