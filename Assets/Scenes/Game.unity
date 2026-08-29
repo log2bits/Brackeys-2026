@@ -505,7 +505,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 730, y: 835}
+  m_AnchoredPosition: {x: 730, y: 881}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &163306507
@@ -1440,7 +1440,7 @@ MonoBehaviour:
   notepadButtonImage: {fileID: 1442487218}
   guardLogHolderTransform: {fileID: 1519767062}
   guardLogButtonImage: {fileID: 1797021758}
-  verticalMoveDistance: -584
+  verticalMoveDistance: -671
   moveTime: 0.5
 --- !u!1 &659337750
 GameObject:
@@ -1774,14 +1774,14 @@ RectTransform:
   m_GameObject: {fileID: 769455769}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0290343, y: 1.0290343, z: 1.0290343}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 124640115}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -366.9}
+  m_AnchoredPosition: {x: 0, y: -390}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &769455771
@@ -2237,7 +2237,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -366.9}
+  m_AnchoredPosition: {x: 0, y: -390}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1290337363
@@ -2377,7 +2377,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 395.5, y: 581}
+  m_SizeDelta: {x: 391.5, y: 673}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1328639040
 MonoBehaviour:
@@ -2628,8 +2628,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -414.8}
-  m_SizeDelta: {x: 395.5, y: 250}
+  m_AnchoredPosition: {x: 0, y: -423.8}
+  m_SizeDelta: {x: 391.5, y: 175}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1442487217
 MonoBehaviour:
@@ -2900,7 +2900,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 323, y: 835}
+  m_AnchoredPosition: {x: 323, y: 881}
   m_SizeDelta: {x: 375, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1519767063
@@ -2985,7 +2985,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 395.5, y: 581}
+  m_SizeDelta: {x: 391.5, y: 673}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1623854693
 MonoBehaviour:
@@ -3071,6 +3071,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneController
   dialogueText: {fileID: 810083626}
+  flashbangEffect: {fileID: 2078307221}
   dialogueLines:
   - Hello Patient #JH129!
   - I'm your friend #####.
@@ -3082,7 +3083,7 @@ MonoBehaviour:
   - But be careful, not many of the doors here are trustworthy.
   - Good luck, friend!
   - '##END TRANSMISSION##'
-  flashbangEffect: {fileID: 2078307221}
+  textShowDelay: 0.04
 --- !u!114 &1624973402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3506,7 +3507,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 562.80585}
+  m_AnchoredPosition: {x: 0, y: 516.8065}
   m_SizeDelta: {x: 365, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1790712726
@@ -3584,8 +3585,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -414.8}
-  m_SizeDelta: {x: 395.5, y: 250}
+  m_AnchoredPosition: {x: 0, y: -423.8}
+  m_SizeDelta: {x: 391.5, y: 175}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1797021757
 MonoBehaviour:
