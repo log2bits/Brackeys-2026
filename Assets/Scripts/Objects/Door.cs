@@ -5,12 +5,16 @@ using UnityEngine.SceneManagement;
 using LogicSolver;
 using System.Text;
 using TMPro;
+using UnityEngine.UI;
 
 public class Door : ClickableObject
 {
     [Header("References")]
     [SerializeField] private Transform doorSpriteTransform;
     [SerializeField] private TextMeshProUGUI doorNumbersText;
+
+    [SerializeField] private Toggle honestToggle;
+    [SerializeField] private Toggle lyingToggle;
 
     [Header("Parameters")]
     [SerializeField] private float doorRotateTime;
@@ -22,6 +26,17 @@ public class Door : ClickableObject
     private bool hasTalkedBefore = false;
     private bool open; 
     private int doorNumber;
+
+
+    private enum HonestyStatus
+    {
+        Honest,
+        Lying,
+        Undecided
+    }
+
+    private HonestyStatus honestyStatus = HonestyStatus.Undecided;
+
 
     protected override void OnMouseDown()
     {
@@ -153,6 +168,32 @@ public class Door : ClickableObject
 
         string doorNumber = "<b>" + (number + 1).ToString();
         doorNumbersText.text = doorNumber;
+    }
+
+    public void ToggleHonest(bool honest)
+    {
+        if (honest)
+        {
+            honestyStatus = HonestyStatus.Honest;
+            lyingToggle.isOn = false;
+        }
+        else if (honestyStatus == HonestyStatus.Honest)
+        {
+            honestyStatus = HonestyStatus.Undecided;
+        }
+    }
+
+    public void ToggleLying(bool lying)
+    {
+        if (lying)
+        {
+            honestyStatus = HonestyStatus.Lying;
+            honestToggle.isOn = false;
+        }
+        else if (honestyStatus == HonestyStatus.Lying)
+        {
+            honestyStatus = HonestyStatus.Undecided;
+        }
     }
 
     private IEnumerator RotateDoor(float rotateAmount)
