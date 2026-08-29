@@ -50,7 +50,7 @@ public class MainCameraMove : MonoBehaviour
     private void LostLifeShake()
     {
         // Magic numbers go brrrrr
-        ShakeCamera(0.35f, 0.3f, 0.015f, 0.85f);
+        ShakeCamera(0.45f, 0.3f, 0.015f, 0.8f);
     }
 
     private void Update()
@@ -108,12 +108,12 @@ public class MainCameraMove : MonoBehaviour
     private IEnumerator MoveCameraCoroutine(Vector3 position, GameManager.GameState finalState)
     {
         inputEnabled = false;
-        Vector3 startingPosition = transform.position;
+        Vector3 startingPosition = transform.localPosition;
 
         float i = 0;
         while (i < cameraMoveTime)
         {
-            transform.position = Vector3.Lerp(startingPosition, position, Mathf.SmoothStep(0, 1, i / cameraMoveTime));
+            transform.localPosition = Vector3.Lerp(startingPosition, position, Mathf.SmoothStep(0, 1, i / cameraMoveTime));
             yield return null;
             i += Time.deltaTime;
         }

@@ -1,8 +1,9 @@
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ClickBlockerObject : ClickableObject
+public class ClickBlockerObject : MonoBehaviour, IClickableObject
 {
-    protected override void OnMouseDown()
+    public void OnMouseDown()
     {
         if (EventSystem.current.IsPointerOverGameObject())
         {
@@ -15,8 +16,18 @@ public class ClickBlockerObject : ClickableObject
         }
     }
 
-    protected override void OnMouseUp()
+    public void OnMouseUp()
     {
         return;
-    } 
+    }
+
+    public void OnMouseOver()
+    {
+        return;
+    }
+
+    public void OnMouseExit()
+    {
+        return;
+    }
 }
