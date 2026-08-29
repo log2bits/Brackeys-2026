@@ -8,25 +8,23 @@ public class FlashbangEffect : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private GameObject flashbangCanvas;
     [SerializeField] private Volume postProcessVolume;
-
-    [SerializeField] private Volume brightnessVolume;
     [SerializeField] private GameObject cutsceneCanvas;
 
     [Header("Settings")]
     [SerializeField] private float flashDuration = 1.0f;
     [SerializeField] private float fadeDuration = 3.0f;
-    [SerializeField] private float brightnessStartWeight = 0.4f;
 
-    private Coroutine flashCoroutine;
+    private IEnumerator flashCoroutine;
 
     public void TriggerFlashbang()
     {
         if (flashCoroutine != null)
         {
-            StopCoroutine(flashCoroutine);
+            CoroutineManager.Instance.Stop(flashCoroutine);
         }
 
-        flashCoroutine = StartCoroutine(DoFlashbang());
+        flashCoroutine = DoFlashbang();
+        CoroutineManager.Instance.Run(flashCoroutine);
     }
 
     private IEnumerator DoFlashbang()
@@ -34,7 +32,6 @@ public class FlashbangEffect : MonoBehaviour
         // Instantly make the screen white
         canvasGroup.alpha = 1f;
         postProcessVolume.weight = 1f;
-        brightnessVolume.weight = brightnessStartWeight;
 
         // Stay completely white for a moment
         yield return new WaitForSeconds(flashDuration);
@@ -55,7 +52,6 @@ public class FlashbangEffect : MonoBehaviour
 
             canvasGroup.alpha = Mathf.Lerp(1f, 0f, progress);
             postProcessVolume.weight = Mathf.Lerp(1f, 0f, progress);
-            brightnessVolume.weight = Mathf.Lerp(brightnessStartWeight, 0f, progress);
 
             yield return null;
         }
@@ -63,9 +59,10 @@ public class FlashbangEffect : MonoBehaviour
         // Make sure everything is fully reset
         canvasGroup.alpha = 0f;
         postProcessVolume.weight = 0f;
-        brightnessVolume.weight = 0f;
         
         flashbangCanvas.SetActive(false);
         flashCoroutine = null;
+
+        GameManager.Instance.state = GameManager.GameState.OUTERROOM;
     }
 }

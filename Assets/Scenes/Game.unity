@@ -2955,7 +2955,6 @@ GameObject:
   - component: {fileID: 1623854691}
   - component: {fileID: 1623854694}
   - component: {fileID: 1623854693}
-  - component: {fileID: 1624973401}
   m_Layer: 5
   m_Name: BG
   m_TagString: Untagged
@@ -3825,7 +3824,7 @@ GameObject:
   - component: {fileID: 1908221837}
   - component: {fileID: 1908221838}
   m_Layer: 0
-  m_Name: Global Volume
+  m_Name: FlashbangVolume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4140,11 +4139,9 @@ MonoBehaviour:
   canvasGroup: {fileID: 1625191925}
   flashbangCanvas: {fileID: 2078307216}
   postProcessVolume: {fileID: 1908221838}
-  brightnessVolume: {fileID: 1285355386}
   cutsceneCanvas: {fileID: 1624973400}
   flashDuration: 0.3
   fadeDuration: 2
-  brightnessStartWeight: 0.5
 --- !u!1 &2087512052
 GameObject:
   m_ObjectHideFlags: 0
