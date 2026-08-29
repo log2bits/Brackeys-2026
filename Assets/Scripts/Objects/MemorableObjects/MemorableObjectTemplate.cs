@@ -5,7 +5,6 @@ public class MemorableObjectTemplate : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer[] spriteRenderers;
     private Dictionary<string, string> actualProperties = new Dictionary<string, string>();
-    public int room;
 
     private List<ObjectPropertyData> builtFrom;
 
@@ -14,6 +13,7 @@ public class MemorableObjectTemplate : MonoBehaviour
         builtFrom = propertyData;
         actualProperties.Clear();
     }
+
     public bool WasBuiltFrom(List<ObjectPropertyData> propertyData)
     {
         return builtFrom == propertyData;
@@ -23,14 +23,17 @@ public class MemorableObjectTemplate : MonoBehaviour
     {
         spriteRenderers[index].sprite = sprite;
     }
+
     public SpriteRenderer[] GetSpriteRenderers()
     {
         return spriteRenderers;
     }
+
     public Dictionary<string, string> GetActualProperties()
     {
         return actualProperties;
     }
+
     public string GetActualValue(string propertyName)
     {
         string found;
