@@ -1539,11 +1539,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
       propertyPath: <ambientEvents>k__BackingField.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
       propertyPath: <ambientEnvironments>k__BackingField.Array.size
-      value: 9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
       propertyPath: <ambientEvents>k__BackingField.Array.data[0].Path
@@ -1555,6 +1555,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
       propertyPath: <ambientEvents>k__BackingField.Array.data[2].Path
+      value: event:/SFX/AsylumSounds/AsylumEvents/AEventElevatorFall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
+      propertyPath: <ambientEvents>k__BackingField.Array.data[3].Path
       value: event:/SFX/AsylumSounds/AsylumEvents/AEventElevatorFall
       objectReference: {fileID: 0}
     - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
@@ -1639,6 +1643,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
       propertyPath: <ambientEvents>k__BackingField.Array.data[2].Guid.Data4
+      value: 1811668749
+      objectReference: {fileID: 0}
+    - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
+      propertyPath: <ambientEvents>k__BackingField.Array.data[3].Guid.Data1
+      value: -1540039005
+      objectReference: {fileID: 0}
+    - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
+      propertyPath: <ambientEvents>k__BackingField.Array.data[3].Guid.Data2
+      value: 1283647781
+      objectReference: {fileID: 0}
+    - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
+      propertyPath: <ambientEvents>k__BackingField.Array.data[3].Guid.Data3
+      value: -1721047656
+      objectReference: {fileID: 0}
+    - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
+      propertyPath: <ambientEvents>k__BackingField.Array.data[3].Guid.Data4
       value: 1811668749
       objectReference: {fileID: 0}
     - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}

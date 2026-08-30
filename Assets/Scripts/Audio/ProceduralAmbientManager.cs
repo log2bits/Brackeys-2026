@@ -19,8 +19,8 @@ public class ProceduralAmbientManager : MonoBehaviour
     private IEnumerator activeLoop;
     private IEnumerator activeFade;
     private System.Random audioRandom;
-    private bool isRunning;
-    private bool isFadeRunning;
+    private bool isRunning = false;
+    private bool isFadeRunning = false;
     private int currentRoom = 1;
     private float secRatio = 1.0f;
 
@@ -34,15 +34,15 @@ public class ProceduralAmbientManager : MonoBehaviour
     // Constructor, mainly for calculating totalWeight and eventsNotEncoutnered
     public ProceduralAmbientManager()
     {
-        FmodEvents.Instance.ambientEnvironments.ForEach(environment => { totalWeight += environment.GetChance(); });
-        
         foreach(int num in Enumerable.Range(0, FmodEvents.Instance.ambientEvents.Count)) { eventsNotEncountered.Add(num); }
     
         audioRandom = new System.Random(GameManager.Instance.currentSeed);
+        Debug.Log(GameManager.Instance.currentSeed);
 
         // setup event action
         EventBus.Instance.Register(EventBus.EventName.CutsceneEnd, CutsceneEnd);
         EventBus.Instance.Register(EventBus.EventName.RoomMove, RoomMove);
+        Debug.Log("ProceduralAmbientManager initialized");
     }
     
 
@@ -65,6 +65,7 @@ public class ProceduralAmbientManager : MonoBehaviour
         isRunning = true;
         activeLoop = AudioLoop();
         CoroutineManager.Instance.Run(activeLoop);
+        Debug.Log("Start Audio Loop");
     }
     public void StartFade()
     {
@@ -76,7 +77,7 @@ public class ProceduralAmbientManager : MonoBehaviour
     }
     public void StopLoop()
     {
-        if (!isRunning) return;
+        if (!isRunning  || CoroutineManager.Instance == null) return;
 
         CoroutineManager.Instance.Stop(activeLoop);
         activeLoop = null;
@@ -84,18 +85,19 @@ public class ProceduralAmbientManager : MonoBehaviour
     }
     public void StopFade()
     {
-        if (!isFadeRunning) return;
+        if (!isFadeRunning || CoroutineManager.Instance == null) return;
 
         CoroutineManager.Instance.Stop(activeFade);
         activeFade = null;
         isFadeRunning = false;
     }
-    public void OnDestroy()
+    public void OnDisable()
     {
-        StopLoop();
-        StopFade();
+        Debug.Log("Stop Audio Loop");
         EventBus.Instance.Deregister(EventBus.EventName.CutsceneEnd, CutsceneEnd);
         EventBus.Instance.Deregister(EventBus.EventName.RoomMove, RoomMove);
+        StopLoop();
+        StopFade();
     }
 
     // Audioloop
@@ -103,8 +105,10 @@ public class ProceduralAmbientManager : MonoBehaviour
     private IEnumerator AudioLoop()
     {
         yield return new WaitForSeconds(initialStartDelay);
+        Debug.Log("Audio Loop Initial Delay Finished");
         while (isRunning)
         {
+            //Debug.Log("AudioLoop Restart");
             EventReference nextEvent = ProceduralAmbientGenerator((float)audioRandom.NextDouble(), (float)audioRandom.NextDouble(), (float)audioRandom.NextDouble());
             FMOD.Studio.EventInstance ambientInstance = AudioManager.Instance.CreateInstance(nextEvent);
             ambientInstance.start();
@@ -131,9 +135,16 @@ public class ProceduralAmbientManager : MonoBehaviour
     }
     private IEnumerator AudioFade()
     {
+        yield return new WaitForSeconds(soundFadeSec);
+
         yield return new WaitUntil(() => Time.time >= (nextAmbientTime - 1f));
         
         Debug.Log("1 second left! Fading now...");
+
+        StopLoop();
+        StopFade();
+        EventBus.Instance.Deregister(EventBus.EventName.CutsceneEnd, CutsceneEnd);
+        EventBus.Instance.Deregister(EventBus.EventName.RoomMove, RoomMove);
     }
 
 
@@ -165,13 +176,17 @@ public class ProceduralAmbientManager : MonoBehaviour
     private EventReference GenerateAmbientEnvironment(float ambientValue)
     {
         if (FmodEvents.Instance.ambientEnvironments == null || FmodEvents.Instance.ambientEnvironments.Count == 0) throw new Exception("GenerateAmbientEnvironment: Missing ambient environments");
-
+        // av = 0-1    total weight = 2.3
+        // av0.7 * 2.3 = 1.61
+        // 1.61 - 0.3 = 1.31
         float scaledAmbientValue = ambientValue * totalWeight;
+
         foreach(AmbientEnvironment environment in FmodEvents.Instance.ambientEnvironments)
         { 
             float currChance = environment.GetChance();
             if (scaledAmbientValue < currChance) return environment.GetAmbience();
             scaledAmbientValue -= currChance;
+            Debug.Log(scaledAmbientValue);
         }
     
         return FmodEvents.Instance.ambientEnvironments[^1].GetAmbience();
@@ -181,7 +196,9 @@ public class ProceduralAmbientManager : MonoBehaviour
     // CutsceneEnd is called when the cutscene ends and it is now safe to play more ambience
     public void CutsceneEnd()
     {
+        FmodEvents.Instance.ambientEnvironments.ForEach(environment => { totalWeight += environment.GetChance(); });
         StartLoop();
+        
     }
     public void RoomMove()
     {

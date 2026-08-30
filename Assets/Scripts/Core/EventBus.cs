@@ -83,12 +83,12 @@ public class EventBus
                 break;
             case EventName.CutsceneEnd:
                 Action handlerCutsceneEnd = () => listener();
-                OnLostLife += handlerCutsceneEnd;
+                OnCutsceneEnd += handlerCutsceneEnd;
                 activeEventListeners[listener] = handlerCutsceneEnd;
                 break;
             case EventName.RoomMove:
                 Action handlerRoomMove = () => listener();
-                OnLostLife += handlerRoomMove;
+                OnRoomMove += handlerRoomMove;
                 activeEventListeners[listener] = handlerRoomMove;
                 break;
             default: throw new Exception("Failed Register: Given eventName does not exist as a register - " + eventName);

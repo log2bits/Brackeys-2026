@@ -119,6 +119,58 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &9322120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9322121}
+  - component: {fileID: 9322122}
+  m_Layer: 0
+  m_Name: ProceduralAmbientGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9322121
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9322120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 28.17352, y: -0, z: 145.75229}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9322122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9322120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 693d8ba0901ee194aa180723b6dee69b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralAmbientManager
+  initialStartDelay: 10
+  minResetSec: 15
+  maxResetSec: 30
+  eventChance: 0.1
+  roomSecRatio: 1.5
+  roomResetRatio: 2
+  soundFadeSec: 30
+  roomSoundFade: 3
 --- !u!1 &50313189
 GameObject:
   m_ObjectHideFlags: 0
@@ -3071,6 +3123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneController
   dialogueText: {fileID: 810083626}
+  flashbangEffect: {fileID: 2078307221}
   dialogueLines:
   - Hello Patient #JH129!
   - I'm your friend #####.
@@ -3082,7 +3135,7 @@ MonoBehaviour:
   - But be careful, not many of the doors here are trustworthy.
   - Good luck, friend!
   - '##END TRANSMISSION##'
-  flashbangEffect: {fileID: 2078307221}
+  textShowDelay: 0.04
 --- !u!114 &1624973402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5676,6 +5729,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1959424167112762386, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5806179141602862877, guid: 2218d94fdb6c9a5448cc48c451f1df2c, type: 3}
       propertyPath: m_Name
       value: FmodEvents
@@ -6201,6 +6258,7 @@ SceneRoots:
   - {fileID: 673853720}
   - {fileID: 255078183}
   - {fileID: 79620413}
+  - {fileID: 9322121}
   - {fileID: 1411373715031152447}
   - {fileID: 5019922500892302581}
   - {fileID: 7078169773750651045}
