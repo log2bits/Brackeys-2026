@@ -64,7 +64,11 @@ public class EndingCutsceneController : MonoBehaviour
         	SaveSystem.SaveHighestBeatenDifficulty(highestBeatenDifficulty);
         }
 
-        SceneManager.LoadSceneAsync("MainMenu");
+        SceneTransition.Instance.FadeToBlack(MainMenuFinish);
     }
 
+    private void MainMenuFinish()
+    {
+        SceneManager.LoadSceneAsync("MainMenu");
+    }
 }
