@@ -7,15 +7,19 @@ public class CutsceneController : MonoBehaviour
     [Header("References")]
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private FlashbangEffect flashbangEffect;
+    [SerializeField] private RectTransform friendlyFace;
 
-    [Header("Dialogue")]
+    [Header("Parameters")]
     [SerializeField] private string[] dialogueLines;
     [SerializeField] private float textShowDelay = 0.04f;
+    [SerializeField] private float friendlyFaceRotateSpeed = 1f;
+    [SerializeField] private float friendlyFaceRotateAmplitude = 1f;
 
     private int currentLine = 0;
     private int charactersShown = 0;
     private float timeLastCharacterShown;
     private bool dialogueTextAppearing;
+    private bool cutsceneEnded = false;
 
     private void Start()
     {
@@ -24,6 +28,13 @@ public class CutsceneController : MonoBehaviour
 
     private void Update()
     {
+        if (cutsceneEnded)
+        {
+            return;
+        }
+
+        friendlyFace.localEulerAngles = new Vector3(0, 0, friendlyFaceRotateAmplitude * Mathf.Sin(Time.time * friendlyFaceRotateSpeed));
+
         // Slowly reveal the current line
         if (dialogueTextAppearing)
         {
@@ -93,6 +104,7 @@ public class CutsceneController : MonoBehaviour
 
     private void EndCutscene()
     {
+        cutsceneEnded = true;
         flashbangEffect.TriggerFlashbang();
     }
 }
