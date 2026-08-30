@@ -356,10 +356,10 @@ public class ProceduralRoomGen : MonoBehaviour
             //Debug.Log($"RandomIndex for Object: {randomIndex}");
             // new random int is not curr object, which isnt random, rather it takes what was calculated above
             
-            float width = GetMaxWidthOfObject(objectDataTemplates[currObject].GetObjectPrefab()) + objectDataTemplates[currObject].GetInvalidationRange();
+            float width = GetMaxWidthOfObject(objectDataTemplates[indices[currObject]].GetObjectPrefab()) + objectDataTemplates[indices[currObject]].GetInvalidationRange();
 
             RoomSpace roomSpace = GameManager.Instance.worldState.roomStates[room].roomSpace;
-            Vector3 placementPosition = SetupRandomizedPlacement(roomSpace, objectDataTemplates[currObject], GameManager.Instance.worldState.roomStates[room].globalPosition, width, GetRoomWidth(doorCount));
+            Vector3 placementPosition = SetupRandomizedPlacement(roomSpace, objectDataTemplates[indices[currObject]], GameManager.Instance.worldState.roomStates[room].globalPosition, width, GetRoomWidth(doorCount));
             if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
             GameObject objectGenerated = Instantiate(objectDataTemplates[currObject].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
             GameManager.Instance.worldState.roomStates[room].objects.Add(objectGenerated);

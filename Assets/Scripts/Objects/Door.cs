@@ -78,6 +78,7 @@ public class Door : MonoBehaviour, IClickableObject
             {
                 int lives = GameManager.Instance.lives;
                 lives -= 1;
+                AudioManager.Instance.PlayOneShot(FmodEvents.Instance.lockedDoor, new Vector3(0,0,0));
                 GameManager.Instance.lives = lives;
 
                 if (lives < 1)
