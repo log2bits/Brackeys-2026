@@ -52,7 +52,7 @@ public class GameManager
 
     public void ChangeGameState(GameState stateChange)
     {
-        Debug.Log(stateChange);
+        //Debug.Log(stateChange);
         switch (stateChange)
         {
             case GameState.MAINMENU:
@@ -64,7 +64,6 @@ public class GameManager
                 break;
             case GameState.OUTERROOM:
                 if (state == GameState.CUTSCENE) {
-                    Debug.Log("Cutscene Ended");
                     EventBus.Instance.DoCutsceneEnd();
                 }
                 break;

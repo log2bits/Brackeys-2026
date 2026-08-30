@@ -38,7 +38,7 @@ public class MainCameraMove : MonoBehaviour
     [SerializeField] private float cameraMoveTime;
     [SerializeField] private float cameraDragStrength = 0.2f;
 
-    [Header("Bobbing")]
+    [Header("Bobbing Parameters")]
     [SerializeField] private float bobbingAmplitude = 0.15f;
     [SerializeField] private float swayAmplitude = 0.5f;
     [SerializeField] private float bobCyclesPerUnit = 0.075f;

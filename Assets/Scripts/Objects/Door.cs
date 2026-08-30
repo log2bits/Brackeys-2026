@@ -115,8 +115,13 @@ public class Door : MonoBehaviour, IClickableObject
 
             Dialogue.Instance.EndDialogue(false);
             GuardLog.Instance.ClearLog();
-
             
+            // Final room
+            if (GameManager.Instance.currentDifficulty.roomCount == GameManager.Instance.currentRoom)
+            {
+                CoroutineManager.Instance.Run(WaitForFinalDialogue());
+            }
+
             // Cutscenes or whatever will go here
             if (GameManager.Instance.currentRoom >= GameManager.Instance.worldState.roomStates.Count)
             {
@@ -132,6 +137,14 @@ public class Door : MonoBehaviour, IClickableObject
 
         GameManager.Instance.state = GameManager.GameState.ZOOMING;
     }
+
+    private IEnumerator WaitForFinalDialogue()
+    {
+		while (!Dialogue.Instance.StartDialogue("This friendly face is here to tell you that you are so close! Just one more room stops you from freedom, and it's a piece of cake!", true))
+		{
+			yield return null;
+		}
+	}
 
     public void OnMouseUp()
     {

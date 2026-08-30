@@ -40,6 +40,7 @@ public class EndingCutsceneController : MonoBehaviour
 		{
 			yield return null;
 		}
+        GameManager.Instance.ChangeGameState(GameManager.GameState.CUTSCENE);
 	}
 
 	private void RunEndGameCoroutine(){

@@ -118,7 +118,38 @@ public class ProceduralRoomGen : MonoBehaviour
 
             AssignDoorData(roomSolution);
         }
-    
+
+        // Generate the last room, very special, always with two doors
+
+        Vector3 finalNextDoorPosition = currentDoors[roomSolution.safeDoor].fullDoor.transform.position;
+        finalNextDoorPosition.z += roomDistance;
+
+        GenerateNextRoom(finalNextDoorPosition, difficulty.minDoors, difficulty.roomCount);
+
+		DoorStatement doorStatement1 = new DoorStatement
+		{
+			speaker = 0,
+            sentence = "I will lead you to freedom.",
+            dropdownContents = new List<List<string>>()
+		};
+        DoorStatement doorStatement2 = new DoorStatement
+		{
+			speaker = 1,
+            sentence = "I will not lead you to freedom.",
+            dropdownContents = new List<List<string>>()
+		};
+        DoorStatement[] doorStatements = {doorStatement1, doorStatement2};
+
+        int[] liars = {0, 1};
+		RoomSolution finalRoomSolution = new RoomSolution
+        {
+            safeDoor = 1,
+            liars = liars,
+            doorStatements = doorStatements
+        };
+
+        AssignDoorData(finalRoomSolution);
+
         // Clear all doors
         currentDoors.Clear();
     }
@@ -158,7 +189,11 @@ public class ProceduralRoomGen : MonoBehaviour
         GenerateWalls(centralPosition, doorCount, room);
         GenerateRoomLights(centralPosition);
 
-        GenerateObjects(doorCount, room);
+        // No objects in last room
+        if (room != difficulty.roomCount)
+        {
+            GenerateObjects(doorCount, room);
+        }
     }
 
     private void GenerateRoomState(int doorCount, Vector3 centralPosition)
