@@ -4,13 +4,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ObjectDataTemplate", menuName = "ScriptableObjects/ObjectDataTemplate")]
 public class ObjectDataTemplate : ScriptableObject
 {
-    [SerializeField] private GameObject objectPrefab;
-    [SerializeField] private float chance;
-    [SerializeField] private string roomTemplate;
-    [SerializeField] private List<int> rowsTaken; // determines which rows are taken up by this object
-    [SerializeField] private int rowSource; // determines which point of origin in global world is the object placed at
-    [SerializeField] private float invalidationRange;
-    [SerializeField] private List<ObjectPropertyData> objectPropertyDatas;
+    [SerializeField] public GameObject objectPrefab;
+    [SerializeField] public float chance;
+    [SerializeField] public string roomTemplate;
+    [SerializeField] public List<int> rowsTaken; // determines which rows are taken up by this object
+    [SerializeField] public int rowSource; // determines which point of origin in global world is the object placed at
+    [SerializeField] public float invalidationRange;
+    [SerializeField] public List<ObjectPropertyData> objectPropertyDatas;
 
     public GameObject GetObjectPrefab()
     {
