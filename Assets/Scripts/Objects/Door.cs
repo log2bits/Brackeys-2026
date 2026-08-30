@@ -119,30 +119,9 @@ public class Door : MonoBehaviour, IClickableObject
             // Cutscenes or whatever will go here
             if (GameManager.Instance.currentRoom >= GameManager.Instance.worldState.roomStates.Count)
             {
-                CoroutineManager.Instance.Run(EndGame());
+                EndingCutsceneController.Instance.EndGame();
             }
         }
-    }
-
-    private IEnumerator EndGame()
-    {
-        yield return new WaitForSeconds(5f);
-
-        MainMenu.HighestBeatenDifficulty getHighestBeatenDifficulty = SaveSystem.GetHighestBeatenDifficulty();
-        int highestDifficulty = -1;
-        if (getHighestBeatenDifficulty != null)
-        {
-            highestDifficulty = getHighestBeatenDifficulty.highestBeatenDifficulty;
-        }
-        if (highestDifficulty >= GameManager.Instance.currentDifficulty.solverDifficulty)
-        {
-            yield break;
-        }
-
-        MainMenu.HighestBeatenDifficulty highestBeatenDifficulty = new MainMenu.HighestBeatenDifficulty(GameManager.Instance.currentDifficulty.solverDifficulty);
-        SaveSystem.SaveHighestBeatenDifficulty(highestBeatenDifficulty);
-
-        SceneManager.LoadSceneAsync("MainMenu");
     }
 
     private void ZoomOut()
