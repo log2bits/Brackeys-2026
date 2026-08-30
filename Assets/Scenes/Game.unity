@@ -2438,6 +2438,7 @@ MonoBehaviour:
   roomLightsPrefab: {fileID: 3994498510218544884, guid: 9a353363b6cbc4c4baff38421172dbd7, type: 3}
   objectDataTemplates:
   - {fileID: 11400000, guid: 0bf19ecc9247deb4691ab39bc0009ec8, type: 2}
+  - {fileID: 11400000, guid: d18c173b4f9baeb44b2a6c9f3d88ee1c, type: 2}
   difficultyIfNull: {fileID: 11400000, guid: f77c6904f89e7de48864c74a624c46c7, type: 2}
   writing1Prefab: {fileID: 7530830482215578029, guid: 39431a6f661a80a4a9b8cb818afab302, type: 3}
   writing2Prefab: {fileID: 7530830482215578029, guid: c07fe2a134810a045bfc6e3e7f630899, type: 3}
@@ -6041,7 +6042,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 658eaf667d9e06e4b9e20f2f6fea5309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashbangEffect
-  canvasGroup: {fileID: 0}
   flashbangCanvas: {fileID: 2078307216}
   postProcessVolume: {fileID: 1908221838}
   cutsceneCanvas: {fileID: 1624973400}
