@@ -193,9 +193,16 @@ public class ProceduralRoomGen : MonoBehaviour
             if (doorScript == null) throw new Exception("ProceduralRoomGen: Door script not found on instantiated door");
             doorScript.SetNumber(currDoor);
 
+            if (currDoor % 2 == 1)
+            {
+                Transform doorFrameTransform = door.transform.GetChild(0).transform;
+                if (doorFrameTransform == null) throw new Exception("how tf");
+                doorFrameTransform.localScale = new Vector3(doorFrameTransform.localScale.x * -1f, doorFrameTransform.localScale.y, doorFrameTransform.localScale.z);
+            }
+
             // Invalidate the position of the door in the grid
-           List<RoomRow> roomRows = GameManager.Instance.worldState.roomStates[room].roomSpace.roomRows;
-           RoomRow.AddObject(roomRows, new Range(newPosition.x - doorCompSize / 2.0f, newPosition.x + doorCompSize / 2.0f), new List<int>{1,2});
+            List<RoomRow> roomRows = GameManager.Instance.worldState.roomStates[room].roomSpace.roomRows;
+            RoomRow.AddObject(roomRows, new Range(newPosition.x - doorCompSize / 2.0f, newPosition.x + doorCompSize / 2.0f), new List<int>{1,2});
 
             // Save the door
             currentDoors.Add(new DoorData(door, doorScript));

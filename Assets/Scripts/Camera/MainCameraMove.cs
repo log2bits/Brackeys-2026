@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,6 +22,10 @@ public class MainCameraMove : MonoBehaviour
         {
             _instance = this;
         }
+
+        basePosition = transform.localPosition;
+        lastBasePosition = basePosition;
+        baseRotation = transform.localRotation;
     }
     // Singleton -------------------------------
 
@@ -33,9 +38,23 @@ public class MainCameraMove : MonoBehaviour
     [SerializeField] private float cameraMoveTime;
     [SerializeField] private float cameraDragStrength = 0.2f;
 
+    [Header("Bobbing")]
+    [SerializeField] private float bobbingAmplitude = 0.15f;
+    [SerializeField] private float swayAmplitude = 0.5f;
+    [SerializeField] private float bobCyclesPerUnit = 0.075f;
+    [SerializeField] private float bobReferenceSpeed = 8f;
+    [SerializeField] private float bobBlendSharpness = 8f;
+
     private bool inputEnabled = true;
+    private bool isSliding = false;
     private bool mouseHeldLastFrame = false;
     private IEnumerator lastShakeCoroutine;
+
+    private Vector3 basePosition;
+    private Vector3 lastBasePosition;
+    private Quaternion baseRotation;
+    private float bobPhase;
+    private float bobWeight;
 
     private void OnEnable()
     {
@@ -77,9 +96,11 @@ public class MainCameraMove : MonoBehaviour
 
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
+        isSliding = false;
         if (mouseHeldLastFrame)
         {
-            transform.localPosition = new Vector3(transform.localPosition.x + (mouseDelta.x * cameraDragStrength), transform.localPosition.y, transform.localPosition.z);
+            basePosition = new Vector3(basePosition.x + (mouseDelta.x * cameraDragStrength), basePosition.y, basePosition.z);
+            isSliding = true;
         }
 
         mouseHeldLastFrame = Mouse.current.leftButton.isPressed;
@@ -96,8 +117,38 @@ public class MainCameraMove : MonoBehaviour
         {
             throw new System.Exception("MainCameraMove: Game currently inside an invalid room!");
         }
-        float clampedX = Mathf.Clamp(transform.localPosition.x, currentRoomState.globalPosition.x + cameraWallMargin - (currentRoomState.roomWidth/2), currentRoomState.globalPosition.x - cameraWallMargin + (currentRoomState.roomWidth/2));
-        transform.localPosition = new Vector3(clampedX, transform.localPosition.y, transform.localPosition.z);
+        float clampedX = Mathf.Clamp(basePosition.x, currentRoomState.globalPosition.x + cameraWallMargin - (currentRoomState.roomWidth / 2), currentRoomState.globalPosition.x - cameraWallMargin + (currentRoomState.roomWidth / 2));
+        basePosition = new Vector3(clampedX, basePosition.y, basePosition.z);
+    }
+
+    private void LateUpdate()
+    {
+        float dt = Time.deltaTime;
+        if (dt <= 0f)
+        {
+            return;
+        }
+
+        float distance = Vector3.Distance(basePosition, lastBasePosition);
+        float speed = distance / dt;
+
+        bobPhase = Mathf.Repeat(bobPhase + distance * bobCyclesPerUnit / (isSliding ? 2.0f : 1.0f) * 2f * Mathf.PI, 2f * Mathf.PI);
+
+        float target = Mathf.Clamp01(speed / bobReferenceSpeed);
+        bobWeight = Mathf.Lerp(bobWeight, target, 1f - Mathf.Exp(-bobBlendSharpness * dt));
+
+        if (bobWeight < 0.01f)
+        {
+            bobPhase = 0f;
+        }
+
+        float bob = bobbingAmplitude * Mathf.Sin(bobPhase * 2f) * bobWeight;
+        float sway = swayAmplitude * Mathf.Sin(bobPhase) * bobWeight;
+
+        transform.localPosition = basePosition + Vector3.up * bob;
+        transform.localRotation = baseRotation * Quaternion.Euler(0f, 0f, sway);
+
+        lastBasePosition = basePosition;
     }
 
     public void MoveCamera(Vector3 position, GameManager.GameState finalState)
@@ -108,47 +159,47 @@ public class MainCameraMove : MonoBehaviour
     private IEnumerator MoveCameraCoroutine(Vector3 position, GameManager.GameState finalState)
     {
         inputEnabled = false;
-        Vector3 startingPosition = transform.localPosition;
+        Vector3 startingPosition = basePosition;
 
-        float i = 0;
+        float i = 0f;
         while (i < cameraMoveTime)
         {
-            transform.localPosition = Vector3.Lerp(startingPosition, position, Mathf.SmoothStep(0, 1, i / cameraMoveTime));
+            basePosition = Vector3.Lerp(startingPosition, position, Mathf.SmoothStep(0f, 1f, i / cameraMoveTime));
             yield return null;
             i += Time.deltaTime;
         }
 
-        transform.localPosition = position;
+        basePosition = position;
         inputEnabled = true;
 
         GameManager.Instance.state = finalState;
     }
 
     public void ShakeCamera(float shakeDuration, float shakeAmount, float timeBetweenShakes, float shakeDecay)
-	{
+    {
         if (lastShakeCoroutine != null)
         {
-		    CoroutineManager.Instance.Stop(lastShakeCoroutine);
+            CoroutineManager.Instance.Stop(lastShakeCoroutine);
         }
 
         lastShakeCoroutine = ShakeCameraCoroutine(shakeDuration, shakeAmount, timeBetweenShakes, shakeDecay);
         CoroutineManager.Instance.Run(lastShakeCoroutine);
-	}
+    }
 
     private IEnumerator ShakeCameraCoroutine(float shakeDuration, float shakeAmount, float timeBetweenShakes, float shakeDecay)
-	{
-		float shakeStartTime = Time.time;
+    {
+        float shakeStartTime = Time.time;
         float lastShakeTime = 0f;
         while (Time.time - shakeStartTime < shakeDuration)
-		{
+        {
             if (Time.time - lastShakeTime > timeBetweenShakes)
-			{
-				cameraShakeGameobject.transform.position = Random.insideUnitSphere * shakeAmount;
+            {
+                cameraShakeGameobject.transform.position = UnityEngine.Random.insideUnitSphere * shakeAmount;
                 shakeAmount *= shakeDecay;
                 lastShakeTime = Time.time;
-			}
-			yield return null;
-		}
+            }
+            yield return null;
+        }
         cameraShakeGameobject.transform.position = Vector3.zero;
-	}
+    }
 }
