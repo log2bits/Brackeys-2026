@@ -132,7 +132,7 @@ public class Door : MonoBehaviour, IClickableObject
 
     private IEnumerator WaitForFinalDialogue()
     {
-		while (!Dialogue.Instance.StartDialogue("This friendly face is here to tell you that you are so close! Just one more room stops you from freedom, and it's a piece of cake!", true))
+		while (!Dialogue.Instance.StartDialogue("Wow, hey friend! I didn't really anticipate you getting this far... but that's great! There's just one more door between you and freedom. Just trust me!", true))
 		{
 			yield return null;
 		}

@@ -26,7 +26,7 @@ public class EndingCutsceneController : MonoBehaviour
 	//[Header("References")]
 
     [Header("Parameters")]
-    [SerializeField] private string endingDialogue = "I'm finally free...";
+    [SerializeField] private string endingDialogue = "I KNEW that thing was lying to me! I need to get the hell out of here.";
     [SerializeField] private float postDialogueWaitTime = 5f;
 
 	public void EndGame()
