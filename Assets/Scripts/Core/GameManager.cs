@@ -1,4 +1,5 @@
 using System.Text;
+using UnityEngine;
 
 public class GameManager
 {
@@ -47,6 +48,36 @@ public class GameManager
         worldState = new WorldState();
         lives = 3;
         currentRoom = 0;
+    }
+
+    public void ChangeGameState(GameState stateChange)
+    {
+        Debug.Log(stateChange);
+        switch (stateChange)
+        {
+            case GameState.MAINMENU:
+                break;
+            case GameState.CUTSCENE:
+                EventBus.Instance.DoGameStart();
+                break;
+            case GameState.INNERROOM:
+                break;
+            case GameState.OUTERROOM:
+                if (state == GameState.CUTSCENE) {
+                    Debug.Log("Cutscene Ended");
+                    EventBus.Instance.DoCutsceneEnd();
+                }
+                break;
+            case GameState.TRANSITIONROOM:
+                EventBus.Instance.DoRoomMove();
+                break;
+            case GameState.ZOOMING:
+                break;
+            case GameState.GAMEOVER: 
+                break;
+
+        }
+        state = stateChange;
     }
 
     public static string GenerateRandomString()

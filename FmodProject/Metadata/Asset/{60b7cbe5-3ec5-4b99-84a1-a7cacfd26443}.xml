@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="EncodableAsset" id="{60b7cbe5-3ec5-4b99-84a1-a7cacfd26443}">
+		<property name="assetPath">
+			<value>SFX/AsylumSounds/AsylumEvents/</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{c22c7806-a81a-436f-813d-40b0fd8e9fbc}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -63,6 +63,6 @@ public class FlashbangEffect : MonoBehaviour
         flashbangCanvas.SetActive(false);
         flashCoroutine = null;
 
-        GameManager.Instance.state = GameManager.GameState.OUTERROOM;
+        GameManager.Instance.ChangeGameState(GameManager.GameState.OUTERROOM);
     }
 }

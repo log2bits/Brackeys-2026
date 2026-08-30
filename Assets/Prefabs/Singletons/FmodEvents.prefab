@@ -51,5 +51,104 @@ MonoBehaviour:
       Data3: -1935938383
       Data4: 487020577
     Path: event:/SFX/Objects/OpenDoor
+  <ambientEvents>k__BackingField:
+  - Guid:
+      Data1: -68852028
+      Data2: 1086418933
+      Data3: -1849582673
+      Data4: 1297046127
+    Path: event:/SFX/AsylumSounds/AsylumEvents/AEventDoorBanging
+  - Guid:
+      Data1: 493691355
+      Data2: 1177012287
+      Data3: -453513595
+      Data4: -1582598569
+    Path: event:/SFX/AsylumSounds/AsylumEvents/AEventDoorFail
+  - Guid:
+      Data1: -1540039005
+      Data2: 1283647781
+      Data3: -1721047656
+      Data4: 1811668749
+    Path: event:/SFX/AsylumSounds/AsylumEvents/AEventElevatorFall
+  <ambientEnvironments>k__BackingField:
+  - ambience:
+      Guid:
+        Data1: -290958179
+        Data2: 1185077640
+        Data3: -300007295
+        Data4: -591417063
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentChainedCreaking
+    chance: 0.2
+  - ambience:
+      Guid:
+        Data1: -440993119
+        Data2: 1303921502
+        Data3: -460678722
+        Data4: 405328818
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentChainedWalk
+    chance: 0.2
+  - ambience:
+      Guid:
+        Data1: 126231411
+        Data2: 1237396806
+        Data3: 471505068
+        Data4: -619782932
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentChair
+    chance: 0.2
+  - ambience:
+      Guid:
+        Data1: -525819916
+        Data2: 1122387110
+        Data3: 1287571072
+        Data4: -1095988283
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentDuctVents
+    chance: 0.3
+  - ambience:
+      Guid:
+        Data1: -511113353
+        Data2: 1339806713
+        Data3: -871067765
+        Data4: 1856169682
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentElevator
+    chance: 0.2
+  - ambience:
+      Guid:
+        Data1: 919092850
+        Data2: 1279734715
+        Data3: -223545431
+        Data4: 1547990705
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentFuseBox
+    chance: 0.3
+  - ambience:
+      Guid:
+        Data1: 1554990083
+        Data2: 1128775922
+        Data3: 1345928608
+        Data4: -162956755
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentPipeCreaking
+    chance: 0.3
+  - ambience:
+      Guid:
+        Data1: 601944077
+        Data2: 1327171177
+        Data3: 1874741428
+        Data4: -106834123
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentPipeLeaking
+    chance: 0.6
+  - ambience:
+      Guid:
+        Data1: -956601478
+        Data2: 1307097711
+        Data3: 2074680710
+        Data4: -1492867724
+      Path: event:/SFX/AsylumSounds/AsylumEnvironments/AEnvironmentVent
+    chance: 0.4
+  <ambience>k__BackingField:
+    Guid:
+      Data1: 1871294723
+      Data2: 1188075702
+      Data3: 1224874125
+      Data4: -184135111
+    Path: event:/SFX/AsylumSounds/AsylumAmbiences/AsylumAmbience
   sfxVCAPath: vca:/SFX
   musicVCAPath: vca:/Music

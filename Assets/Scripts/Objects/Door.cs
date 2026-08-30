@@ -110,6 +110,7 @@ public class Door : MonoBehaviour, IClickableObject
             MainCameraMove.Instance.MoveCamera(transform.position + new Vector3(0, 0, 0.1f), GameManager.GameState.OUTERROOM);
 
             GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
+            GameManager.Instance.ChangeGameState(GameManager.GameState.TRANSITIONROOM);
             GameManager.Instance.currentRoom += 1;
 
             Dialogue.Instance.EndDialogue(false);

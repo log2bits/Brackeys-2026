@@ -19,7 +19,9 @@ public class EventBus
     {
         GameOver,
         GameStart,
-        LostLife
+        LostLife,
+        CutsceneEnd,
+        RoomMove,
     }
 
 
@@ -42,6 +44,18 @@ public class EventBus
     public void DoLostLife()
     {
         OnLostLife?.Invoke();
+    }
+    // OnCutsceneEnd is called when the cutscene ends
+    public event Action OnCutsceneEnd;
+    public void DoCutsceneEnd()
+    {
+        OnCutsceneEnd?.Invoke();
+    }
+    // OnRoomMove is called when you move to another room
+    public event Action OnRoomMove;
+    public void DoRoomMove()
+    {
+        OnRoomMove?.Invoke();
     }
 
     // Note: You can do Action<Vector3> for example, but for dictionary storage we would have to change
@@ -67,6 +81,16 @@ public class EventBus
                 OnLostLife += handlerLostLife;
                 activeEventListeners[listener] = handlerLostLife;
                 break;
+            case EventName.CutsceneEnd:
+                Action handlerCutsceneEnd = () => listener();
+                OnCutsceneEnd += handlerCutsceneEnd;
+                activeEventListeners[listener] = handlerCutsceneEnd;
+                break;
+            case EventName.RoomMove:
+                Action handlerRoomMove = () => listener();
+                OnRoomMove += handlerRoomMove;
+                activeEventListeners[listener] = handlerRoomMove;
+                break;
             default: throw new Exception("Failed Register: Given eventName does not exist as a register - " + eventName);
         }
         
@@ -88,6 +112,12 @@ public class EventBus
                     break;
                 case EventName.LostLife:
                     OnLostLife -= (Action)wrapper;
+                    break;
+                case EventName.CutsceneEnd:
+                    OnCutsceneEnd -= (Action)wrapper;
+                    break;
+                case EventName.RoomMove:
+                    OnRoomMove -= (Action)wrapper;
                     break;
                 default:
                 throw new Exception("Failed Deregister: Given eventName does not exist as a Deregister - " + eventName);

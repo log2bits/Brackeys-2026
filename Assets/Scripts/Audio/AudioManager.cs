@@ -26,6 +26,11 @@ public class AudioManager : MonoBehaviour
     {
         RuntimeManager.PlayOneShot(sound, worldPosition);
     }
+    public FMOD.Studio.EventInstance CreateInstance(EventReference sound)
+    {
+        FMOD.Studio.EventInstance instance = RuntimeManager.CreateInstance(sound);
+        return instance;
+    }
 
     public void PauseFmodSounds(bool pause)
     {        
