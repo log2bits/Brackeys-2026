@@ -5710,7 +5710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
   m_IsGlobal: 1
-  priority: 0
+  priority: 2
   blendDistance: 0
   weight: 0
   sharedProfile: {fileID: 11400000, guid: 65ab5fcf80905164196b6d1ee8f614dc, type: 2}
@@ -6467,6 +6467,10 @@ PrefabInstance:
     - target: {fileID: 8115974603039383389, guid: 2dec1d91472ceb74a911c8f3337aa4d0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622858212358077058, guid: 2dec1d91472ceb74a911c8f3337aa4d0, type: 3}
+      propertyPath: priority
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

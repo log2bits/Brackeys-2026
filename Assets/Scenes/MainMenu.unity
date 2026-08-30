@@ -6584,9 +6584,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 201343076821476424, guid: 83feb291178d9cf44b388ccd385ea097, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3324752326281289991, guid: 83feb291178d9cf44b388ccd385ea097, type: 3}
       propertyPath: m_Name
       value: BlackTransition
+      objectReference: {fileID: 0}
+    - target: {fileID: 3324752326281289991, guid: 83feb291178d9cf44b388ccd385ea097, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6430159411941443744, guid: 83feb291178d9cf44b388ccd385ea097, type: 3}
       propertyPath: m_Pivot.x
