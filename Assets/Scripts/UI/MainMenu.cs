@@ -42,6 +42,7 @@ public class MainMenu : MonoBehaviour
         GameManager.Instance.state = GameManager.GameState.MAINMENU;
         optionsMenuScript.LoadOptions();
         SetDifficulty(0);
+        SceneTransition.Instance.FadeFromBlack();
     }
 
     public void NewGame()
@@ -94,7 +95,7 @@ public class MainMenu : MonoBehaviour
         goingToMainScene = true;
         GameManager.Instance.currentSeed = GameManager.StringToRandomInt(seedInputField.text);
         GameManager.Instance.currentDifficulty = difficulties[difficultyIndex];
-        PlayGameFinish();
+        SceneTransition.Instance.FadeToBlack(PlayGameFinish);
     }
 
     private void PlayGameFinish()
