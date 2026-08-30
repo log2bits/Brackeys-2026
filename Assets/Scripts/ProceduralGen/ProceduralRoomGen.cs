@@ -360,11 +360,11 @@ public class ProceduralRoomGen : MonoBehaviour
 
             RoomSpace roomSpace = GameManager.Instance.worldState.roomStates[room].roomSpace;
             Vector3 placementPosition = SetupRandomizedPlacement(roomSpace, objectDataTemplates[indices[currObject]], GameManager.Instance.worldState.roomStates[room].globalPosition, width, GetRoomWidth(doorCount));
-            if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
-            GameObject objectGenerated = Instantiate(objectDataTemplates[currObject].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
+            if (placementPosition == new Vector3(0, 0, 0)) continue;
+            GameObject objectGenerated = Instantiate(objectDataTemplates[indices[currObject]].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
             GameManager.Instance.worldState.roomStates[room].objects.Add(objectGenerated);
             
-            ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, objectDataTemplates[currObject].GetObjectPropertyDatas(), proceduralRandGen);
+            ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, objectDataTemplates[indices[currObject]].GetObjectPropertyDatas(), proceduralRandGen);
 
             // prevents duplicate prefabs
             indices.RemoveAt(currObject);

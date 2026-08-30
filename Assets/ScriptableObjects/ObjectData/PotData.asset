@@ -17,7 +17,7 @@ MonoBehaviour:
   roomTemplate: there was no pot in {1}
   rowsTaken: 01000000
   rowSource: 1
-  invalidationRange: -0.5
+  invalidationRange: -0.3
   objectPropertyDatas:
   - propertyName: pot type
     template: there was a {0} pot in {1}
