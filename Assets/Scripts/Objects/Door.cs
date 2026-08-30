@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 using LogicSolver;
 using System.Text;
 using TMPro;
-using UnityEngine.UI;
 
 public class Door : MonoBehaviour, IClickableObject
 {
