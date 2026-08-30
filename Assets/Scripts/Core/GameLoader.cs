@@ -7,5 +7,6 @@ public class GameLoader : MonoBehaviour
         GameManager.Instance.ResetGameManager();
         GameManager.Instance.state = GameManager.GameState.CUTSCENE;
         ProceduralRoomGen.Instance.GenerateProcess();
+        
     }    
 }
