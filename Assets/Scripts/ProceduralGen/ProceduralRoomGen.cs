@@ -36,6 +36,7 @@ public class ProceduralRoomGen : MonoBehaviour
     [SerializeField] private GameObject writing2Prefab;
     [SerializeField] private GameObject writing3Prefab;
     [SerializeField] private GameObject writing4Prefab;
+    [SerializeField] private GameObject outsidePrefab;
 
     [Header("Parameters")]
     [SerializeField] private float roomDistance = 20f;
@@ -152,6 +153,9 @@ public class ProceduralRoomGen : MonoBehaviour
         };
 
         AssignDoorData(finalRoomSolution);
+
+        // Generate Outside
+        Instantiate(outsidePrefab, currentDoors[1].doorComponent.transform.position, Quaternion.Euler(0, 90, 0), transform);
 
         // Clear all doors
         currentDoors.Clear();

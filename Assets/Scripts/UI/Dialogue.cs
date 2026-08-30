@@ -78,6 +78,11 @@ public class Dialogue : MonoBehaviour
         }
     }
 
+    public bool GetInDialogue()
+    {
+        return inDialogue;
+    }
+
     public void DeferClickCheckToDialogue()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)

@@ -43,7 +43,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.state == GameManager.GameState.CUTSCENE)
+        if (GameManager.Instance.state == GameManager.GameState.CUTSCENE || GameManager.Instance.state == GameManager.GameState.ENDCUTSCENE)
         {
             return;
         }

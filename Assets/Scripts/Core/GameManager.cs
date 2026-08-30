@@ -27,6 +27,7 @@ public class GameManager
     {
         MAINMENU,
         CUTSCENE,
+        ENDCUTSCENE,
         INNERROOM,
         OUTERROOM,
         TRANSITIONROOM,
@@ -73,6 +74,8 @@ public class GameManager
             case GameState.ZOOMING:
                 break;
             case GameState.GAMEOVER: 
+                break;
+            case GameState.ENDCUTSCENE:
                 break;
 
         }

@@ -153,18 +153,23 @@ public class MainCameraMove : MonoBehaviour
 
     public void MoveCamera(Vector3 position, GameManager.GameState finalState)
     {
-        CoroutineManager.Instance.Run(MoveCameraCoroutine(position, finalState));
+        CoroutineManager.Instance.Run(MoveCameraCoroutine(position, finalState, cameraMoveTime));
     }
 
-    private IEnumerator MoveCameraCoroutine(Vector3 position, GameManager.GameState finalState)
+    public void MoveCamera(Vector3 position, float time)
+    {
+        CoroutineManager.Instance.Run(MoveCameraCoroutine(position, GameManager.GameState.ENDCUTSCENE, time, false));
+    }
+
+    private IEnumerator MoveCameraCoroutine(Vector3 position, GameManager.GameState finalState, float moveTime, bool changeState = true)
     {
         inputEnabled = false;
         Vector3 startingPosition = basePosition;
 
         float i = 0f;
-        while (i < cameraMoveTime)
+        while (i < moveTime)
         {
-            basePosition = Vector3.Lerp(startingPosition, position, Mathf.SmoothStep(0f, 1f, i / cameraMoveTime));
+            basePosition = Vector3.Lerp(startingPosition, position, Mathf.SmoothStep(0f, 1f, i / moveTime));
             yield return null;
             i += Time.deltaTime;
         }
@@ -172,7 +177,10 @@ public class MainCameraMove : MonoBehaviour
         basePosition = position;
         inputEnabled = true;
 
-        GameManager.Instance.state = finalState;
+        if (changeState)
+        {
+            GameManager.Instance.state = finalState;
+        }
     }
 
     public void ShakeCamera(float shakeDuration, float shakeAmount, float timeBetweenShakes, float shakeDecay)

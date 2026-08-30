@@ -45,7 +45,7 @@ public class Door : MonoBehaviour, IClickableObject
         }
 
         // Zoom into door and start dialogue
-        if (GameManager.Instance.state == GameManager.GameState.OUTERROOM)
+        if (GameManager.Instance.state == GameManager.GameState.OUTERROOM && !Dialogue.Instance.GetInDialogue())
         {
             GameManager.Instance.mainCameraZBeforeZoom = MainCameraMove.Instance.transform.position.z;
 
