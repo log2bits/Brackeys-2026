@@ -8,17 +8,19 @@ using FMOD.Studio;
 
 public class ProceduralAmbientManager : MonoBehaviour
 {
-    [SerializeField] private float initialStartDelay = 10.0f;
-    [SerializeField] private float minResetSec = 15f;
-    [SerializeField] private float maxResetSec = 30f;
-    [SerializeField] private float eventChance = 0.1f;
+    [SerializeField] private float initialStartDelay = 5.0f;
+    [SerializeField] private float minResetSec = 10f;
+    [SerializeField] private float maxResetSec = 20f;
+    [SerializeField] private float eventChance = 0.25f;
     [SerializeField] private float roomSecRatio = 1.5f; // multiplied after roomResetRatio hit, to all min and max
-    [SerializeField] private int roomResetRatio = 2; // when ambience reset is changed
+    [SerializeField] private int roomResetRatio = 2; // when ambience reset is changed and music is introduced
     [SerializeField] private float soundFadeSec = 30f; // seconds until ambience ends
     [SerializeField] private int roomSoundFade = 3; // when ambience will start to end
     // Ambience audio 
     private EventInstance backgroundAmbience;
     private EventInstance backgroundAmbientSound;
+    // Music , we dont have too much time left
+    private EventInstance music;
     // Coroutine to keep an active loop
     private IEnumerator activeLoop;
     private IEnumerator activeFade;
@@ -50,6 +52,10 @@ public class ProceduralAmbientManager : MonoBehaviour
         // Setup main ambiance
         backgroundAmbience = AudioManager.Instance.CreateInstance(FmodEvents.Instance.ambience);
         backgroundAmbience.start();
+
+        // Setup main ambiance
+        music = AudioManager.Instance.CreateInstance(FmodEvents.Instance.gameMapMusic);
+        
 
         Debug.Log("ProceduralAmbientManager initialized");
     }
@@ -107,6 +113,7 @@ public class ProceduralAmbientManager : MonoBehaviour
         backgroundAmbience.release();
         backgroundAmbientSound.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         backgroundAmbientSound.release();
+        music.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         EventBus.Instance.Deregister(EventBus.EventName.CutsceneEnd, CutsceneEnd);
         EventBus.Instance.Deregister(EventBus.EventName.RoomMove, RoomMove);
         StopLoop();
@@ -217,7 +224,12 @@ public class ProceduralAmbientManager : MonoBehaviour
     {
         currentRoom+=1;
 
-        if (currentRoom == roomResetRatio) secRatio = roomSecRatio;
+        if (currentRoom == roomResetRatio) 
+        {
+            music.start();
+            music.release();
+            secRatio = roomSecRatio;
+        }
         
         if (currentRoom == roomSoundFade) StartFade();
     }

@@ -25,10 +25,13 @@ public class FmodEvents : MonoBehaviour
 
     [field: Header("Door SFX")]
     [field: SerializeField] public EventReference openDoor { get ; private set;}
+    [field: SerializeField] public EventReference lockedDoor { get ; private set;}
     [field: Header("Ambience SFX")]
     [field: SerializeField] public List<EventReference> ambientEvents { get ; private set;}
     [field: SerializeField] public List<AmbientEnvironment> ambientEnvironments { get ; private set;}
     [field: SerializeField] public EventReference ambience { get ; private set;}
+    [field: Header("Music")]
+    [field: SerializeField] public EventReference gameMapMusic { get ; private set;}
 
     [field: Header("VCAs")]
     [field: SerializeField] public string sfxVCAPath;
