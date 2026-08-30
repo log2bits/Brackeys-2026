@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using ProceduralHelperGen;
 using LogicSolver;
 
@@ -187,7 +186,6 @@ public class ProceduralRoomGen : MonoBehaviour
         //PrintGrid(room);
         GenerateDoors(centralPosition, doorCount, room);
         GenerateWalls(centralPosition, doorCount, room);
-        GenerateRoomLights(centralPosition);
 
         // No objects in last room
         if (room != difficulty.roomCount)
@@ -241,6 +239,8 @@ public class ProceduralRoomGen : MonoBehaviour
 
             // Save the door
             currentDoors.Add(new DoorData(door, doorScript));
+
+            GenerateRoomLights(newPosition - new Vector3(0f, 0f, 0f));
         }
 
         currentDoors.Reverse();
@@ -286,8 +286,8 @@ public class ProceduralRoomGen : MonoBehaviour
     {
         if (roomLightsPrefab == null) throw new Exception("ProceduralRoomGen: RoomLightsPrefab is null");
        
-        Vector3 position = new Vector3(centralPosition.x, roomLightsYPosition, centralPosition.z - (roomDistance / 2));
-        Instantiate(roomLightsPrefab, position, Quaternion.Euler(90, 0, 0), transform);
+        Vector3 position = new Vector3(centralPosition.x, roomLightsYPosition + 7.0f, centralPosition.z - 5.0f);
+        Instantiate(roomLightsPrefab, position, Quaternion.Euler(80, 0, 0), transform);
     }
 
     // GenerateObjects
