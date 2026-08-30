@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Linq;
+using FMOD.Studio;
+using FMODUnity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,7 +34,9 @@ public class MainMenu : MonoBehaviour
 
     [Header("Parameters")]
     [SerializeField] private float menuTransitionTime;
-
+    [Header("Menu Music")]
+    [SerializeField] private EventReference menuMusic;
+    private EventInstance menuMusicInstance;
     private bool goingToMainScene = false;
     private bool transitioning = false;
     private int difficultyIndex = 0;
@@ -42,6 +46,11 @@ public class MainMenu : MonoBehaviour
         GameManager.Instance.state = GameManager.GameState.MAINMENU;
         optionsMenuScript.LoadOptions();
         SetDifficulty(0);
+
+        // music
+        menuMusicInstance = AudioManager.Instance.CreateInstance(menuMusic);
+        menuMusicInstance.start();
+        menuMusicInstance.release();
     }
 
     public void NewGame()
@@ -99,6 +108,7 @@ public class MainMenu : MonoBehaviour
 
     private void PlayGameFinish()
     {
+        menuMusicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         SceneManager.LoadSceneAsync("Game");
     }
 
@@ -158,6 +168,7 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
+        menuMusicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         Debug.Log("Quitting game... will not work in Unity game preview (only in a built version of the game)");
         Application.Quit();
     }

@@ -4752,6 +4752,13 @@ MonoBehaviour:
   creditsMenuUIHolder: {fileID: 7143473761706297714}
   optionsMenuScript: {fileID: 1674276278}
   menuTransitionTime: 0.25
+  menuMusic:
+    Guid:
+      Data1: -1429283032
+      Data2: 1144781195
+      Data3: 1453256098
+      Data4: 1946955027
+    Path: event:/MUSIC/Nocturne in Sanity
 --- !u!1 &2054929991
 GameObject:
   m_ObjectHideFlags: 0
