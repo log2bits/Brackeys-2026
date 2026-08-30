@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using FMODUnity;
 using System.Linq;
+using FMOD.Studio;
 
 public class ProceduralAmbientManager : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class ProceduralAmbientManager : MonoBehaviour
     [SerializeField] private int roomResetRatio = 2; // when ambience reset is changed
     [SerializeField] private float soundFadeSec = 30f; // seconds until ambience ends
     [SerializeField] private int roomSoundFade = 3; // when ambience will start to end
+    // Ambience audio 
+    private EventInstance backgroundAmbience;
+    private EventInstance backgroundAmbientSound;
     // Coroutine to keep an active loop
     private IEnumerator activeLoop;
     private IEnumerator activeFade;
@@ -42,6 +46,11 @@ public class ProceduralAmbientManager : MonoBehaviour
         // setup event action
         EventBus.Instance.Register(EventBus.EventName.CutsceneEnd, CutsceneEnd);
         EventBus.Instance.Register(EventBus.EventName.RoomMove, RoomMove);
+
+        // Setup main ambiance
+        backgroundAmbience = AudioManager.Instance.CreateInstance(FmodEvents.Instance.ambience);
+        backgroundAmbience.start();
+
         Debug.Log("ProceduralAmbientManager initialized");
     }
     
@@ -94,6 +103,10 @@ public class ProceduralAmbientManager : MonoBehaviour
     public void OnDisable()
     {
         Debug.Log("Stop Audio Loop");
+        backgroundAmbience.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        backgroundAmbience.release();
+        backgroundAmbientSound.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        backgroundAmbientSound.release();
         EventBus.Instance.Deregister(EventBus.EventName.CutsceneEnd, CutsceneEnd);
         EventBus.Instance.Deregister(EventBus.EventName.RoomMove, RoomMove);
         StopLoop();
@@ -110,18 +123,18 @@ public class ProceduralAmbientManager : MonoBehaviour
         {
             //Debug.Log("AudioLoop Restart");
             EventReference nextEvent = ProceduralAmbientGenerator((float)audioRandom.NextDouble(), (float)audioRandom.NextDouble(), (float)audioRandom.NextDouble());
-            FMOD.Studio.EventInstance ambientInstance = AudioManager.Instance.CreateInstance(nextEvent);
-            ambientInstance.start();
+            backgroundAmbientSound = AudioManager.Instance.CreateInstance(nextEvent);
+            backgroundAmbientSound.start();
 
             FMOD.Studio.PLAYBACK_STATE playbackState;
             do
             {
-                ambientInstance.getPlaybackState(out playbackState);
+                backgroundAmbientSound.getPlaybackState(out playbackState);
                 yield return null; 
             } 
             while (playbackState != FMOD.Studio.PLAYBACK_STATE.STOPPING && playbackState != FMOD.Studio.PLAYBACK_STATE.STOPPED);
             
-            ambientInstance.release();
+            backgroundAmbientSound.release();
 
             // Unity's Random.Range is inclusive for floats
             randomResetSec = minResetSec + (float)audioRandom.NextDouble() * (maxResetSec - minResetSec);
