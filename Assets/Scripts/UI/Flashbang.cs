@@ -5,7 +5,6 @@ using UnityEngine.Rendering;
 public class FlashbangEffect : MonoBehaviour
 {
     [Header("Components")]
-    [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private GameObject flashbangCanvas;
     [SerializeField] private Volume postProcessVolume;
     [SerializeField] private GameObject cutsceneCanvas;
@@ -30,7 +29,6 @@ public class FlashbangEffect : MonoBehaviour
     private IEnumerator DoFlashbang()
     {
         // Instantly make the screen white
-        canvasGroup.alpha = 1f;
         postProcessVolume.weight = 1f;
 
         // Stay completely white for a moment
@@ -50,7 +48,6 @@ public class FlashbangEffect : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float progress = elapsedTime / fadeDuration;
 
-            canvasGroup.alpha = Mathf.Lerp(1f, 0f, progress);
             postProcessVolume.weight = Mathf.Lerp(1f, 0f, progress);
             postProcessVolume.weight *= postProcessVolume.weight;
 
@@ -58,7 +55,6 @@ public class FlashbangEffect : MonoBehaviour
         }
 
         // Make sure everything is fully reset
-        canvasGroup.alpha = 0f;
         postProcessVolume.weight = 0f;
         
         flashbangCanvas.SetActive(false);

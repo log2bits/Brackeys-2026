@@ -51,6 +51,7 @@ public class MainMenu : MonoBehaviour
         menuMusicInstance = AudioManager.Instance.CreateInstance(menuMusic);
         menuMusicInstance.start();
         menuMusicInstance.release();
+        SceneTransition.Instance.FadeFromBlack();
     }
 
     public void NewGame()
@@ -103,7 +104,7 @@ public class MainMenu : MonoBehaviour
         goingToMainScene = true;
         GameManager.Instance.currentSeed = GameManager.StringToRandomInt(seedInputField.text);
         GameManager.Instance.currentDifficulty = difficulties[difficultyIndex];
-        PlayGameFinish();
+        SceneTransition.Instance.FadeToBlack(PlayGameFinish);
     }
 
     private void PlayGameFinish()
