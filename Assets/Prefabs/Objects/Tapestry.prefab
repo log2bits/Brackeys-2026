@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5005553458981591757}
   - component: {fileID: 4244923497053076430}
   m_Layer: 0
-  m_Name: PotSprite
+  m_Name: TapestrySprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 48e21db9c45f0cd4aa1091163c42a256, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3164c0e3424ea0b47b6c666a2c7e3e17, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -101,10 +101,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8417659273300300849}
-  - component: {fileID: 7455144755632654756}
-  - component: {fileID: 1488860291547762516}
   m_Layer: 0
-  m_Name: PottedPlant
+  m_Name: Tapestry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -126,38 +124,3 @@ Transform:
   - {fileID: 5005553458981591757}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &7455144755632654756
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7530830482215578029}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 6.4, y: 12.8, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1488860291547762516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7530830482215578029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1791f21c8677317418e441f9d9495546, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PottedPlant
-  spriteRenderers:
-  - {fileID: 4244923497053076430}
