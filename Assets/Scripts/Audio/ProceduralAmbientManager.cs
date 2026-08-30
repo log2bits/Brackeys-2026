@@ -35,8 +35,8 @@ public class ProceduralAmbientManager : MonoBehaviour
     private float randomResetSec = 0f;
     private float totalWeight = 0.0f;
     
-    // Constructor, mainly for calculating totalWeight and eventsNotEncoutnered
-    public ProceduralAmbientManager()
+    // Calculates totalWeight and eventsNotEncoutnered
+    private void Start()
     {
         foreach(int num in Enumerable.Range(0, FmodEvents.Instance.ambientEvents.Count)) { eventsNotEncountered.Add(num); }
     
