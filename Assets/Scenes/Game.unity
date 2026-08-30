@@ -3074,7 +3074,7 @@ MonoBehaviour:
   flashbangEffect: {fileID: 2078307221}
   dialogueLines:
   - Hello Patient #JH129!
-  - I'm your friend #####.
+  - Bet you're glad to see a friendly face.
   - You don't remember me?
   - No matter. We don't have time.
   - You aren't supposed to be in here.
@@ -3583,7 +3583,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 516.8065}
+  m_AnchoredPosition: {x: 0, y: 516.8054}
   m_SizeDelta: {x: 365, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1790712726
