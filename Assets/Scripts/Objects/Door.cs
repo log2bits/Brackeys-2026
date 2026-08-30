@@ -11,11 +11,9 @@ public class Door : MonoBehaviour, IClickableObject
 {
     [Header("References")]
     [SerializeField] private Transform doorSpriteTransform;
+    [SerializeField] private Animator honestyButtonAnimator;
     [SerializeField] private SpriteRenderer doorSpriteOverlay;
     [SerializeField] private TextMeshProUGUI doorNumbersText;
-
-    [SerializeField] private Toggle honestToggle;
-    [SerializeField] private Toggle lyingToggle;
 
     [Header("Parameters")]
     [SerializeField] private float doorLightUpAmount = 0.015f;
@@ -30,19 +28,14 @@ public class Door : MonoBehaviour, IClickableObject
     private bool open; 
     private int doorNumber;
 
-
-    private enum HonestyStatus
-    {
-        Honest,
-        Lying,
-        Undecided
-    }
-
-    private HonestyStatus honestyStatus = HonestyStatus.Undecided;
+    private bool honestyStatus;
 
     private void Start()
     {
         doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
+
+        honestyStatus = false;
+        ToggleHonesty();
     }
 
     public void OnMouseDown()
@@ -186,29 +179,16 @@ public class Door : MonoBehaviour, IClickableObject
         doorNumbersText.text = doorNumber;
     }
 
-    public void ToggleHonest(bool honest)
+    public void ToggleHonesty()
     {
-        if (honest)
+        honestyStatus = !honestyStatus;
+        if (honestyStatus)
         {
-            honestyStatus = HonestyStatus.Honest;
-            lyingToggle.isOn = false;
+            honestyButtonAnimator.Play("ChangeToHonest", 0);
         }
-        else if (honestyStatus == HonestyStatus.Honest)
+        else
         {
-            honestyStatus = HonestyStatus.Undecided;
-        }
-    }
-
-    public void ToggleLying(bool lying)
-    {
-        if (lying)
-        {
-            honestyStatus = HonestyStatus.Lying;
-            honestToggle.isOn = false;
-        }
-        else if (honestyStatus == HonestyStatus.Lying)
-        {
-            honestyStatus = HonestyStatus.Undecided;
+            honestyButtonAnimator.Play("ChangeToLying", 0);
         }
     }
 
