@@ -32,6 +32,10 @@ public class ProceduralRoomGen : MonoBehaviour
     [SerializeField] private GameObject roomLightsPrefab;
     [SerializeField] private List<ObjectDataTemplate> objectDataTemplates;
     [SerializeField] private DifficultyTemplate difficultyIfNull;
+    [SerializeField] private GameObject writing1Prefab;
+    [SerializeField] private GameObject writing2Prefab;
+    [SerializeField] private GameObject writing3Prefab;
+    [SerializeField] private GameObject writing4Prefab;
 
     [Header("Parameters")]
     [SerializeField] private float roomDistance = 20f;
@@ -186,12 +190,42 @@ public class ProceduralRoomGen : MonoBehaviour
         //PrintGrid(room);
         GenerateDoors(centralPosition, doorCount, room);
         GenerateWalls(centralPosition, doorCount, room);
-
+        generateWallWriting(room);
         // No objects in last room
         if (room != difficulty.roomCount)
         {
             GenerateObjects(doorCount, room);
         }
+    }
+
+    private void generateWallWriting(int room)
+    {
+        GameObject correctPrefab = null;
+        if (room == 0) correctPrefab = writing1Prefab;
+        if (room == 2) correctPrefab = writing4Prefab;
+        if (room == 4) correctPrefab = writing3Prefab;
+        if (room == difficulty.roomCount) correctPrefab = writing2Prefab;
+        if (correctPrefab == null) return;
+        RoomSpace roomSpace = GameManager.Instance.worldState.roomStates[room].roomSpace;
+        List<int> rowsTaken = new List<int> { 2 };
+        int sourceRow = 2;
+        Vector3 centerRoomPosition = GameManager.Instance.worldState.roomStates[room].globalPosition;
+        List<Range> validRanges = RoomRow.GetSharedFreeSpace(roomSpace.roomRows, new List<int> {2});
+        float objectWidth = GetMaxWidthOfObject(correctPrefab) + 2f;
+        validRanges.RemoveAll(r => r.Length < objectWidth);
+        if (validRanges.Count == 0) return;
+        int randomIndex = proceduralRandGen.Next(0, validRanges.Count);
+        Range randomRange = validRanges[randomIndex];
+        float start = randomRange.Start + (float)proceduralRandGen.NextDouble() * (randomRange.Length - objectWidth);
+        randomRange = new Range(start, start + objectWidth);
+        RoomRow.AddObject(roomSpace.roomRows, randomRange, rowsTaken);
+        float placementHalfWidth = (randomRange.End - randomRange.Start) / 2.0f;
+        float distancePlacement = GetObjectDistances()[RoomSpace.FindRoomRowPlacement(sourceRow, objectRelHeights.Count)];
+        Vector3 position = new Vector3(randomRange.Start + placementHalfWidth, centerRoomPosition.y + objectRelHeights[sourceRow], centerRoomPosition.z - distancePlacement);
+        float width = GetMaxWidthOfObject(correctPrefab);
+        if (position == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
+        GameObject objectGenerated = Instantiate(correctPrefab, position, Quaternion.identity, transform);
+        GameManager.Instance.worldState.roomStates[room].objects.Add(objectGenerated);
     }
 
     private void GenerateRoomState(int doorCount, Vector3 centralPosition)
