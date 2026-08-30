@@ -301,8 +301,8 @@ public class ProceduralRoomGen : MonoBehaviour
 
         float roomWidth = GetRoomWidth(doorCount);
        
-        Vector3 rightPosition = new Vector3(centralPosition.x + (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2));
-        Vector3 leftPosition = new Vector3(centralPosition.x - (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2));
+        Vector3 rightPosition = new Vector3(centralPosition.x + (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2.1f));
+        Vector3 leftPosition = new Vector3(centralPosition.x - (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2.1f));
         
         Instantiate(wallPrefab, rightPosition, Quaternion.Euler(0, 90, 0), transform);
         Instantiate(wallPrefab, leftPosition, Quaternion.Euler(0, 270, 0), transform);
@@ -356,15 +356,15 @@ public class ProceduralRoomGen : MonoBehaviour
             //Debug.Log($"RandomIndex for Object: {randomIndex}");
             // new random int is not curr object, which isnt random, rather it takes what was calculated above
             
-            float width = GetMaxWidthOfObject(objectDataTemplates[currObject].GetObjectPrefab()) + objectDataTemplates[currObject].GetInvalidationRange();
+            float width = GetMaxWidthOfObject(objectDataTemplates[indices[currObject]].GetObjectPrefab()) + objectDataTemplates[indices[currObject]].GetInvalidationRange();
 
             RoomSpace roomSpace = GameManager.Instance.worldState.roomStates[room].roomSpace;
-            Vector3 placementPosition = SetupRandomizedPlacement(roomSpace, objectDataTemplates[currObject], GameManager.Instance.worldState.roomStates[room].globalPosition, width, GetRoomWidth(doorCount));
-            if (placementPosition == new Vector3(0, 0, 0)) throw new Exception("GeneratedObjects: no valid positions for object");
-            GameObject objectGenerated = Instantiate(objectDataTemplates[currObject].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
+            Vector3 placementPosition = SetupRandomizedPlacement(roomSpace, objectDataTemplates[indices[currObject]], GameManager.Instance.worldState.roomStates[room].globalPosition, width, GetRoomWidth(doorCount));
+            if (placementPosition == new Vector3(0, 0, 0)) continue;
+            GameObject objectGenerated = Instantiate(objectDataTemplates[indices[currObject]].GetObjectPrefab(), placementPosition, Quaternion.identity, transform);
             GameManager.Instance.worldState.roomStates[room].objects.Add(objectGenerated);
             
-            ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, objectDataTemplates[currObject].GetObjectPropertyDatas(), proceduralRandGen);
+            ProceduralObjectGen.GenerateRandomForEachSprite(objectGenerated, objectDataTemplates[indices[currObject]].GetObjectPropertyDatas(), proceduralRandGen);
 
             // prevents duplicate prefabs
             indices.RemoveAt(currObject);

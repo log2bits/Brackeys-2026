@@ -2385,7 +2385,7 @@ MonoBehaviour:
   writing4Prefab: {fileID: 7530830482215578029, guid: f9e54365f48f7b74ab2f1c1cdb1d9ed3, type: 3}
   outsidePrefab: {fileID: 9153622392254389089, guid: 9f9e4d1351918d94a83ca5160fe8d5b3, type: 3}
   roomDistance: 20
-  objectDoorDistance: 0.5
+  objectDoorDistance: 0.3
   objectGroundDistance: 10
   objectCeilingDistance: 10
   objectRelHeights:
@@ -7275,14 +7275,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1438383397992806513, guid: 2174ca3c35709ab48b217d9290f95fe4, type: 3}
-      propertyPath: swayAmplitude
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1438383397992806513, guid: 2174ca3c35709ab48b217d9290f95fe4, type: 3}
-      propertyPath: bobCyclesPerUnit
-      value: 0.075
-      objectReference: {fileID: 0}
     - target: {fileID: 1943722381144612878, guid: 2174ca3c35709ab48b217d9290f95fe4, type: 3}
       propertyPath: m_Name
       value: ShakeCameraObject

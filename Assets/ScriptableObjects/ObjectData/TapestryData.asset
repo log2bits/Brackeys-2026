@@ -15,9 +15,9 @@ MonoBehaviour:
   objectPrefab: {fileID: 7530830482215578029, guid: b22362ada14a8924a96e2d1a0a760678, type: 3}
   chance: 0.2
   roomTemplate: there was no banner in {1}
-  rowsTaken: 01000000
+  rowsTaken: 02000000
   rowSource: 2
-  invalidationRange: 0
+  invalidationRange: 2
   objectPropertyDatas:
   - propertyName: banner type
     template: there was a {0} banner in {1}
