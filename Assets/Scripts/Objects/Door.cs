@@ -13,6 +13,7 @@ public class Door : MonoBehaviour, IClickableObject
     [SerializeField] private Animator honestyButtonAnimator;
     [SerializeField] private SpriteRenderer doorSpriteOverlay;
     [SerializeField] private TextMeshProUGUI doorNumbersText;
+    [SerializeField] private SpriteRenderer wrongDoorSpriteWall;
 
     [Header("Parameters")]
     [SerializeField] private float doorLightUpAmount = 0.015f;
@@ -32,6 +33,7 @@ public class Door : MonoBehaviour, IClickableObject
     private void Start()
     {
         doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
+        wrongDoorSpriteWall.gameObject.SetActive(!safe);
 
         honestyStatus = false;
         ToggleHonesty();
@@ -84,7 +86,8 @@ public class Door : MonoBehaviour, IClickableObject
                 if (lives < 1)
                 {
                     GameManager.Instance.currentSeed = GameManager.StringToRandomInt(GameManager.GenerateRandomString());
-                    SceneManager.LoadScene("MainMenu");
+                    MainCameraMove.Instance.LostLifeShake();
+                    SceneTransition.Instance.FadeToBlack(MainMenuFinish);
                     return;
                 }
                 
@@ -139,6 +142,11 @@ public class Door : MonoBehaviour, IClickableObject
 		}
 	}
 
+    private void MainMenuFinish()
+    {
+        SceneManager.LoadSceneAsync("MainMenu");
+    }
+
     public void OnMouseUp()
     {
         doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
@@ -166,9 +174,11 @@ public class Door : MonoBehaviour, IClickableObject
         this.doorStatement.sentence = FormatDialogue(this.doorStatement.sentence);
     }
 
-    public void SetIsSafe(bool IsSafe = false)
+    public void SetIsSafe(bool isSafe = false)
     {
-        this.safe = IsSafe;
+        this.safe = isSafe;
+
+        wrongDoorSpriteWall.gameObject.SetActive(!isSafe);
     }
 
     public void SetNumber(int number)

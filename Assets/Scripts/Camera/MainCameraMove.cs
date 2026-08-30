@@ -66,7 +66,7 @@ public class MainCameraMove : MonoBehaviour
         EventBus.Instance.Deregister(EventBus.EventName.LostLife, LostLifeShake);
     }
 
-    private void LostLifeShake()
+    public void LostLifeShake()
     {
         // Magic numbers go brrrrr
         ShakeCamera(0.45f, 0.3f, 0.015f, 0.8f);
