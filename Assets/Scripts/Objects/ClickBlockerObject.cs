@@ -10,7 +10,7 @@ public class ClickBlockerObject : MonoBehaviour, IClickableObject
             return;
         }
 
-        if (GameManager.Instance.state == GameManager.GameState.INNERROOM)
+        if (GameManager.Instance.state == GameManager.GameState.INNERROOM || GameManager.Instance.state == GameManager.GameState.OUTERROOM || GameManager.Instance.state == GameManager.GameState.ENDCUTSCENE)
         {
             Dialogue.Instance.DeferClickCheckToDialogue();
         }

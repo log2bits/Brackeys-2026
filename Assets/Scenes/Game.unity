@@ -2266,7 +2266,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EndingCutsceneController
   endingDialogue: I KNEW that thing was lying to me! I need to get the hell out of
     here.
-  postDialogueWaitTime: 5
+  cameraMoveForwardDistance: 160
+  cameraMoveForwardTime: 20
 --- !u!4 &617377698
 Transform:
   m_ObjectHideFlags: 0
@@ -2443,6 +2444,7 @@ MonoBehaviour:
   writing2Prefab: {fileID: 7530830482215578029, guid: c07fe2a134810a045bfc6e3e7f630899, type: 3}
   writing3Prefab: {fileID: 7530830482215578029, guid: bab5e55c5e63b3c41b16fc3e2968db16, type: 3}
   writing4Prefab: {fileID: 7530830482215578029, guid: f9e54365f48f7b74ab2f1c1cdb1d9ed3, type: 3}
+  outsidePrefab: {fileID: 9153622392254389089, guid: 9f9e4d1351918d94a83ca5160fe8d5b3, type: 3}
   roomDistance: 20
   objectDoorDistance: 0.5
   objectGroundDistance: 10
@@ -6041,7 +6043,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 658eaf667d9e06e4b9e20f2f6fea5309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashbangEffect
-  canvasGroup: {fileID: 0}
   flashbangCanvas: {fileID: 2078307216}
   postProcessVolume: {fileID: 1908221838}
   cutsceneCanvas: {fileID: 1624973400}

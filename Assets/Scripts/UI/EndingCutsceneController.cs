@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,7 +28,8 @@ public class EndingCutsceneController : MonoBehaviour
 
     [Header("Parameters")]
     [SerializeField] private string endingDialogue = "I KNEW that thing was lying to me! I need to get the hell out of here.";
-    [SerializeField] private float postDialogueWaitTime = 5f;
+    [SerializeField] private float cameraMoveForwardDistance = 40f;
+    [SerializeField] private float cameraMoveForwardTime = 10f;
 
 	public void EndGame()
     {
@@ -39,8 +41,8 @@ public class EndingCutsceneController : MonoBehaviour
 		while (!Dialogue.Instance.StartDialogue(endingDialogue, true, RunEndGameCoroutine))
 		{
 			yield return null;
+            GameManager.Instance.ChangeGameState(GameManager.GameState.ENDCUTSCENE);
 		}
-        GameManager.Instance.ChangeGameState(GameManager.GameState.CUTSCENE);
 	}
 
 	private void RunEndGameCoroutine(){
@@ -49,7 +51,7 @@ public class EndingCutsceneController : MonoBehaviour
 
 	private IEnumerator EndGameCoroutine()
     {
-        yield return new WaitForSeconds(postDialogueWaitTime);
+        GameManager.Instance.ChangeGameState(GameManager.GameState.ENDCUTSCENE);
 
         MainMenu.HighestBeatenDifficulty getHighestBeatenDifficulty = SaveSystem.GetHighestBeatenDifficulty();
         int highestDifficulty = -1;
@@ -64,6 +66,9 @@ public class EndingCutsceneController : MonoBehaviour
         	SaveSystem.SaveHighestBeatenDifficulty(highestBeatenDifficulty);
         }
 
+        MainCameraMove.Instance.MoveCamera(MainCameraMove.Instance.transform.position + new Vector3(0, 0, cameraMoveForwardDistance), cameraMoveForwardTime);
+        
+        yield return new WaitForSeconds(cameraMoveForwardTime / 2f);
         SceneTransition.Instance.FadeToBlack(MainMenuFinish);
     }
 
