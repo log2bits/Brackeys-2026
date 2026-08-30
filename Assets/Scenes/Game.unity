@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 617377698}
-  - component: {fileID: 617377698}
+  - component: {fileID: 9322121}
+  - component: {fileID: 9322122}
   m_Layer: 0
   m_Name: ProceduralAmbientGenerator
   m_TagString: Untagged
@@ -136,7 +136,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &617377698
+--- !u!4 &9322121
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6437,6 +6437,7 @@ SceneRoots:
   - {fileID: 673853720}
   - {fileID: 255078183}
   - {fileID: 79620413}
+  - {fileID: 9322121}
   - {fileID: 617377698}
   - {fileID: 1411373715031152447}
   - {fileID: 5019922500892302581}
