@@ -4108,6 +4108,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2009324022}
     m_Modifications:
+    - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2009324023}
+    - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ReturnFromOptions
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MainMenu, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1864743990740857758, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
       propertyPath: controlsMenuUI
       value: 
@@ -4900,6 +4928,18 @@ PrefabInstance:
     - target: {fileID: 1947614460163652041, guid: 728dc759ed457b147bb4c7446245e581, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356940441679921207, guid: 728dc759ed457b147bb4c7446245e581, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1674276278}
+    - target: {fileID: 2356940441679921207, guid: 728dc759ed457b147bb4c7446245e581, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ReturnFromControls
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356940441679921207, guid: 728dc759ed457b147bb4c7446245e581, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: OptionsMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4996966043875346965, guid: 728dc759ed457b147bb4c7446245e581, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
