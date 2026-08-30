@@ -301,8 +301,8 @@ public class ProceduralRoomGen : MonoBehaviour
 
         float roomWidth = GetRoomWidth(doorCount);
        
-        Vector3 rightPosition = new Vector3(centralPosition.x + (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2));
-        Vector3 leftPosition = new Vector3(centralPosition.x - (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2));
+        Vector3 rightPosition = new Vector3(centralPosition.x + (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2.1f));
+        Vector3 leftPosition = new Vector3(centralPosition.x - (roomWidth / 2), centralPosition.y, centralPosition.z - (roomDistance / 2.1f));
         
         Instantiate(wallPrefab, rightPosition, Quaternion.Euler(0, 90, 0), transform);
         Instantiate(wallPrefab, leftPosition, Quaternion.Euler(0, 270, 0), transform);

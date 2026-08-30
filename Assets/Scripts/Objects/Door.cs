@@ -33,6 +33,7 @@ public class Door : MonoBehaviour, IClickableObject
     private void Start()
     {
         doorSpriteOverlay.color = new Color(1f, 1f, 1f, 0f);
+        wrongDoorSpriteWall.gameObject.SetActive(!safe);
 
         honestyStatus = false;
         ToggleHonesty();
@@ -84,6 +85,7 @@ public class Door : MonoBehaviour, IClickableObject
                 if (lives < 1)
                 {
                     GameManager.Instance.currentSeed = GameManager.StringToRandomInt(GameManager.GenerateRandomString());
+                    MainCameraMove.Instance.LostLifeShake();
                     SceneTransition.Instance.FadeToBlack(MainMenuFinish);
                     return;
                 }
@@ -175,7 +177,7 @@ public class Door : MonoBehaviour, IClickableObject
     {
         this.safe = isSafe;
 
-        wrongDoorSpriteWall.enabled = isSafe;
+        wrongDoorSpriteWall.gameObject.SetActive(!isSafe);
     }
 
     public void SetNumber(int number)
