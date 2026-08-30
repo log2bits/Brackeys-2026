@@ -4108,6 +4108,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2009324022}
     m_Modifications:
+    - target: {fileID: 839551124378342381, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1175407285666189196, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1175407285666189196, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1283715261693734304, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -4136,6 +4148,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 1589277039133835747, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1589277039133835747, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1864743990740857758, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
       propertyPath: controlsMenuUI
       value: 
@@ -4144,9 +4164,57 @@ PrefabInstance:
       propertyPath: brightnessVolume
       value: 
       objectReference: {fileID: 420662756}
+    - target: {fileID: 2298429327927091187, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2899790293493204009, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2944556743227772277, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
       propertyPath: m_Name
       value: OptionsCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 3994540707556333554, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5130991490263744314, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5196864447191654879, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5196864447191654879, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5196864447191654879, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5456988316153133294, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5456988316153133294, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5456988316153133294, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5900602362597145164, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5900602362597145164, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6289759375103411027, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
       propertyPath: m_Pivot.x
@@ -4239,6 +4307,22 @@ PrefabInstance:
     - target: {fileID: 7716485632332252713, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: MainMenu, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903149641729710750, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8290990067518330263, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8290990067518330263, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8290990067518330263, guid: 8f10199eb480cd947b2dd8967e6907dc, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
