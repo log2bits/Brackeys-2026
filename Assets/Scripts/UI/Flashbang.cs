@@ -11,8 +11,8 @@ public class FlashbangEffect : MonoBehaviour
     [SerializeField] private GameObject cutsceneCanvas;
 
     [Header("Settings")]
-    [SerializeField] private float flashDuration = 1.0f;
-    [SerializeField] private float fadeDuration = 3.0f;
+    [SerializeField] private float flashDuration = 0.5f;
+    [SerializeField] private float fadeDuration = 2.0f;
 
     private IEnumerator flashCoroutine;
 
@@ -52,6 +52,7 @@ public class FlashbangEffect : MonoBehaviour
 
             canvasGroup.alpha = Mathf.Lerp(1f, 0f, progress);
             postProcessVolume.weight = Mathf.Lerp(1f, 0f, progress);
+            postProcessVolume.weight *= postProcessVolume.weight;
 
             yield return null;
         }
