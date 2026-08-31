@@ -47,11 +47,29 @@ public class MainMenu : MonoBehaviour
         optionsMenuScript.LoadOptions();
         SetDifficulty(0);
 
-        // music
+        // music register incase web build
+        #if !UNITY_WEBGL
+        StartMenuMusic();
+        #elif UNITY_WEBGL
+        RegisterMenuMusic();
+        #endif
+        
+
+        SceneTransition.Instance.FadeFromBlack();
+    }
+
+    void RegisterMenuMusic()
+    {
+        EventBus.Instance.Register(EventBus.EventName.PlayerClicked, StartMenuMusic);
+    }
+
+    void StartMenuMusic()
+    {
         menuMusicInstance = AudioManager.Instance.CreateInstance(menuMusic);
         menuMusicInstance.start();
         menuMusicInstance.release();
-        SceneTransition.Instance.FadeFromBlack();
+        // if null or not registered, it wont be a problem, will ignore
+        EventBus.Instance.Deregister(EventBus.EventName.PlayerClicked, StartMenuMusic);
     }
 
     public void NewGame()

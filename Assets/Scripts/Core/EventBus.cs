@@ -22,6 +22,7 @@ public class EventBus
         LostLife,
         CutsceneEnd,
         RoomMove,
+        PlayerClicked, // purpose is for web builds
     }
 
 
@@ -57,6 +58,12 @@ public class EventBus
     {
         OnRoomMove?.Invoke();
     }
+    // DoPlayerClicked called when causing death 
+    public event Action OnPlayerClicked;
+    public void DoPlayerClicked()
+    {
+        OnPlayerClicked?.Invoke();
+    }
 
     // Note: You can do Action<Vector3> for example, but for dictionary storage we would have to change
 
@@ -91,6 +98,11 @@ public class EventBus
                 OnRoomMove += handlerRoomMove;
                 activeEventListeners[listener] = handlerRoomMove;
                 break;
+            case EventName.PlayerClicked:
+                Action handlerPlayerClicked = () => listener();
+                OnPlayerClicked += handlerPlayerClicked;
+                activeEventListeners[listener] = handlerPlayerClicked;
+                break;
             default: throw new Exception("Failed Register: Given eventName does not exist as a register - " + eventName);
         }
         
@@ -118,6 +130,9 @@ public class EventBus
                     break;
                 case EventName.RoomMove:
                     OnRoomMove -= (Action)wrapper;
+                    break;
+                case EventName.PlayerClicked:
+                    OnPlayerClicked -= (Action)wrapper;
                     break;
                 default:
                 throw new Exception("Failed Deregister: Given eventName does not exist as a Deregister - " + eventName);
