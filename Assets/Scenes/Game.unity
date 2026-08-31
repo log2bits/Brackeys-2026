@@ -2385,7 +2385,7 @@ MonoBehaviour:
   writing4Prefab: {fileID: 7530830482215578029, guid: f9e54365f48f7b74ab2f1c1cdb1d9ed3, type: 3}
   outsidePrefab: {fileID: 9153622392254389089, guid: 9f9e4d1351918d94a83ca5160fe8d5b3, type: 3}
   roomDistance: 20
-  objectDoorDistance: 0.3
+  objectDoorDistance: 0.5
   objectGroundDistance: 10
   objectCeilingDistance: 10
   objectRelHeights:
