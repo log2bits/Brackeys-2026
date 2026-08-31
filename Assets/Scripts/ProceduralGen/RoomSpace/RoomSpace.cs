@@ -13,10 +13,10 @@ public class RoomSpace
     {
         float halfWidth = roomWidth / 2.0f;
         int rowDistIndex = 0;
-        Debug.Log(heightDistPlacements.Count);
+        //Debug.Log(heightDistPlacements.Count);
         for (int currRow = 0; currRow < heightDistPlacements.Count; currRow++)
         {
-            Debug.Log($"CurrRow and RowDistIndex: {currRow} {rowDistIndex}");
+            //Debug.Log($"CurrRow and RowDistIndex: {currRow} {rowDistIndex}");
             float positionZ = rowDistPlacements[rowDistIndex];
             float positionY = heightDistPlacements[currRow];
             roomRows.Add(new RoomRow(centralPosition.x - halfWidth, centralPosition.x + halfWidth, new Vector2(centralPosition.z, centralPosition.y)));   

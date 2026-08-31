@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a992d5e301996849baa2f8100f8d229, type: 3}
+  m_Name: ChainData
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectDataTemplate
+  objectPrefab: {fileID: 7530830482215578029, guid: d209af8b894b9db4ea14cb864f9a27b2, type: 3}
+  chance: 0.2
+  roomTemplate: there were no chains in {1}
+  rowsTaken: 03000000
+  rowSource: 3
+  invalidationRange: 0
+  objectPropertyDatas:
+  - propertyName: chain type
+    template: there were {0} in {1}
+    values:
+    - two chains and a looped chain
+    - four chains
+    - three chains
+    - two chains
+    sprites:
+    - {fileID: 21300000, guid: cb4423b545a407c4db1b94c865161e10, type: 3}
+    - {fileID: 21300000, guid: 816d9cdf16f3b174fa84a3f8c2dbccb7, type: 3}
+    - {fileID: 21300000, guid: 997e6f6540ed2ad47944ac9315e09e5a, type: 3}
+    - {fileID: 21300000, guid: 79754a31f9932094f83e9ea15791b138, type: 3}

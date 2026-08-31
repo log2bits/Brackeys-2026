@@ -1051,7 +1051,7 @@ Transform:
   m_GameObject: {fileID: 164846444}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: 0, y: 14.5, z: 250}
+  m_LocalPosition: {x: 0, y: 21.6, z: 250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -2378,6 +2378,7 @@ MonoBehaviour:
   objectDataTemplates:
   - {fileID: 11400000, guid: 0bf19ecc9247deb4691ab39bc0009ec8, type: 2}
   - {fileID: 11400000, guid: d18c173b4f9baeb44b2a6c9f3d88ee1c, type: 2}
+  - {fileID: 11400000, guid: e9f26f221592aa54e8ec213538866a11, type: 2}
   difficultyIfNull: {fileID: 11400000, guid: f77c6904f89e7de48864c74a624c46c7, type: 2}
   writing1Prefab: {fileID: 7530830482215578029, guid: 39431a6f661a80a4a9b8cb818afab302, type: 3}
   writing2Prefab: {fileID: 7530830482215578029, guid: c07fe2a134810a045bfc6e3e7f630899, type: 3}
@@ -2386,8 +2387,8 @@ MonoBehaviour:
   outsidePrefab: {fileID: 9153622392254389089, guid: 9f9e4d1351918d94a83ca5160fe8d5b3, type: 3}
   roomDistance: 20
   objectDoorDistance: 0.5
-  objectGroundDistance: 10
-  objectCeilingDistance: 10
+  objectGroundDistance: 4
+  objectCeilingDistance: 3
   objectRelHeights:
   - 0
   - 0
