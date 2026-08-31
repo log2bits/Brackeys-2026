@@ -17,7 +17,7 @@ MonoBehaviour:
   roomTemplate: there was no banner in {1}
   rowsTaken: 02000000
   rowSource: 2
-  invalidationRange: 2
+  invalidationRange: 2.3
   objectPropertyDatas:
   - propertyName: banner type
     template: there was a {0} banner in {1}
