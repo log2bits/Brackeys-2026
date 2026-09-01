@@ -6852,7 +6852,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Christopher Green
 
-    <size=50%>Tools Engineer, Systems Designer, Audio
+    <size=50%>Systems Engineer, Systems Designer, Audio
     Engineer</size>
 
     Jack "Serpent" Seales
@@ -6872,8 +6872,8 @@ MonoBehaviour:
 
     Tyler Roth
 
-    <size=50%>Engineer, Gameplay
-    Programmer, UI Engineer</size>'
+    <size=50%>Gameplay Programmer,
+    VFX Engineer, UI Engineer</size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: daee20bb137e687418de41760683ad31, type: 2}
   m_sharedMaterial: {fileID: -6068697145922739691, guid: daee20bb137e687418de41760683ad31, type: 2}
