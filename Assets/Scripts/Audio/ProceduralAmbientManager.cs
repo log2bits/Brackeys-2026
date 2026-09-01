@@ -224,10 +224,13 @@ public class ProceduralAmbientManager : MonoBehaviour
     {
         currentRoom+=1;
 
-        if (currentRoom == roomResetRatio) 
+        if (currentRoom == roomResetRatio - 1) 
         {
             music.start();
             music.release();
+        }
+        if (currentRoom == roomResetRatio) 
+        {
             secRatio = roomSecRatio;
         }
         

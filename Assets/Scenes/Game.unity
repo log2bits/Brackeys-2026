@@ -166,11 +166,11 @@ MonoBehaviour:
   initialStartDelay: 10
   minResetSec: 15
   maxResetSec: 30
-  eventChance: 0.1
-  roomSecRatio: 1.5
-  roomResetRatio: 2
+  eventChance: 0.15
+  roomSecRatio: 1.25
+  roomResetRatio: 3
   soundFadeSec: 30
-  roomSoundFade: 3
+  roomSoundFade: 5
 --- !u!1 &49129320
 GameObject:
   m_ObjectHideFlags: 0

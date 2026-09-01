@@ -133,13 +133,13 @@ public class ProceduralRoomGen : MonoBehaviour
 		DoorStatement doorStatement1 = new DoorStatement
 		{
 			speaker = 0,
-            sentence = "This door leads to the outside world.",
+            sentence = "this door leads to the outside world",
             dropdownContents = new List<List<string>>()
 		};
         DoorStatement doorStatement2 = new DoorStatement
 		{
 			speaker = 1,
-            sentence = "Your friend is lying to you.",
+            sentence = "your friend is lying to you",
             dropdownContents = new List<List<string>>()
 		};
         DoorStatement[] doorStatements = {doorStatement1, doorStatement2};
