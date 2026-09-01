@@ -103,7 +103,7 @@ public class Door : MonoBehaviour, IClickableObject
             CoroutineManager.Instance.Run(RotateDoor(safeDoorRotateAngle));
 
             AudioManager.Instance.PlayOneShot(FmodEvents.Instance.openDoor, transform.position);
-            MainCameraMove.Instance.MoveCamera(transform.position + new Vector3(0, 0, 0.1f), GameManager.GameState.OUTERROOM);
+            MainCameraMove.Instance.MoveCamera(transform.position + new Vector3(0, 0, 0.5f), GameManager.GameState.OUTERROOM);
 
             GameManager.Instance.state = GameManager.GameState.TRANSITIONROOM;
             GameManager.Instance.ChangeGameState(GameManager.GameState.TRANSITIONROOM);
