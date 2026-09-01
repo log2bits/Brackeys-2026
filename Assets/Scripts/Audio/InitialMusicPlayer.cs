@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InitialMusicPlayer: MonoBehaviour
 {
@@ -14,7 +15,8 @@ public class InitialMusicPlayer: MonoBehaviour
 
     private void Update()
     {
-        if (!playerClicked && (Input.anyKeyDown || Input.GetMouseButtonDown(0)))
+        bool pressed = (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame) || (Pointer.current != null && Pointer.current.press.wasPressedThisFrame);
+        if (!playerClicked && pressed)
         {
             playerClicked = true;
             EventBus.Instance.DoPlayerClicked();

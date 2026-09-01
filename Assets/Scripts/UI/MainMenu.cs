@@ -65,6 +65,8 @@ public class MainMenu : MonoBehaviour
 
     void StartMenuMusic()
     {
+        FMODUnity.RuntimeManager.CoreSystem.mixerResume();
+
         menuMusicInstance = AudioManager.Instance.CreateInstance(menuMusic);
         menuMusicInstance.start();
         menuMusicInstance.release();
