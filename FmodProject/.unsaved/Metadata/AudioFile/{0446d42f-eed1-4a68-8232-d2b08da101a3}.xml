@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{0446d42f-eed1-4a68-8232-d2b08da101a3}">
+		<property name="assetPath">
+			<value>SFX/AsylumSounds/AsylumEnvironments/AEnvironment Elevator.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>12</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{c22c7806-a81a-436f-813d-40b0fd8e9fbc}</destination>
+		</relationship>
+	</object>
+</objects>

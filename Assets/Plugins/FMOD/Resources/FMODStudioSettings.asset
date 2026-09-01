@@ -160,7 +160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: FMODUnity::FMODUnity.PlatformWebGL
   identifier: 46fbfdf3fc43db0458918377fd40293e
   parentIdentifier: default
-  active: 0
+  active: 1
   Properties:
     LiveUpdate:
       Value: 0
@@ -181,8 +181,8 @@ MonoBehaviour:
       Value: 0
       HasValue: 0
     SampleRate:
-      Value: 0
-      HasValue: 0
+      Value: 48000
+      HasValue: 1
     BuildDirectory:
       Value: 
       HasValue: 0
@@ -196,21 +196,22 @@ MonoBehaviour:
       Value: 0
       HasValue: 0
     DSPBufferLength:
-      Value: 0
-      HasValue: 0
+      Value: 2048
+      HasValue: 1
     DSPBufferCount:
-      Value: 0
-      HasValue: 0
+      Value: 4
+      HasValue: 1
     Plugins:
       Value: []
       HasValue: 0
     StaticPlugins:
-      Value: []
+      Value:
+      - 
       HasValue: 0
     CallbackHandler:
       Value: {fileID: 0}
       HasValue: 0
-  OutputTypeName: 
+  OutputTypeName: WEBAUDIO
   threadAffinities:
     Value: []
     HasValue: 0
