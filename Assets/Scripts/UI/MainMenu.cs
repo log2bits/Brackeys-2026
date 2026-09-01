@@ -44,14 +44,22 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.state = GameManager.GameState.MAINMENU;
-        optionsMenuScript.LoadOptions();
         SetDifficulty(0);
+        SceneTransition.Instance.FadeFromBlack();
 
-        // music
+        StartCoroutine(StartMenuMusicWhenBanksReady());
+    }
+    private IEnumerator StartMenuMusicWhenBanksReady()
+    {
+        while (!RuntimeManager.HaveAllBanksLoaded)
+        {
+            yield return null;
+        }
+        optionsMenuScript.LoadOptions();
+
         menuMusicInstance = AudioManager.Instance.CreateInstance(menuMusic);
         menuMusicInstance.start();
         menuMusicInstance.release();
-        SceneTransition.Instance.FadeFromBlack();
     }
 
     public void NewGame()
