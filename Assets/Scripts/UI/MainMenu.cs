@@ -129,11 +129,6 @@ public class MainMenu : MonoBehaviour
         difficultiesDescription.text = difficulties[difficultyIndex].difficultyDescription;
     }
 
-    public void FinishSetDifficulty()
-    {
-        difficultiesSlider.value = difficultyIndex;
-    }
-
     private int GetHighestUnlockedDifficulty()
     {
         HighestBeatenDifficulty highestBeatenDifficulty = SaveSystem.GetHighestBeatenDifficulty();
